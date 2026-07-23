@@ -1,0 +1,1435 @@
+===== snapshot/workspace4-fixes.js (9 matches) =====
+--- lines 1-15 match 7 ---
+1: /* MEETUS 0.6.25.2 COMMUNITY2-TG11-WORKSPACE4 — reliable pins, message links and rich text */
+2: (() => {
+3:   'use strict';
+4: 
+5:   const VERSION = '0.6.25.2-community2tg11workspace4';
+6:   const fix = {
+7:     lastContextMessage: null,
+8:     lastSelection: null,
+9:     deepLinkRunning: false,
+10:     hooked: false,
+11:   };
+12: 
+13:   const $ = (id) => document.getElementById(id);
+14: 
+15:   function workspaceApi(path, method = 'GET', body) {
+--- lines 70-86 match 78 ---
+70:   function actionSvg(kind) {
+71:     if (kind === 'pin') {
+72:       return '<svg viewBox="0 0 24 24"><path d="M9 4h6v5l3 3-5 1v6l-2 2v-8l-5-1 3-3V4Z"/></svg>';
+73:     }
+74:     return '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.1.1l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"/><path d="M14 11a5 5 0 0 0-7.1-.1l-2 2A5 5 0 0 0 12 20l1.1-1.1"/></svg>';
+75:   }
+76: 
+77:   function ensureContextActions() {
+78:     const menu = $('messageContextMenu');
+79:     if (!menu) return;
+80: 
+81:     menu.querySelectorAll('[data-workspace-message-action]').forEach((node) => node.remove());
+82:     if (menu.querySelector('.workspace4-context-actions')) return;
+83: 
+84:     const info = menu.querySelector('[data-message-action="info"]');
+85:     const divider = menu.querySelector('.message-context-divider');
+86:     const anchor = divider || info?.nextSibling || null;
+--- lines 200-216 match 208 ---
+200:       }
+201:       notify(unpin ? 'Сообщение откреплено' : 'Сообщение закреплено');
+202:     } catch (error) {
+203:       notify(error?.message || 'Не удалось закрепить сообщение', true);
+204:     }
+205:   }
+206: 
+207:   function rememberMessage(message) {
+208:     fix.lastContextMessage = message || null;
+209:     refreshContextActions(message);
+210:   }
+211: 
+212:   function installContextMenuHook() {
+213:     if (fix.hooked || typeof openMessageContextMenu !== 'function') return;
+214:     fix.hooked = true;
+215:     const original = openMessageContextMenu;
+216:     openMessageContextMenu = function workspace4OpenContext(message, trigger) {
+--- lines 219-235 match 227 ---
+219:       refreshContextActions(message);
+220:       requestAnimationFrame(() => refreshContextActions(message));
+221:       return result;
+222:     };
+223: 
+224:     document.addEventListener('pointerdown', (event) => {
+225:       const action = event.target.closest?.('[data-workspace4-message-action]');
+226:       if (!action) return;
+227:       const message = fix.lastContextMessage || (typeof state !== 'undefined' ? state.contextMessage : null);
+228:       event.preventDefault();
+229:       event.stopPropagation();
+230:       event.stopImmediatePropagation();
+231:       try { if (typeof closeMessageContextMenu === 'function') closeMessageContextMenu(); } catch {}
+232:       if (!message) return notify('Сообщение не выбрано', true);
+233:       if (action.dataset.workspace4MessageAction === 'pin') void pinMessage(message);
+234:       if (action.dataset.workspace4MessageAction === 'copy-link') void copyMessageLink(message);
+235:     }, true);
+===== snapshot/app.js (59 matches) =====
+--- lines 33-49 match 41 ---
+33:   friendRemoveTarget: null,
+34:   managedCommunity: null,
+35:   managedCommunityInfo: null,
+36:   communityBans: [],
+37:   communityActionMember: null,
+38:   activePermissions: null,
+39:   communityInviteSearchTimer: null,
+40:   activeChat: null,
+41:   activeMessages: [],
+42:   socket: null,
+43:   searchTimer: null,
+44:   dialogSearchTimer: null,
+45:   dialogSearchResults: [],
+46:   dialogSearchChatId: null,
+47:   searchContextActive: false,
+48:   activeChatMute: null,
+49:   chatClearTarget: null,
+--- lines 53-69 match 61 ---
+53:     files: [],
+54:     links: [],
+55:   },
+56:   sharedChatTab: "media",
+57:   sharedPanelCloseTimer: null,
+58:   readTimer: null,
+59: 
+60:   replyToMessage: null,
+61:   contextMessage: null,
+62:   reactionTargetMessage: null,
+63:   pendingMediaFiles: [],
+64:   pendingMediaIndex: 0,
+65:   pendingMediaUrls: [],
+66:   pickerTab: "emoji",
+67:   gifSearchTimer: null,
+68:   gifResults: [],
+69:   communityMode: "group",
+--- lines 329-345 match 337 ---
+329: const imageEditorColor = $("imageEditorColor");
+330: const imageEditorSize = $("imageEditorSize");
+331: const imageEditorText = $("imageEditorText");
+332: const imageEditorSticker = $("imageEditorSticker");
+333: const imageEditorUndo = $("imageEditorUndo");
+334: const imageEditorReset = $("imageEditorReset");
+335: const imageEditorStickerTray = $("imageEditorStickerTray");
+336: 
+337: const messageContextMenu = $("messageContextMenu");
+338: const quickReactionRow = $("quickReactionRow");
+339: const moreReactionButton = $("moreReactionButton");
+340: const messageDownloadAction = $("messageDownloadAction");
+341: const messageDeleteMeAction = $("messageDeleteMeAction");
+342: const messageDeleteEveryoneAction = $("messageDeleteEveryoneAction");
+343: 
+344: const reactionPicker = $("reactionPicker");
+345: const reactionPickerClose = $("reactionPickerClose");
+--- lines 2181-2197 match 2189 ---
+2181:       }
+2182:     } catch {}
+2183:   }
+2184: 
+2185:   clearLocalSession();
+2186:   state.chats = [];
+2187:   state.contacts = [];
+2188:   state.activeChat = null;
+2189:   state.activeMessages = [];
+2190:   state.activePermissions = null;
+2191: 
+2192:   messengerScreen.classList.add("hidden");
+2193:   authScreen.classList.remove("hidden");
+2194:   showAuthMode("login");
+2195:   authError.textContent = message;
+2196: }
+2197: 
+--- lines 3278-3294 match 3286 ---
+3278:   });
+3279: 
+3280:   state.socket.on(
+3281:     "message.receipt",
+3282:     ({ chatId, messageIds, status }) => {
+3283:       if (!Array.isArray(messageIds)) return;
+3284: 
+3285:       for (const messageId of messageIds) {
+3286:         const message = state.activeMessages.find(
+3287:           (item) => item.id === messageId,
+3288:         );
+3289: 
+3290:         if (message) {
+3291:           message.receipt_status =
+3292:             advancedReceiptStatus(
+3293:               message.receipt_status,
+3294:               status,
+--- lines 3509-3525 match 3517 ---
+3509:       ) {
+3510:         return;
+3511:       }
+3512: 
+3513:       if (
+3514:         state.activeChat?.id ===
+3515:         chatId
+3516:       ) {
+3517:         state.activeMessages = [];
+3518:         messageArea.innerHTML =
+3519:           '<div class="empty-chat-history">История чата очищена</div>';
+3520:         closeDialogSearch(false);
+3521:       }
+3522: 
+3523:       loadChats(false);
+3524:     },
+3525:   );
+--- lines 5220-5236 match 5228 ---
+5220:   }
+5221: }
+5222: 
+5223: function removeCommunityChatsLocally(chatIds) {
+5224:   const ids = new Set(chatIds || []);
+5225:   state.chats = state.chats.filter((chat) => !ids.has(chat.id));
+5226:   if (state.activeChat && ids.has(state.activeChat.id)) {
+5227:     state.activeChat = null;
+5228:     state.activeMessages = [];
+5229:     messenger.classList.remove("chat-open");
+5230:   }
+5231:   renderChats();
+5232: }
+5233: 
+5234: async function leaveManagedCommunity() {
+5235:   const chat = state.managedCommunity;
+5236:   const info = state.managedCommunityInfo;
+--- lines 5917-5933 match 5925 ---
+5917:   if (state.remoteActivityTimer) {
+5918:     clearTimeout(state.remoteActivityTimer);
+5919:     state.remoteActivityTimer = null;
+5920:   }
+5921:   closeUserProfilePanel();
+5922:   closeSharedChatPanel();
+5923:   closeChatHeaderMenu();
+5924:   state.activeChat = chat;
+5925:   state.activeMessages = [];
+5926:   state.searchContextActive = false;
+5927:   closeDialogSearch(false);
+5928: 
+5929:   messengerScreen.classList.add("chat-open");
+5930:   emptyState.classList.add("hidden");
+5931:   messageArea.classList.remove("hidden");
+5932:   recordBar.classList.add("hidden");
+5933: 
+--- lines 5949-5965 match 5957 ---
+5949:   updateActiveChatAccess();
+5950:   updateChatMuteMenuLabel();
+5951: 
+5952:   chat.unread_count = 0;
+5953:   renderChats();
+5954:   messageArea.innerHTML = '<div class="loading">Загружаем сообщения…</div>';
+5955: 
+5956:   try {
+5957:     const messages = await request(`/chats/${chat.id}/messages`);
+5958:     state.activeMessages = messages;
+5959: 
+5960:     messageArea.innerHTML = "";
+5961:     messages.forEach(appendMessage);
+5962:     scrollMessages(true);
+5963: 
+5964:     state.socket?.emit("chat.join", {
+5965:       chatId: chat.id,
+--- lines 6328-6344 match 6336 ---
+6328: 
+6329:   let target = messageArea.querySelector(
+6330:     `[data-message-id="${CSS.escape(messageId)}"]`,
+6331:   );
+6332: 
+6333:   if (!target) {
+6334:     try {
+6335:       const context = await request(
+6336:         `/chats/${chatId}/messages/${messageId}/context?limit=100`,
+6337:       );
+6338: 
+6339:       state.activeMessages = context;
+6340:       state.searchContextActive = true;
+6341:       messageArea.innerHTML = "";
+6342:       context.forEach(appendMessage);
+6343: 
+6344:       target = messageArea.querySelector(
+--- lines 6784-6800 match 6792 ---
+6784:           type:
+6785:             kind === "sticker"
+6786:               ? "sticker"
+6787:               : "gif",
+6788:         }),
+6789:       },
+6790:     );
+6791: 
+6792:     await createMediaMessage(
+6793:       uploaded,
+6794:       kind,
+6795:       "",
+6796:       state.replyToMessage?.id,
+6797:     );
+6798: 
+6799:     clearReplyMessage();
+6800:     toggleContentPicker(false);
+--- lines 7273-7289 match 7281 ---
+7273:     file: "Документ",
+7274:     sticker: "Стикер",
+7275:   };
+7276: 
+7277:   return labels[message?.kind] || "Сообщение";
+7278: }
+7279: 
+7280: function findMessageById(messageId) {
+7281:   return state.activeMessages.find((message) => message.id === messageId) || null;
+7282: }
+7283: 
+7284: function replyMarkup(message) {
+7285:   if (!message.reply_to_id) return "";
+7286: 
+7287:   const original = findMessageById(message.reply_to_id);
+7288:   const senderName =
+7289:     original?.sender_id === state.user?.id
+--- lines 7638-7654 match 7646 ---
+7638:   } catch (error) {
+7639:     setUploadStatus(error.message, true);
+7640:     setTimeout(() => setUploadStatus(""), 4000);
+7641:   } finally {
+7642:     mediaPreviewSend.disabled = false;
+7643:   }
+7644: }
+7645: 
+7646: function openMessageContextMenu(message, trigger) {
+7647:   state.contextMessage = message;
+7648: 
+7649:   const deletedForEveryone =
+7650:     isDeletedForEveryone(message);
+7651: 
+7652:   quickReactionRow.classList.toggle(
+7653:     "hidden",
+7654:     deletedForEveryone,
+--- lines 7665-7681 match 7673 ---
+7665:     message.sender_id !== state.user?.id ||
+7666:       deletedForEveryone,
+7667:   );
+7668: 
+7669:   messageDeleteMeAction.classList.remove(
+7670:     "hidden",
+7671:   );
+7672: 
+7673:   messageContextMenu.classList.remove("hidden");
+7674: 
+7675:   const rect = trigger.getBoundingClientRect();
+7676:   const menuRect = messageContextMenu.getBoundingClientRect();
+7677: 
+7678:   let left = rect.right - menuRect.width;
+7679:   let top = rect.bottom + 5;
+7680: 
+7681:   if (left < 8) left = 8;
+--- lines 7685-7701 match 7693 ---
+7685:   if (top + menuRect.height > window.innerHeight - 8) {
+7686:     top = rect.top - menuRect.height - 5;
+7687:   }
+7688: 
+7689:   messageContextMenu.style.left = `${left}px`;
+7690:   messageContextMenu.style.top = `${Math.max(8, top)}px`;
+7691: }
+7692: 
+7693: function closeMessageContextMenu() {
+7694:   messageContextMenu.classList.add("hidden");
+7695:   quickReactionRow.classList.remove(
+7696:     "hidden",
+7697:   );
+7698:   state.contextMessage = null;
+7699: }
+7700: 
+7701: async function copyMessageContent(message) {
+--- lines 7811-7827 match 7819 ---
+7811:             </button>
+7812:           `,
+7813:         )
+7814:         .join("")}
+7815:     </div>
+7816:   `;
+7817: }
+7818: 
+7819: function renderMessageReactions(messageId, reactions) {
+7820:   const message = state.activeMessages.find(
+7821:     (item) => item.id === messageId,
+7822:   );
+7823: 
+7824:   if (message) {
+7825:     message.reactions = Array.isArray(reactions)
+7826:       ? reactions.map(normalizeReaction)
+7827:       : [];
+--- lines 7893-7909 match 7901 ---
+7893: 
+7894:   const existing = Array.isArray(message.reactions)
+7895:     ? message.reactions
+7896:         .map(normalizeReaction)
+7897:         .find((item) => item.emoji === emoji)
+7898:     : null;
+7899: 
+7900:   const result = await request(
+7901:     `/chats/${state.activeChat.id}/messages/${message.id}/reaction`,
+7902:     {
+7903:       method: existing?.reactedByMe
+7904:         ? "DELETE"
+7905:         : "POST",
+7906:       body: existing?.reactedByMe
+7907:         ? undefined
+7908:         : JSON.stringify({ emoji }),
+7909:     },
+--- lines 7947-7963 match 7955 ---
+7947:   ) {
+7948:     return;
+7949:   }
+7950: 
+7951:   closeUserProfilePanel();
+7952:   closeSharedChatPanel();
+7953:   closeDialogSearch(false);
+7954:   state.activeChat = null;
+7955:   state.activeMessages = [];
+7956:   state.replyToMessage = null;
+7957:   messageArea.innerHTML = "";
+7958:   messageArea.classList.add("hidden");
+7959:   recordBar.classList.add("hidden");
+7960:   emptyState.classList.remove("hidden");
+7961:   messengerScreen.classList.remove(
+7962:     "chat-open",
+7963:   );
+--- lines 8099-8115 match 8107 ---
+8099: 
+8100: function openReactionPicker(message) {
+8101:   if (!message) return;
+8102: 
+8103:   state.reactionTargetMessage =
+8104:     message;
+8105:   reactionPickerSearch.value = "";
+8106:   renderReactionPicker();
+8107:   closeMessageContextMenu();
+8108:   reactionPicker.classList.remove(
+8109:     "hidden",
+8110:   );
+8111: 
+8112:   requestAnimationFrame(() => {
+8113:     reactionPickerSearch.focus();
+8114:   });
+8115: }
+--- lines 8122-8138 match 8130 ---
+8122:   state.reactionTargetMessage = null;
+8123: }
+8124: 
+8125: function replaceMessageInCurrentView(
+8126:   messageId,
+8127:   patch,
+8128: ) {
+8129:   const index =
+8130:     state.activeMessages.findIndex(
+8131:       (message) =>
+8132:         message.id === messageId,
+8133:     );
+8134: 
+8135:   if (index < 0) return;
+8136: 
+8137:   const updated = {
+8138:     ...state.activeMessages[index],
+--- lines 8143-8159 match 8151 ---
+8143:           .metadata || {}
+8144:       ),
+8145:       ...(
+8146:         patch.metadata || {}
+8147:       ),
+8148:     },
+8149:   };
+8150: 
+8151:   state.activeMessages[index] = updated;
+8152: 
+8153:   const currentRow =
+8154:     messageArea.querySelector(
+8155:       `[data-message-id="${CSS.escape(
+8156:         messageId,
+8157:       )}"]`,
+8158:     );
+8159: 
+--- lines 8207-8223 match 8215 ---
+8207:     },
+8208:   );
+8209: }
+8210: 
+8211: 
+8212: function removeMessageFromCurrentView(
+8213:   messageId,
+8214: ) {
+8215:   state.activeMessages =
+8216:     state.activeMessages.filter(
+8217:       (message) =>
+8218:         message.id !== messageId,
+8219:     );
+8220: 
+8221:   messageArea
+8222:     .querySelector(
+8223:       `[data-message-id="${CSS.escape(
+--- lines 8237-8253 match 8245 ---
+8237:   scope,
+8238: ) {
+8239:   const chatId =
+8240:     state.activeChat?.id;
+8241: 
+8242:   if (!chatId || !message?.id) return;
+8243: 
+8244:   await request(
+8245:     `/chats/${chatId}/messages/${message.id}?scope=${encodeURIComponent(
+8246:       scope,
+8247:     )}`,
+8248:     {
+8249:       method: "DELETE",
+8250:     },
+8251:   );
+8252: 
+8253:   if (scope === "everyone") {
+--- lines 8310-8326 match 8318 ---
+8310:   }
+8311: 
+8312:   chatClearConfirm.disabled = true;
+8313:   chatClearStatus.textContent =
+8314:     "Очищаем историю…";
+8315: 
+8316:   try {
+8317:     await request(
+8318:       `/chats/${chat.id}/messages`,
+8319:       {
+8320:         method: "DELETE",
+8321:       },
+8322:     );
+8323: 
+8324:     if (
+8325:       state.activeChat?.id ===
+8326:       chat.id
+--- lines 9013-9029 match 9021 ---
+9013:       scrollToMessage(replyQuote.dataset.replyMessageId);
+9014:     });
+9015:   }
+9016: 
+9017:   const menuTrigger = row.querySelector(".message-menu-trigger");
+9018:   if (menuTrigger) {
+9019:     menuTrigger.addEventListener("click", (event) => {
+9020:       event.stopPropagation();
+9021:       openMessageContextMenu(message, menuTrigger);
+9022:     });
+9023:   }
+9024: 
+9025:   const voice = row.querySelector(".voice-message");
+9026:   if (voice) setupVoicePlayer(voice);
+9027: }
+9028: 
+9029: function scrollMessages(instant = false) {
+--- lines 9059-9075 match 9067 ---
+9059:     pinToBottom();
+9060:     messageArea.classList.remove(
+9061:       "instant-scroll-position",
+9062:     );
+9063:   }, 760);
+9064: }
+9065: 
+9066: function addActiveMessage(message) {
+9067:   const index = state.activeMessages.findIndex(
+9068:     (item) => item.id === message.id,
+9069:   );
+9070: 
+9071:   if (index >= 0) {
+9072:     const current = state.activeMessages[index];
+9073:     state.activeMessages[index] = {
+9074:       ...current,
+9075:       ...message,
+--- lines 9077-9093 match 9085 ---
+9077:         advancedReceiptStatus(
+9078:           current.receipt_status,
+9079:           message.receipt_status,
+9080:         ),
+9081:     };
+9082: 
+9083:     updateMessageReceipt(
+9084:       message.id,
+9085:       state.activeMessages[index]
+9086:         .receipt_status,
+9087:     );
+9088: 
+9089:     return false;
+9090:   }
+9091: 
+9092:   state.activeMessages.push(message);
+9093:   return true;
+--- lines 9107-9123 match 9115 ---
+9107: 
+9108:   clearLocalChatActivity();
+9109:   messageInput.value = "";
+9110:   resizeMessageInput();
+9111:   updateComposerAction();
+9112: 
+9113:   try {
+9114:     const message = await request(
+9115:       `/chats/${state.activeChat.id}/messages`,
+9116:       {
+9117:         method: "POST",
+9118:         body: JSON.stringify({
+9119:           kind: "text",
+9120:           text,
+9121:           replyToId: state.replyToMessage?.id,
+9122:         }),
+9123:       },
+--- lines 9292-9308 match 9300 ---
+9292: function classifyFile(file) {
+9293:   if (file.type.startsWith("image/") && file.type !== "image/svg+xml") {
+9294:     return "image";
+9295:   }
+9296:   if (file.type.startsWith("video/")) return "video";
+9297:   return "file";
+9298: }
+9299: 
+9300: async function createMediaMessage(
+9301:   uploaded,
+9302:   kind,
+9303:   caption = "",
+9304:   replyToId = undefined,
+9305:   durationMs = undefined,
+9306:   waveform = null,
+9307: ) {
+9308:   const message = await request(
+--- lines 9433-9449 match 9441 ---
+9433: 
+9434:   if (!response.ok) {
+9435:     throw new Error(
+9436:       uploaded?.message ||
+9437:       `Ошибка загрузки ${response.status}`,
+9438:     );
+9439:   }
+9440: 
+9441:   return createMediaMessage(
+9442:     uploaded,
+9443:     kind,
+9444:     caption,
+9445:     replyToId,
+9446:     durationMs,
+9447:     waveform,
+9448:   );
+9449: }
+--- lines 10047-10063 match 10055 ---
+10047:     resumeIcon.classList.add("hidden");
+10048:     recordWave.classList.remove("paused");
+10049:   }
+10050: }
+10051: 
+10052: /* MEDIA VIEWER */
+10053: 
+10054: function collectViewerMedia() {
+10055:   return state.activeMessages.filter(
+10056:     (message) =>
+10057:       (
+10058:         message.kind === "image" ||
+10059:         message.kind === "video" ||
+10060:         message.kind === "gif" ||
+10061:         isGifMessage(message)
+10062:       ) &&
+10063:       message.media_key,
+--- lines 11711-11727 match 11719 ---
+11711:   finishEditorPointer,
+11712: );
+11713: 
+11714: moreReactionButton.addEventListener(
+11715:   "click",
+11716:   (event) => {
+11717:     event.stopPropagation();
+11718:     openReactionPicker(
+11719:       state.contextMessage,
+11720:     );
+11721:   },
+11722: );
+11723: 
+11724: reactionPickerClose.addEventListener(
+11725:   "click",
+11726:   closeReactionPicker,
+11727: );
+--- lines 11743-11759 match 11751 ---
+11743:   },
+11744: );
+11745: 
+11746: quickReactionRow
+11747:   ?.querySelectorAll("[data-quick-reaction]")
+11748:   .forEach((button) => {
+11749:     button.addEventListener("click", async (event) => {
+11750:       event.stopPropagation();
+11751:       const message = state.contextMessage;
+11752: 
+11753:       if (!message) return;
+11754: 
+11755:       await toggleMessageReaction(
+11756:         message,
+11757:         button.dataset.quickReaction,
+11758:       );
+11759:       closeMessageContextMenu();
+--- lines 12312-12328 match 12320 ---
+12312:   if (
+12313:     !contentPicker.contains(event.target) &&
+12314:     event.target !== emojiButton
+12315:   ) {
+12316:     toggleContentPicker(false);
+12317:   }
+12318: 
+12319:   if (
+12320:     !messageContextMenu.contains(event.target) &&
+12321:     !event.target.closest(".message-menu-trigger")
+12322:   ) {
+12323:     closeMessageContextMenu();
+12324:   }
+12325: });
+12326: 
+12327: attachmentButton.addEventListener("click", (event) => {
+12328:   event.stopPropagation();
+--- lines 12389-12405 match 12397 ---
+12389:   "click",
+12390:   (event) => {
+12391:     event.stopPropagation();
+12392:   },
+12393: );
+12394: 
+12395: mediaPreviewSend.addEventListener("click", sendPendingMedia);
+12396: 
+12397: messageContextMenu.addEventListener("click", async (event) => {
+12398:   const action = event.target.closest("[data-message-action]")?.dataset.messageAction;
+12399:   const message = state.contextMessage;
+12400: 
+12401:   if (!action || !message) return;
+12402: 
+12403:   closeMessageContextMenu();
+12404: 
+12405:   try {
+===== snapshot/workspace6-fixes.js (3 matches) =====
+--- lines 247-263 match 255 ---
+247:     let chat = state.chats?.find((item) => item.id === chatId);
+248:     if (!chat && typeof loadChats === 'function') {
+249:       await loadChats(false);
+250:       chat = state.chats?.find((item) => item.id === chatId);
+251:     }
+252:     if (!chat) throw new Error('Чат не найден или нет доступа');
+253:     if (typeof setSidebarMode === 'function') setSidebarMode('chats');
+254:     await openChat(chat);
+255:     const latest = Array.isArray(state.activeMessages) ? [...state.activeMessages] : [];
+256:     let context = [];
+257:     try {
+258:       context = normalizeContext(await request(`/chats/${encodeURIComponent(chatId)}/messages/${encodeURIComponent(messageId)}/context?limit=200`));
+259:     } catch (error) {
+260:       if (!findMessage(messageId)) throw error;
+261:     }
+262:     const merged = mergeMessages(context, latest);
+263:     const area = byId('messageArea');
+===== snapshot/workspace12-fixes.js (6 matches) =====
+--- lines 312-328 match 320 ---
+312:         if (typeof handleSessionExpired === 'function') handleSessionExpired();
+313:         throw new Error('Сессия истекла. Войдите снова.');
+314:       }
+315:     }
+316:     if (!response.ok) throw new Error(response.payload?.message || `Ошибка загрузки ${response.status}`);
+317:     return response.payload;
+318:   }
+319: 
+320:   async function createMediaMessageForChat(chatId, uploaded, kind, caption = '', replyToId = undefined, durationMs = undefined, waveform = null) {
+321:     if (state?.activeChat?.id === chatId && typeof createMediaMessage === 'function') {
+322:       return createMediaMessage(uploaded, kind, caption, replyToId, durationMs, waveform);
+323:     }
+324:     const message = await request(`/chats/${encodeURIComponent(chatId)}/messages`, {
+325:       method: 'POST',
+326:       body: JSON.stringify({
+327:         kind,
+328:         mediaKey: uploaded.key,
+--- lines 355-371 match 363 ---
+355:     card?.row?.classList.remove('is-failed');
+356:     card?.retry?.classList.add('hidden');
+357:     updateUploadCard(card, 1, kind === 'voice' ? 'Отправляем голосовое…' : 'Начинаем загрузку…');
+358: 
+359:     try {
+360:       if (typeof setLocalChatActivity === 'function') setLocalChatActivity('upload');
+361:       const uploaded = await performUpload(blob, fileName, forceAttachment, card);
+362:       updateUploadCard(card, 98, 'Создаём сообщение…');
+363:       const message = await createMediaMessageForChat(chatId, uploaded, kind, caption, replyToId, durationMs, waveform);
+364:       updateUploadCard(card, 100, 'Отправлено');
+365:       disposeUploadCard(card, 90);
+366:       return message;
+367:     } catch (error) {
+368:       if (card?.row) {
+369:         card.row.classList.add('is-failed');
+370:         updateUploadCard(card, 100, error?.message || 'Ошибка отправки');
+371:         if (card.retry) {
+--- lines 378-394 match 386 ---
+378:       }
+379:       throw error;
+380:     } finally {
+381:       if (typeof clearLocalChatActivity === 'function') clearLocalChatActivity();
+382:     }
+383:   }
+384: 
+385:   function wrapUploadBlob() {
+386:     if (runtime.uploadWrapped || typeof uploadBlob !== 'function' || typeof createMediaMessage !== 'function') return;
+387:     runtime.uploadWrapped = true;
+388:     uploadBlob = uploadBlob12;
+389:   }
+390: 
+391:   async function sendPendingMediaImmediate() {
+392:     if (runtime.mediaSending || !state?.activeChat || !Array.isArray(state.pendingMediaFiles) || !state.pendingMediaFiles.length) return;
+393:     runtime.mediaSending = true;
+394:     const files = [...state.pendingMediaFiles];
+===== snapshot/workspace7-fixes.js (3 matches) =====
+--- lines 284-300 match 292 ---
+284:     if (!chat) throw new Error('Чат не найден или нет доступа');
+285: 
+286:     const dialogQuery = options.dialogQuery ?? byId('chatSearchInput')?.value ?? '';
+287:     await openChat(chat);
+288:     if (sequence !== runtime.jumpSequence) return null;
+289: 
+290:     const hideOverlay = showJumpOverlay();
+291:     try {
+292:       const latest = Array.isArray(state.activeMessages) ? [...state.activeMessages] : [];
+293:       const contextPromise = request(`/chats/${encodeURIComponent(chatId)}/messages/${encodeURIComponent(messageId)}/context?limit=200`)
+294:         .then(normalizeContext)
+295:         .catch((error) => {
+296:           if (findMessage(messageId)) return [];
+297:           throw error;
+298:         });
+299: 
+300:       // openChat() deliberately pins the chat to bottom several times for 760 ms.
+===== snapshot/tg9-enhancements.js (2 matches) =====
+--- lines 16-32 match 24 ---
+16:       }
+17:     } catch {
+18:       // Fall through to a lightweight approximation.
+19:     }
+20:     return Array.from(text.replace(/\s+/g, ""));
+21:   }
+22: 
+23:   function activeMessage(messageId) {
+24:     return Array.isArray(window.state?.activeMessages)
+25:       ? window.state.activeMessages.find((item) => item.id === messageId)
+26:       : null;
+27:   }
+28: 
+29:   function decorateEmojiRow(row) {
+30:     const bubble = row.querySelector(":scope > .message-bubble");
+31:     const textNode = bubble?.querySelector(":scope > .message-text");
+32:     if (!bubble || !textNode) return;
+===== snapshot/tg8-enhancements.js (1 matches) =====
+--- lines 38-54 match 46 ---
+38:       document
+39:         .querySelectorAll("#messageArea > .message-date-divider")
+40:         .forEach((divider) => divider.remove());
+41: 
+42:       let previousKey = "";
+43:       messageArea
+44:         .querySelectorAll(":scope > .message-row[data-message-id]")
+45:         .forEach((row) => {
+46:           const message = state.activeMessages.find(
+47:             (item) => item.id === row.dataset.messageId,
+48:           );
+49:           if (!message) return;
+50:           const key = dayKey(message.created_at);
+51:           row.dataset.messageDay = key;
+52:           if (!key || key === previousKey) return;
+53: 
+54:           const divider = document.createElement("div");
+===== snapshot/tg6-enhancements.js (1 matches) =====
+--- lines 247-263 match 255 ---
+247:   }
+248: 
+249:   sendProviderMedia = async function tg6SendProviderMedia(result, kind) {
+250:     if (kind !== "gif") return originalSendProviderMedia.apply(this, arguments);
+251:     openGifPreview(result, kind);
+252:   };
+253: 
+254:   function decorateExistingStickers() {
+255:     state.activeMessages?.forEach(decorateStickerBubble);
+256:     document.querySelectorAll(".community2-thread-message").forEach((row) => {
+257:       if (row.querySelector(".message-sticker")) {
+258:         row.classList.add("sticker-only-message");
+259:         row.querySelector(".message-bubble")?.classList.add("sticker-only-bubble");
+260:       }
+261:     });
+262:   }
+263: 
+===== snapshot/telegram-discussions.js (7 matches) =====
+--- lines 8-24 match 16 ---
+8:   const community2 = {
+9:     initialized: false,
+10:     socket: null,
+11:     mode: null,
+12:     thread: null,
+13:     threadReplyTo: null,
+14:     threadEditMessage: null,
+15:     returnToSidebarAfterWorkspace: false,
+16:     threadContextMessage: null,
+17:     threadLoading: false,
+18:     threadRefreshTimer: null,
+19:     replies: [],
+20:     unreadReplies: 0,
+21:     refreshRepliesTimer: null,
+22:     spaces: new Map(),
+23:     spacesLoaded: false,
+24:     spacesLoading: null,
+--- lines 324-340 match 332 ---
+324:     updateThreadComposerAction();
+325:     input.focus();
+326:     input.setSelectionRange(input.value.length, input.value.length);
+327:   }
+328: 
+329:   function closeThreadContextMenu() {
+330:     byId("community2ThreadContextMenu")?.classList.add("hidden");
+331:     byId("community2ThreadReactionGrid")?.classList.add("hidden");
+332:     community2.threadContextMessage = null;
+333:   }
+334: 
+335:   function openThreadContextMenu(comment, trigger) {
+336:     const menu = byId("community2ThreadContextMenu");
+337:     if (!menu || !comment) return;
+338:     community2.threadContextMessage = comment;
+339:     const mine = comment.sender_id === state.user?.id;
+340:     const deleted = isDeletedComment(comment);
+--- lines 465-481 match 473 ---
+465:     const url = new URL(location.origin + "/");
+466:     url.searchParams.set("post", community2.thread.channelMessageId);
+467:     url.searchParams.set("comment", comment.id);
+468:     await writeWorkspaceClipboard(url.toString());
+469:     showStatus("Ссылка на сообщение скопирована");
+470:   }
+471: 
+472:   async function handleThreadContextAction(action) {
+473:     const comment = community2.threadContextMessage;
+474:     if (!comment) return;
+475:     if (action === "reply") setThreadReply(comment);
+476:     if (action === "edit") setThreadEdit(comment);
+477:     if (action === "copy") await copyMessageContent(comment);
+478:     if (action === "info") openMessageInfo(comment);
+479:     if (action === "pin") await toggleThreadPinnedMessage(comment);
+480:     if (action === "message-link") await copyThreadMessageLink(comment);
+481:     if (action === "restore") await restoreThreadComment(comment);
+--- lines 583-599 match 591 ---
+583:         <div class="message-context-divider"></div>
+584:         <button type="button" class="message-delete-action" data-community2-thread-action="delete-me"><span>♲</span><span>Удалить у меня</span></button>
+585:         <button type="button" class="message-delete-action" data-community2-thread-action="delete-everyone"><span>♲</span><span>Удалить у всех</span></button>
+586:       `;
+587:       document.body.appendChild(menu);
+588:       menu.addEventListener("click", async (event) => {
+589:         const reaction = event.target.closest("[data-community2-thread-reaction]")?.dataset.community2ThreadReaction;
+590:         if (reaction) {
+591:           const comment = community2.threadContextMessage;
+592:           closeThreadContextMenu();
+593:           await toggleThreadReaction(comment, reaction);
+594:           return;
+595:         }
+596:         const action = event.target.closest("[data-community2-thread-action]")?.dataset.community2ThreadAction;
+597:         if (!action) return;
+598:         if (action === "more-reactions") {
+599:           byId("community2ThreadReactionGrid")?.classList.toggle("hidden");
+--- lines 740-756 match 748 ---
+740:       closeWorkspace();
+741:       await openSearchMessageResult(discussionChatId, discussionRootMessageId);
+742:     });
+743: 
+744:     body.querySelector("[data-community2-toggle-comments]")?.addEventListener("click", async (event) => {
+745:       const button = event.currentTarget;
+746:       button.disabled = true;
+747:       try {
+748:         const result = await workspaceRequest(`/messages/${data.channelMessageId}/comments`, {
+749:           method: "POST",
+750:           body: JSON.stringify({ commentsEnabled: data.commentsEnabled === false }),
+751:         });
+752:         community2.thread = await request(`/channel-posts/${data.channelMessageId}/discussion`);
+753:         community2.thread.commentsEnabled = result.commentsEnabled !== false;
+754:         renderThread();
+755:       } catch (error) { showStatus(error.message); }
+756:       finally { button.disabled = false; }
+--- lines 1332-1348 match 1340 ---
+1332:       }
+1333:       origin.querySelector("[data-channel-origin-title]").textContent = meta?.channelTitle ? `Переслано из ${meta.channelTitle}` : "Переслано из канала";
+1334:       origin.querySelector("[data-channel-root-count]").textContent = commentButtonText(meta?.replyCount || 0);
+1335:     }
+1336:   }
+1337: 
+1338:   function updateThreadCountEverywhere(channelMessageId, count, details = null) {
+1339:     const normalized = Number(count || 0);
+1340:     const activeMessage = state.activeMessages.find(
+1341:       (item) => item.id === channelMessageId || threadMeta(item)?.channelMessageId === channelMessageId,
+1342:     );
+1343: 
+1344:     if (activeMessage) {
+1345:       const current = threadMeta(activeMessage) || {};
+1346:       activeMessage.metadata = {
+1347:         ...(activeMessage.metadata || {}),
+1348:         telegramDiscussion: {
+===== snapshot/tg7-enhancements.js (3 matches) =====
+--- lines 8-24 match 16 ---
+8:     return Boolean(message?.metadata?.deletedForEveryone);
+9:   }
+10: 
+11:   async function syncRestoredTombstones() {
+12:     if (
+13:       recoveryPollBusy ||
+14:       !state.token ||
+15:       !state.activeChat?.id ||
+16:       !state.activeMessages?.some(isDeleted)
+17:     ) return;
+18: 
+19:     recoveryPollBusy = true;
+20:     const chatId = state.activeChat.id;
+21:     try {
+22:       const messages = await request(`/chats/${chatId}/messages`);
+23:       if (state.activeChat?.id !== chatId || !Array.isArray(messages)) return;
+24: 
+===== snapshot/workspace13-fixes.js (5 matches) =====
+--- lines 406-422 match 414 ---
+406:     const result = await api(`/chats/${encodeURIComponent(chat.id)}/pinned-messages/reorder`, 'POST', { pinIds: rt.pins.map((pin) => pin.id) });
+407:     if (Array.isArray(result)) rt.pins = result;
+408:     renderPinsBanner();
+409:     renderPinsList();
+410:   }
+411: 
+412:   async function toggleContextPin() {
+413:     const chat = window.state?.activeChat;
+414:     const message = window.state?.contextMessage;
+415:     if (!chat || !message || !canManage()) return;
+416:     const existing = rt.pins.find((pin) => pin.message_id === message.id);
+417:     if (existing) await deletePin(existing.id);
+418:     else {
+419:       const pin = await api(`/chats/${encodeURIComponent(chat.id)}/pinned-messages`, 'POST', { messageId: message.id });
+420:       if (pin?.id && !rt.pins.some((item) => item.id === pin.id)) rt.pins.push(pin);
+421:       renderPinsBanner();
+422:     }
+--- lines 448-464 match 456 ---
+448:       const base = openChat;
+449:       openChat = async function workspace13OpenChat(...args) {
+450:         const result = await base.apply(this, args);
+451:         refreshProfileAction();
+452:         await loadPins().catch((error) => console.warn('WORKSPACE13 pins load', error));
+453:         return result;
+454:       };
+455:     }
+456:     if (!rt.contextWrapped && typeof openMessageContextMenu === 'function') {
+457:       rt.contextWrapped = true;
+458:       const base = openMessageContextMenu;
+459:       openMessageContextMenu = function workspace13Context(message, trigger) {
+460:         const result = base.call(this, message, trigger);
+461:         refreshPinMenuLabel(message);
+462:         return result;
+463:       };
+464:     }
+===== snapshot/voice-transcription.js (1 matches) =====
+--- lines 55-71 match 63 ---
+55:       event.stopImmediatePropagation();
+56:       menu.classList.add('hidden');
+57:       if (!context.row || !context.messageId) return;
+58:       await toggleTranscription(context.row, context.messageId);
+59:     }, true);
+60:   }
+61: 
+62:   function ensureButtons() {
+63:     injectButton(document.getElementById('messageContextMenu'), false);
+64:     injectButton(document.getElementById('community2ThreadContextMenu'), true);
+65:   }
+66: 
+67:   function transcriptPanel(row, messageId) {
+68:     const voice = row.querySelector('.voice-message');
+69:     if (!voice) return null;
+70:     let panel = voice.querySelector('.voice-transcription-panel');
+71:     if (panel) return panel;
+===== snapshot/message-editing.js (8 matches) =====
+--- lines 1-15 match 7 ---
+1: /* MEETUS 0.6.25.2 COMMUNITY2-TG5 — own-message editing everywhere */
+2: (() => {
+3:   "use strict";
+4: 
+5:   let boundSocket = null;
+6:   const originalAppendMessage = appendMessage;
+7:   const originalOpenMessageContextMenu = openMessageContextMenu;
+8:   const originalSendTextMessage = sendTextMessage;
+9:   const originalSetReplyMessage = setReplyMessage;
+10:   const originalOpenChat = openChat;
+11:   const originalConnectSocket = connectSocket;
+12: 
+13:   function ensureEditingDom() {
+14:     if (!("editMessage" in state)) state.editMessage = null;
+15: 
+--- lines 28-44 match 36 ---
+28:           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg>
+29:         </button>
+30:       `;
+31:       replyBar?.parentElement?.insertBefore(bar, replyBar);
+32:       bar.querySelector("#editComposerClose")?.addEventListener("click", clearEditMessage);
+33:     }
+34: 
+35:     if (!document.getElementById("messageEditAction")) {
+36:       const copyAction = messageContextMenu?.querySelector('[data-message-action="copy"]');
+37:       const button = document.createElement("button");
+38:       button.id = "messageEditAction";
+39:       button.type = "button";
+40:       button.dataset.messageAction = "edit";
+41:       button.innerHTML = `
+42:         <svg viewBox="0 0 24 24"><path d="M4 20h4l11-11-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg>
+43:         <span>Редактировать</span>
+44:       `;
+--- lines 100-116 match 108 ---
+100:     messageInput.value = message.text || "";
+101:     messageInput.placeholder = message.media_key ? "Добавить или изменить подпись" : "Измените сообщение";
+102:     resizeMessageInput();
+103:     updateComposerAction();
+104:     messageInput.focus();
+105:     messageInput.setSelectionRange(messageInput.value.length, messageInput.value.length);
+106:   }
+107: 
+108:   openMessageContextMenu = function tg4OpenMessageContextMenu(message, trigger) {
+109:     ensureEditingDom();
+110:     const result = originalOpenMessageContextMenu(message, trigger);
+111:     document.getElementById("messageEditAction")?.classList.toggle("hidden", !canEditMessage(message));
+112:     return result;
+113:   };
+114: 
+115:   setReplyMessage = function tg4SetReplyMessage(message) {
+116:     clearEditMessage();
+--- lines 131-147 match 139 ---
+131:       return;
+132:     }
+133: 
+134:     const attemptedText = messageInput.value;
+135:     messageInput.disabled = true;
+136:     actionButton.disabled = true;
+137:     try {
+138:       const updated = await request(
+139:         `/chats/${chat.id}/messages/${target.id}`,
+140:         {
+141:           method: "PATCH",
+142:           body: JSON.stringify({ text }),
+143:         },
+144:       );
+145:       replaceMessageInCurrentView(target.id, {
+146:         ...updated,
+147:         text: updated.text ?? (text || null),
+--- lines 206-222 match 214 ---
+206:     return result;
+207:   };
+208: 
+209:   document.addEventListener("click", (event) => {
+210:     const editAction = event.target.closest('#messageEditAction[data-message-action="edit"]');
+211:     if (!editAction) return;
+212:     event.preventDefault();
+213:     event.stopImmediatePropagation();
+214:     const message = state.contextMessage;
+215:     closeMessageContextMenu();
+216:     if (message) setEditMessage(message);
+217:   }, true);
+218: 
+219:   document.addEventListener("keydown", (event) => {
+220:     if (event.key === "Escape" && state.editMessage) {
+221:       event.preventDefault();
+222:       clearEditMessage();
+===== snapshot/tg5-enhancements.js (12 matches) =====
+--- lines 3-19 match 11 ---
+3:   "use strict";
+4: 
+5:   const TEN_MINUTES_MS = 10 * 60 * 1000;
+6:   let boundSocket = null;
+7:   let contactSearchTimer = null;
+8:   let userSearchTimer = null;
+9: 
+10:   const originalAppendMessage = appendMessage;
+11:   const originalOpenMessageContextMenu = openMessageContextMenu;
+12:   const originalConnectSocket = connectSocket;
+13:   const originalSetSidebarMode = setSidebarMode;
+14: 
+15:   function messageMetadata(message) {
+16:     return message?.metadata && typeof message.metadata === "object"
+17:       ? message.metadata
+18:       : {};
+19:   }
+--- lines 106-122 match 114 ---
+106:   }
+107: 
+108:   appendMessage = function tg5AppendMessage(message) {
+109:     const result = originalAppendMessage(message);
+110:     decorateRecovery(message);
+111:     return result;
+112:   };
+113: 
+114:   openMessageContextMenu = function tg5OpenMessageContextMenu(message, trigger) {
+115:     document.getElementById("messageRestoreAction")?.classList.toggle(
+116:       "hidden",
+117:       !canRestore(message),
+118:     );
+119:     const result = originalOpenMessageContextMenu(message, trigger);
+120:     messageDeleteEveryoneAction?.classList.toggle(
+121:       "hidden",
+122:       !canDeleteForEveryone(message),
+--- lines 124-140 match 132 ---
+124:     return result;
+125:   };
+126: 
+127:   deleteMessageForScope = async function tg5DeleteMessageForScope(message, scope) {
+128:     const chatId = state.activeChat?.id;
+129:     if (!chatId || !message?.id) return;
+130: 
+131:     const result = await request(
+132:       `/chats/${chatId}/messages/${message.id}?scope=${encodeURIComponent(scope)}`,
+133:       { method: "DELETE" },
+134:     );
+135: 
+136:     if (scope === "everyone") {
+137:       const tombstone = result?.message || {
+138:         ...message,
+139:         kind: "text",
+140:         text: "Сообщение удалено",
+--- lines 170-186 match 178 ---
+170: 
+171:     const button = messageArea?.querySelector(
+172:       `[data-message-id="${CSS.escape(message.id)}"] [data-restore-message]`,
+173:     );
+174:     if (button) button.disabled = true;
+175: 
+176:     try {
+177:       const restored = await request(
+178:         `/chats/${chatId}/messages/${message.id}/restore`,
+179:         { method: "POST", body: JSON.stringify({}) },
+180:       );
+181:       closeMessageContextMenu();
+182:       replaceMessageInCurrentView(message.id, restored);
+183:       await loadChats(false);
+184:     } catch (error) {
+185:       if (button) button.disabled = false;
+186:       alert(error.message);
+--- lines 224-240 match 232 ---
+224: 
+225:   connectSocket = function tg5ConnectSocket(...args) {
+226:     const result = originalConnectSocket.apply(this, args);
+227:     queueMicrotask(bindTg5Socket);
+228:     return result;
+229:   };
+230: 
+231:   function updateRestoreButtons() {
+232:     state.activeMessages?.forEach((message) => {
+233:       if (isTombstone(message)) decorateRecovery(message);
+234:     });
+235:   }
+236: 
+237:   function ensureNewChatUi() {
+238:     if (!document.getElementById("tg5NewChatMenu")) {
+239:       const menu = document.createElement("div");
+240:       menu.id = "tg5NewChatMenu";
+--- lines 425-441 match 433 ---
+425:       searchInput.placeholder = "Поиск пользователей по имени или @username";
+426:     } else if (mode === "chats") {
+427:       searchInput.placeholder = "Чаты, сообщения или пользователи";
+428:     }
+429:     return result;
+430:   };
+431: 
+432:   function ensureRestoreMenuAction() {
+433:     if (!messageContextMenu || document.getElementById("messageRestoreAction")) return;
+434:     const action = document.createElement("button");
+435:     action.id = "messageRestoreAction";
+436:     action.type = "button";
+437:     action.className = "hidden";
+438:     action.dataset.messageAction = "restore";
+439:     action.innerHTML = `
+440:       <svg viewBox="0 0 24 24" aria-hidden="true">
+441:         <path d="M9 7H4V2"/><path d="M4 7a9 9 0 1 1-1 8"/>
+--- lines 489-505 match 497 ---
+489:       }
+490:     });
+491: 
+492:     window.addEventListener("resize", () => {
+493:       if (!document.getElementById("tg5NewChatMenu")?.classList.contains("hidden")) positionNewChatMenu();
+494:     });
+495: 
+496:     setInterval(updateRestoreButtons, 1000);
+497:     state.activeMessages?.forEach(decorateRecovery);
+498:   }
+499: 
+500:   initialize();
+501: 
+502:   window.MeetusTg5 = {
+503:     restoreMessage,
+504:     canDeleteForEveryone,
+505:     canRestore,
+===== snapshot/workspace.js (23 matches) =====
+--- lines 199-215 match 207 ---
+199:       event.stopImmediatePropagation();
+200:       if (action === 'members') await openMemberInfo();
+201:       if (action === 'protection') await toggleContentProtection();
+202:       if (typeof closeChatHeaderMenu === 'function') closeChatHeaderMenu();
+203:     }, true);
+204:   }
+205: 
+206:   function injectContextActions() {
+207:     const menu = typeof messageContextMenu !== 'undefined' ? messageContextMenu : null;
+208:     if (!menu || menu.querySelector('[data-workspace-message-action]')) return;
+209:     menu.insertAdjacentHTML('beforeend', `
+210:       <button type="button" data-workspace-message-action="pin">${icon.pin}<span id="workspacePinMessageLabel">Закрепить сообщение</span></button>
+211:       <button type="button" data-workspace-message-action="message-link">↗<span>Копировать ссылку на сообщение</span></button>
+212:       <button type="button" data-workspace-message-action="comments">☑<span id="workspaceCommentsLabel">Комментарии к сообщению</span></button>
+213:     `);
+214:     menu.addEventListener('click', async (event) => {
+215:       const action = event.target.closest('[data-workspace-message-action]')?.dataset.workspaceMessageAction;
+--- lines 432-448 match 440 ---
+432:     field.style.position = 'fixed';
+433:     field.style.opacity = '0';
+434:     document.body.append(field);
+435:     field.select();
+436:     document.execCommand('copy');
+437:     field.remove();
+438:   }
+439: 
+440:   async function copyContextMessageLink() {
+441:     if (!state.activeChat || !state.contextMessage) return;
+442:     const canLink = ['group', 'channel'].includes(state.activeChat.type) && ['owner', 'admin'].includes(state.activeChat.role);
+443:     if (!canLink) return toast('Ссылку на сообщение может копировать администратор или владелец', true);
+444:     const url = new URL(location.origin + '/');
+445:     url.searchParams.set('chat', state.activeChat.id);
+446:     url.searchParams.set('message', state.contextMessage.id);
+447:     await writeClipboard(url.toString());
+448:     toast('Ссылка на сообщение скопирована');
+--- lines 450-466 match 458 ---
+450: 
+451:   function ensurePinnedBannerPlacement() {
+452:     const banner = byId('workspacePinnedBanner');
+453:     const header = document.querySelector('.chat-header');
+454:     if (!banner || !header) return;
+455:     if (header.nextElementSibling !== banner) header.insertAdjacentElement('afterend', banner);
+456:   }
+457: 
+458:   async function pinContextMessage() {
+459:     if (!state.activeChat || !state.contextMessage) return;
+460:     if (!canManageActiveChat()) return toast('Закреплять сообщения здесь может только владелец или администратор', true);
+461:     const current = ws.pinnedMessage?.id === state.contextMessage.id;
+462:     try {
+463:       const result = await api(`/chats/${state.activeChat.id}/pinned-message`, 'POST', { messageId: current ? null : state.contextMessage.id });
+464:       ws.pinnedMessage = result.message || null;
+465:       renderPinnedBanner();
+466:       toast(current ? 'Сообщение откреплено' : 'Сообщение закреплено');
+--- lines 484-500 match 492 ---
+484:     if (!ws.pinnedMessage) return;
+485:     const preview = ws.pinnedMessage.text || ws.pinnedMessage.file_name || ({ image: 'Фото', video: 'Видео', voice: 'Голосовое сообщение', file: 'Файл' }[ws.pinnedMessage.kind]) || 'Сообщение';
+486:     byId('workspacePinnedText').textContent = `${ws.pinnedMessage.sender_name || 'Пользователь'}: ${preview}`;
+487:     byId('workspacePinnedRemove').classList.toggle('hidden', !canManageActiveChat());
+488:   }
+489: 
+490:   async function readCommentsSetting(messageId, force = false) {
+491:     if (!force && ws.commentSettings.has(messageId)) return ws.commentSettings.get(messageId);
+492:     const setting = await api(`/messages/${messageId}/comments`);
+493:     const enabled = setting.commentsEnabled !== false;
+494:     ws.commentSettings.set(messageId, enabled);
+495:     return enabled;
+496:   }
+497: 
+498:   async function toggleContextComments() {
+499:     const message = state.contextMessage;
+500:     const canComments = state.activeChat?.type === 'channel' && ['owner', 'admin'].includes(state.activeChat?.role);
+--- lines 527-543 match 535 ---
+527:         toggle.type = 'button';
+528:         toggle.className = 'workspace-comment-toggle-chip';
+529:         row.querySelector('.message-bubble')?.append(toggle);
+530:         toggle.addEventListener('click', async (event) => {
+531:           event.preventDefault();
+532:           event.stopPropagation();
+533:           const currentValue = ws.commentSettings.get(messageId) !== false;
+534:           try {
+535:             const result = await api(`/messages/${messageId}/comments`, 'POST', { commentsEnabled: !currentValue });
+536:             applyCommentStateToRow(messageId, result.commentsEnabled !== false);
+537:           } catch (error) { toast(error.message, true); }
+538:         });
+539:       }
+540:       toggle.textContent = enabled ? '☑ Комментарии включены' : '☐ Комментарии отключены';
+541:       toggle.title = enabled ? 'Отключить комментарии к публикации' : 'Включить комментарии к публикации';
+542:     }
+543:   }
+--- lines 770-786 match 778 ---
+770:     openChat = async function workspaceOpenChat(chat, ...args) {
+771:       const result = await baseOpenChat.call(this, chat, ...args);
+772:       ensurePinnedBannerPlacement();
+773:       await Promise.all([loadPinnedMessage(), loadContentProtection()]);
+774:       hardenProtectedMedia(messageArea);
+775:       return result;
+776:     };
+777: 
+778:     const baseOpenContext = openMessageContextMenu;
+779:     openMessageContextMenu = function workspaceMessageMenu(message, trigger) {
+780:       const result = baseOpenContext.call(this, message, trigger);
+781:       refreshContextActions(message);
+782:       if (ws.contentProtected) messageDownloadAction?.classList.add('hidden');
+783:       return result;
+784:     };
+785: 
+786:     const baseUploadBlob = uploadBlob;
+--- lines 927-943 match 935 ---
+927:       } else {
+928:         let chat = state.chats.find((item) => item.id === chatId);
+929:         if (!chat && typeof loadChats === 'function') {
+930:           await loadChats(false);
+931:           chat = state.chats.find((item) => item.id === chatId);
+932:         }
+933:         if (!chat) throw new Error('Нет доступа к этому каналу или группе');
+934:         await openChat(chat);
+935:         const context = await request(`/chats/${chatId}/messages/${messageId}/context?limit=100`);
+936:         state.activeMessages = context;
+937:         state.searchContextActive = true;
+938:         messageArea.innerHTML = '';
+939:         context.forEach(appendMessage);
+940:         requestAnimationFrame(() => scrollToMessage(messageId));
+941:       }
+942:       const target = messageArea?.querySelector(`[data-message-id="${CSS.escape(messageId)}"]`);
+943:       if (target) {
+===== snapshot/workspace5-fixes.js (3 matches) =====
+--- lines 800-816 match 808 ---
+800:       chat = state.chats?.find((item) => item.id === chatId);
+801:     }
+802:     if (!chat) throw new Error('Нет доступа к этому каналу или группе');
+803: 
+804:     setDeepLinkLoading(true);
+805:     try {
+806:       if (typeof openChat === 'function') await openChat(chat);
+807:       if (sequence !== runtime.deepLinkSequence) return null;
+808:       const latest = Array.isArray(state.activeMessages) ? [...state.activeMessages] : [];
+809:       let context = [];
+810:       try {
+811:         const result = await request(`/chats/${encodeURIComponent(chatId)}/messages/${encodeURIComponent(messageId)}/context?limit=200`);
+812:         context = Array.isArray(result)
+813:           ? result
+814:           : mergeMessageSets(
+815:               Array.isArray(result?.before) ? result.before : [],
+816:               Array.isArray(result?.messages) ? result.messages : [],
+--- lines 819-835 match 827 ---
+819:               Array.isArray(result?.items) ? result.items : [],
+820:             );
+821:       } catch (error) {
+822:         if (!findMessageTarget(messageId)) throw error;
+823:       }
+824: 
+825:       const merged = mergeMessageSets(context, latest);
+826:       if (merged.length && typeof messageArea !== 'undefined' && messageArea) {
+827:         state.activeMessages = merged;
+828:         state.searchContextActive = true;
+829:         messageArea.innerHTML = '';
+830:         merged.forEach((message) => appendMessage(message));
+831:       }
+832: 
+833:       await afterFrames(2);
+834:       let target = await waitForMessageTarget(messageId, 6500);
+835:       if (!target) throw new Error('Сообщение не найдено или было удалено');
+===== snapshot/index.html (1 matches) =====
+--- lines 829-845 match 837 ---
+829: 
+830:           <button id="mediaPreviewSend" type="button" class="media-preview-send" title="Отправить">
+831:             <svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg>
+832:           </button>
+833:         </div>
+834:       </footer>
+835:     </div>
+836: 
+837:     <div id="messageContextMenu" class="message-context-menu hidden">
+838:       <div id="quickReactionRow" class="quick-reaction-row">
+839:         <button type="button" data-quick-reaction="👍">👍</button>
+840:         <button type="button" data-quick-reaction="❤️">❤️</button>
+841:         <button type="button" data-quick-reaction="😂">😂</button>
+842:         <button type="button" data-quick-reaction="😮">😮</button>
+843:         <button type="button" data-quick-reaction="😢">😢</button>
+844:         <button type="button" data-quick-reaction="🙏">🙏</button>
+845:         <button

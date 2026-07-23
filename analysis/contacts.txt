@@ -1,0 +1,959 @@
+===== snapshot/calls.js (8 matches) =====
+--- lines 290-306 match 298 ---
+290:     syncCallButtonAvailability();
+291:   }
+292: 
+293:   function isActivePrivateContact() {
+294:     const chat = state.activeChat;
+295:     if (!chat || chat.type !== "private") return true;
+296:     const peerId = chat.peer?.id;
+297:     if (!peerId) return false;
+298:     return Array.isArray(state.contacts) && state.contacts.some((item) =>
+299:       (item.user_id || item.contact_user_id || item.id) === peerId
+300:     );
+301:   }
+302: 
+303:   function syncCallButtonAvailability() {
+304:     const button = callButton();
+305:     if (!button) return;
+306:     const allowed = isActivePrivateContact();
+--- lines 410-426 match 418 ---
+410:       </label>`).join("") : `<div class="empty-list">${callState.inviteContacts.length ? "Ничего не найдено" : "Все ваши контакты уже участвуют в звонке"}</div>`;
+411:     const count = $("meetusCallInviteCount");
+412:     if (count) count.textContent = callState.inviteContacts.length ? `Контактов: ${callState.inviteContacts.length}${visible.length !== callState.inviteContacts.length ? ` • найдено: ${visible.length}` : ""}` : "";
+413:     $("meetusCallInviteSubmit").disabled = !callState.inviteContacts.length;
+414:   }
+415: 
+416:   async function openInviteModal() {
+417:     if (!callState.call || !callState.room) return toast("Сначала подключитесь к звонку");
+418:     if (typeof loadContacts === "function") {
+419:       try { await loadContacts(); } catch {}
+420:     }
+421:     const participantIds = new Set((callState.call.participants || [])
+422:       .filter((item) => ["invited", "ringing", "joined"].includes(item.state))
+423:       .map((item) => item.user_id || item.id));
+424:     callState.inviteContacts = (state.contacts || [])
+425:       .map(contactRecord)
+426:       .filter((item) => item?.id && !participantIds.has(item.id))
+--- lines 1391-1407 match 1399 ---
+1391:       if (call && call.mode !== "private") showCallBanner(call);
+1392:     } catch {}
+1393:   }
+1394: 
+1395:   function injectCallsSidebar() {
+1396:     if (document.getElementById("callsTabButton")) return;
+1397:     const tabs = document.querySelector(".sidebar-mode-tabs");
+1398:     const requestsButton = document.getElementById("requestsTabButton");
+1399:     const contactListNode = document.getElementById("contactList");
+1400:     if (!tabs || !requestsButton || !contactListNode) return;
+1401: 
+1402:     tabs.classList.add("meetus-sidebar-four-tabs");
+1403:     const button = document.createElement("button");
+1404:     button.id = "callsTabButton";
+1405:     button.type = "button";
+1406:     button.textContent = "Звонки";
+1407:     tabs.insertBefore(button, requestsButton);
+--- lines 1424-1440 match 1432 ---
+1424:     document.querySelector(".sidebar-search-block")?.classList.remove("meetus-call-search-hidden");
+1425:   }
+1426: 
+1427:   async function openCallsSidebar() {
+1428:     injectCallsSidebar();
+1429:     state.sidebarMode = "calls";
+1430:     ["chatsTabButton", "contactsTabButton", "requestsTabButton"].forEach((id) => document.getElementById(id)?.classList.remove("active"));
+1431:     document.getElementById("callsTabButton")?.classList.add("active");
+1432:     ["chatList", "contactList", "requestList", "searchResults"].forEach((id) => document.getElementById(id)?.classList.add("hidden"));
+1433:     document.getElementById("callHistoryList")?.classList.remove("hidden");
+1434:     document.querySelector(".sidebar-search-block")?.classList.add("meetus-call-search-hidden");
+1435:     await loadCallHistory();
+1436:   }
+1437: 
+1438:   async function loadCallHistory(force = false) {
+1439:     if (callState.historyLoading) return;
+1440:     const root = document.getElementById("callHistoryList");
+===== snapshot/app.js (116 matches) =====
+--- lines 17-33 match 25 ---
+17:   recoveryMethod: "email",
+18:   registerUsernameAvailable: false,
+19:   registerUsernameCheckTimer: null,
+20:   registerUsernameCheckSequence: 0,
+21:   resendTimer: null,
+22:   publicConfig: null,
+23:   chats: [],
+24:   contacts: [],
+25:   friendRequests: {
+26:     incoming: [],
+27:     outgoing: [],
+28:   },
+29:   sidebarMode: "chats",
+30:   profileTarget: null,
+31:   blockedUsers: [],
+32:   contactRequestTarget: null,
+33:   friendRemoveTarget: null,
+--- lines 181-197 match 189 ---
+181: const testCodeBox = $("testCodeBox");
+182: const authError = $("authError");
+183: const messengerScreen = $("messengerScreen");
+184: const sidebar = $("sidebar");
+185: const selfAvatar = $("selfAvatar");
+186: const searchInput = $("searchInput");
+187: const searchResults = $("searchResults");
+188: const chatList = $("chatList");
+189: const contactList = $("contactList");
+190: const requestList = $("requestList");
+191: const chatsTabButton = $("chatsTabButton");
+192: const contactsTabButton = $("contactsTabButton");
+193: const requestsTabButton = $("requestsTabButton");
+194: const requestsBadge = $("requestsBadge");
+195: const bootShield = $("bootShield");
+196: const mainMenu = $("mainMenu");
+197: const mainMenuMuteLabel = $("mainMenuMuteLabel");
+--- lines 423-439 match 431 ---
+423: const viewProfilePrivacyHint = $("viewProfilePrivacyHint");
+424: const viewProfileRelationship = $("viewProfileRelationship");
+425: const viewProfileContactButton = $("viewProfileContactButton");
+426: const viewProfileAcceptButton = $("viewProfileAcceptButton");
+427: const viewProfileRemoveButton = $("viewProfileRemoveButton");
+428: const viewProfileBlockButton = $("viewProfileBlockButton");
+429: const viewProfileStatus = $("viewProfileStatus");
+430: 
+431: const friendRemoveModal = $("friendRemoveModal");
+432: const friendRemoveClose = $("friendRemoveClose");
+433: const friendRemoveCancel = $("friendRemoveCancel");
+434: const friendRemoveTargetLabel = $("friendRemoveTargetLabel");
+435: const friendRemoveConfirmInput = $("friendRemoveConfirmInput");
+436: const friendRemoveConfirm = $("friendRemoveConfirm");
+437: const friendRemoveStatus = $("friendRemoveStatus");
+438: 
+439: const communityManageModal = $("communityManageModal");
+--- lines 2179-2195 match 2187 ---
+2179:       if (state.recorder.state !== "inactive") {
+2180:         state.recorder.stop();
+2181:       }
+2182:     } catch {}
+2183:   }
+2184: 
+2185:   clearLocalSession();
+2186:   state.chats = [];
+2187:   state.contacts = [];
+2188:   state.activeChat = null;
+2189:   state.activeMessages = [];
+2190:   state.activePermissions = null;
+2191: 
+2192:   messengerScreen.classList.add("hidden");
+2193:   authScreen.classList.remove("hidden");
+2194:   showAuthMode("login");
+2195:   authError.textContent = message;
+--- lines 3155-3171 match 3163 ---
+3155:       state.user?.phone,
+3156:     state.user?.avatar_key ||
+3157:       state.user?.avatarKey,
+3158:   );
+3159: 
+3160:   // Start loading chats first. A non-critical composer error must
+3161:   // never leave the sidebar empty after a page refresh.
+3162:   loadChats();
+3163:   loadContactsData();
+3164:   connectSocket();
+3165:   updateComposerAction();
+3166:   processInviteFromUrl();
+3167: }
+3168: 
+3169: async function performLogout(all = false) {
+3170:   try {
+3171:     await request(
+--- lines 3303-3319 match 3311 ---
+3303: 
+3304:       if (state.activeChat?.id === chatId) {
+3305:         loadChats(false);
+3306:       }
+3307:     },
+3308:   );
+3309: 
+3310:   state.socket.on(
+3311:     "friend.request",
+3312:     () => {
+3313:       loadContactsData();
+3314:       loadChats(false);
+3315:     },
+3316:   );
+3317: 
+3318:   state.socket.on(
+3319:     "friend.accepted",
+--- lines 3321-3337 match 3329 ---
+3321:       loadContactsData();
+3322:       loadChats(false);
+3323:     },
+3324:   );
+3325: 
+3326:   state.socket.on(
+3327:     "friend.declined",
+3328:     () => {
+3329:       loadContactsData();
+3330:       loadChats(false);
+3331:     },
+3332:   );
+3333: 
+3334:   state.socket.on(
+3335:     "friend.cancelled",
+3336:     () => {
+3337:       loadContactsData();
+--- lines 3573-3589 match 3581 ---
+3573:     "active",
+3574:     mode === "requests",
+3575:   );
+3576: 
+3577:   chatList.classList.toggle(
+3578:     "hidden",
+3579:     mode !== "chats",
+3580:   );
+3581:   contactList.classList.toggle(
+3582:     "hidden",
+3583:     mode !== "contacts",
+3584:   );
+3585:   requestList.classList.toggle(
+3586:     "hidden",
+3587:     mode !== "requests",
+3588:   );
+3589: 
+--- lines 3596-3612 match 3604 ---
+3596:       : mode === "requests"
+3597:         ? "Запросы в контакты"
+3598:         : "Поиск или новый чат";
+3599: 
+3600:   searchInput.disabled =
+3601:     mode === "requests";
+3602: 
+3603:   if (mode === "contacts") {
+3604:     renderContacts();
+3605:   }
+3606: 
+3607:   if (mode === "requests") {
+3608:     renderFriendRequests();
+3609:   }
+3610: }
+3611: 
+3612: async function loadContactsData() {
+--- lines 3622-3638 match 3630 ---
+3622:     )
+3623:       ? contactsResult.value
+3624:       : [];
+3625:   } else {
+3626:     console.warn(
+3627:       "Unable to load contacts",
+3628:       contactsResult.reason,
+3629:     );
+3630:     state.contacts = [];
+3631:   }
+3632: 
+3633:   if (requestsResult.status === "fulfilled") {
+3634:     const requests = requestsResult.value;
+3635: 
+3636:     state.friendRequests = {
+3637:       incoming: Array.isArray(
+3638:         requests?.incoming,
+--- lines 3645-3661 match 3653 ---
+3645:         ? requests.outgoing
+3646:         : [],
+3647:     };
+3648:   } else {
+3649:     console.warn(
+3650:       "Unable to load contact requests",
+3651:       requestsResult.reason,
+3652:     );
+3653:     state.friendRequests = {
+3654:       incoming: [],
+3655:       outgoing: [],
+3656:     };
+3657:   }
+3658: 
+3659:   const incomingCount =
+3660:     state.friendRequests.incoming.length;
+3661: 
+--- lines 3663-3679 match 3671 ---
+3663:     incomingCount > 99
+3664:       ? "99+"
+3665:       : String(incomingCount);
+3666:   requestsBadge.classList.toggle(
+3667:     "hidden",
+3668:     incomingCount === 0,
+3669:   );
+3670: 
+3671:   renderContacts();
+3672:   renderFriendRequests();
+3673: }
+3674: 
+3675: function sidebarArrowMarkup() {
+3676:   return `
+3677:     <svg viewBox="0 0 24 24" aria-hidden="true">
+3678:       <path d="m7 10 5 5 5-5"/>
+3679:     </svg>
+--- lines 3704-3720 match 3712 ---
+3704: 
+3705:   menu.classList.toggle(
+3706:     "hidden",
+3707:     !shouldOpen,
+3708:   );
+3709: }
+3710: 
+3711: 
+3712: function renderContacts(query = "") {
+3713:   const clean =
+3714:     query.trim().toLowerCase();
+3715: 
+3716:   const contacts =
+3717:     state.contacts.filter(
+3718:       (contact) =>
+3719:         !clean ||
+3720:         String(
+--- lines 3727-3743 match 3735 ---
+3727:           .includes(clean) ||
+3728:         String(contact.phone || "")
+3729:           .includes(clean) ||
+3730:         String(contact.email || "")
+3731:           .toLowerCase()
+3732:           .includes(clean),
+3733:     );
+3734: 
+3735:   contactList.innerHTML =
+3736:     contacts.length
+3737:       ? contacts
+3738:           .map((contact) => {
+3739:             const title =
+3740:               contact.custom_name ||
+3741:               contact.display_name;
+3742: 
+3743:             return `
+--- lines 3793-3809 match 3801 ---
+3793:                   </button>
+3794:                 </div>
+3795:               </div>
+3796:             `;
+3797:           })
+3798:           .join("")
+3799:       : '<div class="empty-list">Контактов пока нет</div>';
+3800: 
+3801:   contactList
+3802:     .querySelectorAll(
+3803:       "[data-contact-user-id]",
+3804:     )
+3805:     .forEach((button) => {
+3806:       button.addEventListener(
+3807:         "click",
+3808:         async () => {
+3809:           closeSidebarRowMenus();
+--- lines 3820-3836 match 3828 ---
+3820:     )
+3821:     .forEach((button) => {
+3822:       button.addEventListener(
+3823:         "click",
+3824:         (event) => {
+3825:           event.stopPropagation();
+3826: 
+3827:           const menu =
+3828:             contactList.querySelector(
+3829:               `[data-contact-menu="${CSS.escape(
+3830:                 button.dataset
+3831:                   .contactRowMenu,
+3832:               )}"]`,
+3833:             );
+3834: 
+3835:           if (menu) {
+3836:             toggleSidebarRowMenu(menu);
+--- lines 3845-3861 match 3853 ---
+3845:     )
+3846:     .forEach((button) => {
+3847:       button.addEventListener(
+3848:         "click",
+3849:         (event) => {
+3850:           event.stopPropagation();
+3851: 
+3852:           const contact =
+3853:             state.contacts.find(
+3854:               (item) =>
+3855:                 item.id ===
+3856:                 button.dataset
+3857:                   .removeContactId,
+3858:             );
+3859: 
+3860:           if (!contact) return;
+3861: 
+--- lines 3873-3889 match 3881 ---
+3873:             },
+3874:             false,
+3875:           );
+3876:         },
+3877:       );
+3878:     });
+3879: }
+3880: 
+3881: function renderFriendRequests() {
+3882:   const incoming =
+3883:     state.friendRequests.incoming;
+3884:   const outgoing =
+3885:     state.friendRequests.outgoing;
+3886: 
+3887:   const requestCard = (
+3888:     item,
+3889:     direction,
+--- lines 3895-3911 match 3903 ---
+3895:       <div class="sidebar-list-row request-list-row">
+3896:         <div class="friend-request-card">
+3897:           ${avatarMarkup(
+3898:             item.display_name,
+3899:             item.avatar_key,
+3900:             "avatar request-avatar",
+3901:           )}
+3902: 
+3903:           <div class="friend-request-content">
+3904:             <strong>${escapeHtml(
+3905:               item.display_name,
+3906:             )}</strong>
+3907:             <span>
+3908:               ${
+3909:                 incomingRequest
+3910:                   ? item.username
+3911:                     ? `@${escapeHtml(
+--- lines 4029-4045 match 4037 ---
+4029:     .querySelectorAll(
+4030:       "[data-accept-request]",
+4031:     )
+4032:     .forEach((button) => {
+4033:       button.addEventListener(
+4034:         "click",
+4035:         async () => {
+4036:           closeSidebarRowMenus();
+4037:           await answerFriendRequest(
+4038:             button.dataset.acceptRequest,
+4039:             true,
+4040:           );
+4041:         },
+4042:       );
+4043:     });
+4044: 
+4045:   requestList
+--- lines 4063-4079 match 4071 ---
+4063:     .querySelectorAll(
+4064:       "[data-cancel-request]",
+4065:     )
+4066:     .forEach((button) => {
+4067:       button.addEventListener(
+4068:         "click",
+4069:         async () => {
+4070:           closeSidebarRowMenus();
+4071:           await cancelFriendRequest(
+4072:             button.dataset.cancelRequest,
+4073:           );
+4074:         },
+4075:       );
+4076:     });
+4077: }
+4078: 
+4079: async function answerFriendRequest(
+--- lines 4084-4100 match 4092 ---
+4084:     await request(
+4085:       `/contacts/requests/${requestId}/${
+4086:         accept ? "accept" : "decline"
+4087:       }`,
+4088:       { method: "POST" },
+4089:     );
+4090: 
+4091:     await Promise.all([
+4092:       loadContactsData(),
+4093:       loadChats(false),
+4094:     ]);
+4095: 
+4096:     if (state.profileTarget?.request_id === requestId) {
+4097:       await openUserProfile(
+4098:         state.profileTarget.id,
+4099:       );
+4100:     }
+--- lines 4109-4125 match 4117 ---
+4109:   try {
+4110:     await request(
+4111:       `/contacts/requests/${requestId}`,
+4112:       {
+4113:         method: "DELETE",
+4114:       },
+4115:     );
+4116: 
+4117:     await loadContactsData();
+4118:   } catch (error) {
+4119:     alert(error.message);
+4120:   }
+4121: }
+4122: 
+4123: 
+4124: async function openPrivateChatWithUser(userId) {
+4125:   try {
+--- lines 4199-4215 match 4207 ---
+4199:         contactName,
+4200:       }),
+4201:     });
+4202: 
+4203:     contactRequestModal.classList.add(
+4204:       "hidden",
+4205:     );
+4206:     await Promise.all([
+4207:       loadContactsData(),
+4208:       loadChats(false),
+4209:     ]);
+4210: 
+4211:     if (state.profileTarget?.id === target.id) {
+4212:       await openUserProfile(target.id);
+4213:     }
+4214:   } catch (error) {
+4215:     contactRequestStatus.textContent =
+--- lines 4224-4240 match 4232 ---
+4224:         "hidden",
+4225:       );
+4226:     }
+4227:   } finally {
+4228:     contactRequestSendButton.disabled = false;
+4229:   }
+4230: }
+4231: 
+4232: function openFriendRemoveConfirmation(
+4233:   profile = state.profileTarget,
+4234:   reopenProfile = true,
+4235: ) {
+4236:   if (!profile?.id || !profile.is_friend) {
+4237:     return;
+4238:   }
+4239: 
+4240:   state.friendRemoveTarget = {
+--- lines 4242-4258 match 4250 ---
+4242:     reopenProfile,
+4243:   };
+4244:   friendRemoveTargetLabel.textContent =
+4245:     profile.real_display_name ||
+4246:     profile.display_name ||
+4247:     "Пользователь";
+4248:   friendRemoveConfirmInput.value = "";
+4249:   friendRemoveStatus.textContent = "";
+4250:   friendRemoveModal.classList.remove(
+4251:     "hidden",
+4252:   );
+4253: 
+4254:   requestAnimationFrame(() => {
+4255:     friendRemoveConfirmInput.focus();
+4256:   });
+4257: }
+4258: 
+--- lines 4260-4276 match 4268 ---
+4260:   friendRemoveModal.classList.add(
+4261:     "hidden",
+4262:   );
+4263:   friendRemoveConfirmInput.value = "";
+4264:   friendRemoveStatus.textContent = "";
+4265:   state.friendRemoveTarget = null;
+4266: }
+4267: 
+4268: async function confirmFriendRemoval() {
+4269:   const target =
+4270:     state.friendRemoveTarget;
+4271:   const confirmation =
+4272:     friendRemoveConfirmInput.value
+4273:       .trim()
+4274:       .toLocaleLowerCase("ru-RU");
+4275: 
+4276:   if (!target?.id) return;
+--- lines 4278-4294 match 4286 ---
+4278:   if (confirmation !== "да") {
+4279:     friendRemoveStatus.textContent =
+4280:       "Для удаления напишите «Да»";
+4281:     friendRemoveConfirmInput.focus();
+4282:     return;
+4283:   }
+4284: 
+4285:   friendRemoveConfirm.disabled = true;
+4286:   friendRemoveStatus.textContent =
+4287:     "Удаляем из друзей…";
+4288: 
+4289:   try {
+4290:     await request(
+4291:       `/contacts/${target.id}`,
+4292:       {
+4293:         method: "DELETE",
+4294:       },
+--- lines 4323-4339 match 4331 ---
+4323:       await openUserProfile(target.id);
+4324:     } else if (
+4325:       state.profileTarget?.id ===
+4326:       target.id
+4327:     ) {
+4328:       closeUserProfilePanel();
+4329:     }
+4330:   } catch (error) {
+4331:     friendRemoveStatus.textContent =
+4332:       error.message;
+4333:   } finally {
+4334:     friendRemoveConfirm.disabled =
+4335:       false;
+4336:   }
+4337: }
+4338: 
+4339: 
+--- lines 4449-4465 match 4457 ---
+4449:       profile.email || "Скрыт";
+4450: 
+4451:     viewProfilePrivacyHint.textContent =
+4452:       profile.can_view_private
+4453:         ? "Контактные данные доступны"
+4454:         : "Чтобы увидеть телефон и email, отправьте запрос в контакты.";
+4455: 
+4456:     viewProfileRelationship.textContent =
+4457:       profile.is_friend
+4458:         ? "В контактах"
+4459:         : profile.request_direction ===
+4460:             "outgoing"
+4461:           ? "Запрос отправлен"
+4462:           : profile.request_direction ===
+4463:               "incoming"
+4464:             ? "Входящий запрос"
+4465:             : "Не в контактах";
+--- lines 4482-4498 match 4490 ---
+4482:     viewProfileAcceptButton.classList.toggle(
+4483:       "hidden",
+4484:       profile.request_direction !==
+4485:         "incoming",
+4486:     );
+4487: 
+4488:     viewProfileRemoveButton.classList.toggle(
+4489:       "hidden",
+4490:       !profile.is_friend,
+4491:     );
+4492: 
+4493:     applyUserProfileBlockState(
+4494:       profile,
+4495:     );
+4496: 
+4497:     viewProfileStatus.textContent = "";
+4498:   } catch (error) {
+--- lines 4517-4533 match 4525 ---
+4517:   viewProfileBlockButton.textContent =
+4518:     blocked
+4519:       ? "Разблокировать пользователя"
+4520:       : "Заблокировать пользователя";
+4521: 
+4522:   viewProfileContactButton.classList.toggle(
+4523:     "hidden",
+4524:     blocked ||
+4525:       profile.is_friend ||
+4526:       profile.request_direction ===
+4527:         "incoming",
+4528:   );
+4529: 
+4530:   viewProfileContactButton.disabled =
+4531:     blocked ||
+4532:     profile.request_direction ===
+4533:       "outgoing";
+--- lines 4550-4566 match 4558 ---
+4550:       "Заблокирован";
+4551: 
+4552:     viewProfilePrivacyHint.textContent =
+4553:       "Пользователь заблокирован. Личные сообщения и новые запросы контакта недоступны.";
+4554:     return;
+4555:   }
+4556: 
+4557:   viewProfileRelationship.textContent =
+4558:     profile.is_friend
+4559:       ? "В контактах"
+4560:       : profile.request_direction ===
+4561:           "outgoing"
+4562:         ? "Запрос отправлен"
+4563:         : profile.request_direction ===
+4564:             "incoming"
+4565:           ? "Входящий запрос"
+4566:           : "Не в контактах";
+--- lines 4607-4623 match 4615 ---
+4607: 
+4608:     const resultMessage =
+4609:       currentlyBlocked
+4610:         ? "Пользователь разблокирован"
+4611:         : "Пользователь заблокирован";
+4612: 
+4613:     await Promise.all([
+4614:       loadChats(false),
+4615:       loadContactsData(),
+4616:     ]);
+4617: 
+4618:     if (
+4619:       !settingsModal.classList.contains(
+4620:         "hidden",
+4621:       )
+4622:     ) {
+4623:       await loadBlockedUsers();
+--- lines 4807-4823 match 4815 ---
+4807: }
+4808: 
+4809: function updateActiveChatAccess() {
+4810:   const chat = state.activeChat;
+4811:   if (!chat) return;
+4812:   const permissions = currentChatPermissions(chat);
+4813:   state.activePermissions = permissions;
+4814:   const peer = chat.peer;
+4815:   const limited = chat.type === "private" && peer && !peer.isFriend;
+4816:   const remaining = limited ? Math.max(0, Number(peer.remainingMessages ?? 3)) : null;
+4817: 
+4818:   privateLimitBar.classList.toggle("hidden", !limited);
+4819:   if (limited) {
+4820:     privateLimitText.textContent = remaining > 0
+4821:       ? `Пользователь не в контактах. Можно отправить ещё: ${remaining}`
+4822:       : "Лимит из трёх сообщений исчерпан. Для продолжения добавьте пользователя в контакты.";
+4823:     privateLimitContactButton.textContent = peer.friendshipStatus === "outgoing"
+--- lines 4847-4863 match 4855 ---
+4847:   emojiButton.disabled = !permissions.reactions;
+4848:   attachmentButton.disabled = !permissions.media && !permissions.files;
+4849:   attachmentMenu.querySelectorAll("[data-attachment-action]").forEach((button) => {
+4850:     const action = button.dataset.attachmentAction;
+4851:     const allowed = ["media", "camera", "video-camera"].includes(action) ? permissions.media : permissions.files;
+4852:     button.classList.toggle("hidden", !allowed);
+4853:   });
+4854: 
+4855:   chatAddContactButton.classList.toggle("hidden", chat.type !== "private" || !peer || peer.isFriend);
+4856:   chatAddContactButton.disabled = peer?.friendshipStatus === "outgoing";
+4857:   chatAddContactButton.title = peer?.friendshipStatus === "outgoing"
+4858:     ? "Запрос в контакты уже отправлен"
+4859:     : peer?.friendshipStatus === "incoming" ? "Принять входящий запрос" : "Добавить в контакты";
+4860:   updateComposerAction();
+4861: }
+4862: 
+4863: function decrementPrivateAllowance() {
+--- lines 11802-11818 match 11810 ---
+11802:       );
+11803:     }
+11804:   },
+11805: );
+11806: 
+11807: viewProfileRemoveButton.addEventListener(
+11808:   "click",
+11809:   () => {
+11810:     openFriendRemoveConfirmation(
+11811:       state.profileTarget,
+11812:       true,
+11813:     );
+11814:   },
+11815: );
+11816: 
+11817: viewProfileBlockButton.addEventListener(
+11818:   "click",
+--- lines 11821-11837 match 11829 ---
+11821: 
+11822: friendRemoveClose.addEventListener(
+11823:   "click",
+11824:   closeFriendRemoveConfirmation,
+11825: );
+11826: 
+11827: friendRemoveCancel.addEventListener(
+11828:   "click",
+11829:   closeFriendRemoveConfirmation,
+11830: );
+11831: 
+11832: friendRemoveConfirm.addEventListener(
+11833:   "click",
+11834:   confirmFriendRemoval,
+11835: );
+11836: 
+11837: friendRemoveConfirmInput.addEventListener(
+--- lines 11839-11855 match 11847 ---
+11839:   (event) => {
+11840:     if (event.key === "Enter") {
+11841:       event.preventDefault();
+11842:       confirmFriendRemoval();
+11843:     }
+11844: 
+11845:     if (event.key === "Escape") {
+11846:       event.preventDefault();
+11847:       closeFriendRemoveConfirmation();
+11848:     }
+11849:   },
+11850: );
+11851: 
+11852: friendRemoveModal.addEventListener(
+11853:   "click",
+11854:   (event) => {
+11855:     if (event.target === friendRemoveModal) {
+--- lines 11860-11876 match 11868 ---
+11860: 
+11861: viewProfileAcceptButton.addEventListener(
+11862:   "click",
+11863:   async () => {
+11864:     const requestId =
+11865:       state.profileTarget?.request_id;
+11866: 
+11867:     if (requestId) {
+11868:       await answerFriendRequest(
+11869:         requestId,
+11870:         true,
+11871:       );
+11872:     }
+11873:   },
+11874: );
+11875: 
+11876: chatAddContactButton.addEventListener(
+--- lines 11879-11895 match 11887 ---
+11879:     const peer = state.activeChat?.peer;
+11880: 
+11881:     if (!peer) return;
+11882: 
+11883:     if (
+11884:       peer.friendshipStatus === "incoming" &&
+11885:       peer.friendRequestId
+11886:     ) {
+11887:       await answerFriendRequest(
+11888:         peer.friendRequestId,
+11889:         true,
+11890:       );
+11891:       return;
+11892:     }
+11893: 
+11894:     if (
+11895:       peer.friendshipStatus !== "outgoing"
+--- lines 12236-12252 match 12244 ---
+12236:       event.preventDefault();
+12237:       closeDialogSearch(true);
+12238:     }
+12239:   },
+12240: );
+12241: 
+12242: searchInput.addEventListener("input", () => {
+12243:   if (state.sidebarMode === "contacts") {
+12244:     renderContacts(searchInput.value);
+12245:     return;
+12246:   }
+12247: 
+12248:   if (state.sidebarMode === "requests") {
+12249:     return;
+12250:   }
+12251: 
+12252:   clearTimeout(state.searchTimer);
+--- lines 12648-12664 match 12656 ---
+12648:     closeChatDeleteConfirmation();
+12649:     closeSidebarRowMenus();
+12650:     chatMuteModal.classList.add("hidden");
+12651:     communityModal.classList.add("hidden");
+12652:     communityManageModal.classList.add("hidden");
+12653:     chatSearchPanel.classList.add("hidden");
+12654:     chatSearchResults.classList.add("hidden");
+12655:     contactRequestModal.classList.add("hidden");
+12656:     closeFriendRemoveConfirmation();
+12657:     closeUserProfilePanel();
+12658:     muteModal.classList.add("hidden");
+12659:     appLockSettingsModal.classList.add("hidden");
+12660:     settingsModal.classList.add("hidden");
+12661:   }
+12662: });
+12663: 
+12664: document.addEventListener(
+===== snapshot/workspace7-fixes.js (2 matches) =====
+--- lines 31-47 match 39 ---
+31:       (byId('callsTabButton')?.classList.contains('active') ? 'calls' :
+32:         byId('contactsTabButton')?.classList.contains('active') ? 'contacts' :
+33:           byId('requestsTabButton')?.classList.contains('active') ? 'requests' : 'chats');
+34: 
+35:     const isCalls = resolved === 'calls';
+36:     const callsButton = byId('callsTabButton');
+37:     const callsList = byId('callHistoryList');
+38:     const chatList = byId('chatList');
+39:     const contactList = byId('contactList');
+40:     const requestList = byId('requestList');
+41:     const searchResults = byId('searchResults');
+42:     const searchBlock = document.querySelector('.sidebar-search-block');
+43: 
+44:     callsButton?.classList.toggle('active', isCalls);
+45:     callsList?.classList.toggle('hidden', !isCalls);
+46:     chatList?.classList.toggle('hidden', resolved !== 'chats');
+47:     contactList?.classList.toggle('hidden', resolved !== 'contacts');
+===== snapshot/tg5-enhancements.js (6 matches) =====
+--- lines 338-354 match 346 ---
+338:   }
+339: 
+340:   function closeUserSearchModal() {
+341:     document.getElementById("tg5UserSearchModal")?.classList.add("hidden");
+342:   }
+343: 
+344:   function userResultMarkup(user, { compact = false } = {}) {
+345:     const username = user.username ? `@${escapeHtml(user.username)}` : "Без username";
+346:     const isContact = state.contacts?.some((contact) => contact.id === user.id);
+347:     return `
+348:       <div class="tg5-user-result ${compact ? "compact" : ""}">
+349:         <button type="button" class="tg5-user-main" data-tg5-open-user="${user.id}">
+350:           ${avatarMarkup(user.display_name, user.avatar_key, "avatar tg5-user-avatar")}
+351:           <span>
+352:             <strong>${escapeHtml(user.display_name)}</strong>
+353:             <small>${username}${isContact ? " · в контактах" : ""}</small>
+354:           </span>
+--- lines 397-413 match 405 ---
+397:     } catch (error) {
+398:       results.innerHTML = `<div class="empty-list">${escapeHtml(error.message)}</div>`;
+399:     }
+400:   }
+401: 
+402:   async function searchUsersInContacts(value) {
+403:     const clean = String(value || "").trim();
+404:     if (clean.length < 2) {
+405:       renderContacts(clean);
+406:       return;
+407:     }
+408: 
+409:     contactList.innerHTML = '<div class="search-loading">Ищем пользователей…</div>';
+410:     try {
+411:       const found = await request(`/users/search?q=${encodeURIComponent(clean)}`);
+412:       const users = Array.isArray(found) ? found : [];
+413:       contactList.innerHTML = users.length
+===== snapshot/index.html (11 matches) =====
+--- lines 415-431 match 423 ---
+415:           <button id="requestsTabButton" type="button">
+416:             Запросы
+417:             <span id="requestsBadge" class="sidebar-tab-badge hidden">0</span>
+418:           </button>
+419:         </div>
+420: 
+421:         <div id="searchResults" class="search-results hidden"></div>
+422:         <div id="chatList" class="chat-list"></div>
+423:         <div id="contactList" class="chat-list hidden"></div>
+424:         <div id="requestList" class="chat-list hidden"></div>
+425:       </aside>
+426: 
+427:       <section id="chatPane" class="chat-pane">
+428:         <header class="chat-header">
+429:           <button id="backButton" type="button" class="icon-button mobile-back" title="Назад">
+430:             <svg viewBox="0 0 24 24" aria-hidden="true">
+431:               <path d="m15 18-6-6 6-6"/>
+--- lines 1377-1393 match 1385 ---
+1377:             Отправить запрос
+1378:           </button>
+1379: 
+1380:           <div id="contactRequestStatus" class="settings-hint"></div>
+1381:         </div>
+1382:       </section>
+1383:     </div>
+1384: 
+1385:     <div id="friendRemoveModal" class="modal-backdrop hidden">
+1386:       <section class="small-settings-modal friend-remove-modal" role="dialog" aria-modal="true">
+1387:         <header class="settings-header">
+1388:           <div>
+1389:             <strong>Удалить из друзей?</strong>
+1390:             <span id="friendRemoveTargetLabel"></span>
+1391:           </div>
+1392: 
+1393:           <button id="friendRemoveClose" type="button" class="icon-button">×</button>
+--- lines 1397-1413 match 1405 ---
+1397:           <p>
+1398:             Контактные данные снова будут скрыты, а лимит сообщений
+1399:             для пользователей не в друзьях снова начнёт действовать.
+1400:           </p>
+1401: 
+1402:           <label class="settings-field">
+1403:             <span>Для подтверждения напишите «Да»</span>
+1404:             <input
+1405:               id="friendRemoveConfirmInput"
+1406:               type="text"
+1407:               autocomplete="off"
+1408:               placeholder="Да"
+1409:             >
+1410:           </label>
+1411: 
+1412:           <div class="friend-remove-actions">
+1413:             <button id="friendRemoveCancel" type="button" class="secondary-button">

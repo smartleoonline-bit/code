@@ -1,0 +1,292 @@
+===== snapshot/calls.js (1 matches) =====
+--- lines 1390-1406 match 1398 ---
+1390:       if (seq !== callState.activeCheck) return;
+1391:       if (call && call.mode !== "private") showCallBanner(call);
+1392:     } catch {}
+1393:   }
+1394: 
+1395:   function injectCallsSidebar() {
+1396:     if (document.getElementById("callsTabButton")) return;
+1397:     const tabs = document.querySelector(".sidebar-mode-tabs");
+1398:     const requestsButton = document.getElementById("requestsTabButton");
+1399:     const contactListNode = document.getElementById("contactList");
+1400:     if (!tabs || !requestsButton || !contactListNode) return;
+1401: 
+1402:     tabs.classList.add("meetus-sidebar-four-tabs");
+1403:     const button = document.createElement("button");
+1404:     button.id = "callsTabButton";
+1405:     button.type = "button";
+1406:     button.textContent = "Звонки";
+===== snapshot/app.js (17 matches) =====
+--- lines 182-198 match 190 ---
+182: const authError = $("authError");
+183: const messengerScreen = $("messengerScreen");
+184: const sidebar = $("sidebar");
+185: const selfAvatar = $("selfAvatar");
+186: const searchInput = $("searchInput");
+187: const searchResults = $("searchResults");
+188: const chatList = $("chatList");
+189: const contactList = $("contactList");
+190: const requestList = $("requestList");
+191: const chatsTabButton = $("chatsTabButton");
+192: const contactsTabButton = $("contactsTabButton");
+193: const requestsTabButton = $("requestsTabButton");
+194: const requestsBadge = $("requestsBadge");
+195: const bootShield = $("bootShield");
+196: const mainMenu = $("mainMenu");
+197: const mainMenuMuteLabel = $("mainMenuMuteLabel");
+198: 
+--- lines 2042-2058 match 2050 ---
+2042:       "Community creation failed",
+2043:       error,
+2044:     );
+2045:   } finally {
+2046:     communitySubmitButton.disabled = false;
+2047:   }
+2048: }
+2049: 
+2050: async function rawRequest(path, options = {}) {
+2051:   const headers = {
+2052:     ...(options.body && !(options.body instanceof FormData)
+2053:       ? { "Content-Type": "application/json" }
+2054:       : {}),
+2055:     ...(state.token && options.auth !== false
+2056:       ? { Authorization: `Bearer ${state.token}` }
+2057:       : {}),
+2058:     ...(options.headers || {}),
+--- lines 2080-2096 match 2088 ---
+2080:       response: null,
+2081:       data: null,
+2082:       networkError: true,
+2083:       error,
+2084:     };
+2085:   }
+2086: }
+2087: 
+2088: async function request(path, options = {}) {
+2089:   let result = await rawRequest(path, options);
+2090: 
+2091:   if (result.networkError) {
+2092:     throw new Error("Нет соединения с сервером");
+2093:   }
+2094: 
+2095:   if (
+2096:     result.response.status === 401 &&
+--- lines 2196-2212 match 2204 ---
+2196: }
+2197: 
+2198: async function refreshAccessToken() {
+2199:   if (state.refreshPromise) {
+2200:     return state.refreshPromise;
+2201:   }
+2202: 
+2203:   state.refreshPromise = (async () => {
+2204:     const result = await rawRequest("/auth/refresh", {
+2205:       method: "POST",
+2206:       auth: false,
+2207:     });
+2208: 
+2209:     if (result.networkError) {
+2210:       return "network";
+2211:     }
+2212: 
+--- lines 2483-2499 match 2491 ---
+2483:   } else {
+2484:     testCodeBox.classList.add("hidden");
+2485:   }
+2486: 
+2487:   showAuthMode("code");
+2488:   startResendCountdown(retryAfter || 60);
+2489: }
+2490: 
+2491: async function requestLoginCode() {
+2492:   const requestPayload =
+2493:     state.loginMethod === "email"
+2494:       ? {
+2495:           method: "email",
+2496:           email: loginEmailInput.value
+2497:             .trim()
+2498:             .toLowerCase(),
+2499:         }
+--- lines 2740-2756 match 2748 ---
+2740: 
+2741:   state.registerUsernameCheckTimer =
+2742:     setTimeout(
+2743:       checkRegistrationUsername,
+2744:       350,
+2745:     );
+2746: }
+2747: 
+2748: async function requestRegistrationCode() {
+2749:   const displayName = registerNameInput.value.trim();
+2750:   const email = registerEmailInput.value
+2751:     .trim()
+2752:     .toLowerCase();
+2753:   const phone = fullPhone(
+2754:     registerCountrySelect,
+2755:     registerPhoneInput,
+2756:   );
+--- lines 2780-2796 match 2788 ---
+2780:     return;
+2781:   }
+2782: 
+2783:   registerSubmitButton.disabled = true;
+2784:   registerSubmitButton.textContent =
+2785:     "Проверяем данные…";
+2786:   resetAuthError();
+2787: 
+2788:   const requestPayload = {
+2789:     displayName,
+2790:     email,
+2791:     phone,
+2792:     username,
+2793:   };
+2794: 
+2795:   try {
+2796:     const check = await request(
+--- lines 2876-2892 match 2884 ---
+2876:       ? `${result.message}. Код восстановления можно отправить на ${result.recoveryEmail}.`
+2877:       : result.message ||
+2878:         "Такие данные уже используются.";
+2879: 
+2880:   registrationConflict.classList.remove("hidden");
+2881:   authError.textContent = "";
+2882: }
+2883: 
+2884: async function requestRecoveryCode() {
+2885:   const payload =
+2886:     state.recoveryMethod === "email"
+2887:       ? {
+2888:           method: "email",
+2889:           email: recoveryEmailInput.value
+2890:             .trim()
+2891:             .toLowerCase(),
+2892:         }
+--- lines 3626-3642 match 3634 ---
+3626:     console.warn(
+3627:       "Unable to load contacts",
+3628:       contactsResult.reason,
+3629:     );
+3630:     state.contacts = [];
+3631:   }
+3632: 
+3633:   if (requestsResult.status === "fulfilled") {
+3634:     const requests = requestsResult.value;
+3635: 
+3636:     state.friendRequests = {
+3637:       incoming: Array.isArray(
+3638:         requests?.incoming,
+3639:       )
+3640:         ? requests.incoming
+3641:         : [],
+3642:       outgoing: Array.isArray(
+--- lines 3879-3895 match 3887 ---
+3879: }
+3880: 
+3881: function renderFriendRequests() {
+3882:   const incoming =
+3883:     state.friendRequests.incoming;
+3884:   const outgoing =
+3885:     state.friendRequests.outgoing;
+3886: 
+3887:   const requestCard = (
+3888:     item,
+3889:     direction,
+3890:   ) => {
+3891:     const incomingRequest =
+3892:       direction === "incoming";
+3893: 
+3894:     return `
+3895:       <div class="sidebar-list-row request-list-row">
+--- lines 10779-10795 match 10787 ---
+10779:       error.message;
+10780:   } finally {
+10781:     avatarCropSaveButton.disabled = false;
+10782:     avatarCropSaveButton.textContent =
+10783:       "Сохранить фотографию";
+10784:   }
+10785: }
+10786: 
+10787: async function requestLinkEmail() {
+10788:   const email = linkEmailInput.value.trim().toLowerCase();
+10789: 
+10790:   if (!email) {
+10791:     linkEmailHint.textContent = "Введите email";
+10792:     return;
+10793:   }
+10794: 
+10795:   linkEmailButton.disabled = true;
+--- lines 11856-11872 match 11864 ---
+11856:       closeFriendRemoveConfirmation();
+11857:     }
+11858:   },
+11859: );
+11860: 
+11861: viewProfileAcceptButton.addEventListener(
+11862:   "click",
+11863:   async () => {
+11864:     const requestId =
+11865:       state.profileTarget?.request_id;
+11866: 
+11867:     if (requestId) {
+11868:       await answerFriendRequest(
+11869:         requestId,
+11870:         true,
+11871:       );
+11872:     }
+===== snapshot/workspace7-fixes.js (1 matches) =====
+--- lines 32-48 match 40 ---
+32:         byId('contactsTabButton')?.classList.contains('active') ? 'contacts' :
+33:           byId('requestsTabButton')?.classList.contains('active') ? 'requests' : 'chats');
+34: 
+35:     const isCalls = resolved === 'calls';
+36:     const callsButton = byId('callsTabButton');
+37:     const callsList = byId('callHistoryList');
+38:     const chatList = byId('chatList');
+39:     const contactList = byId('contactList');
+40:     const requestList = byId('requestList');
+41:     const searchResults = byId('searchResults');
+42:     const searchBlock = document.querySelector('.sidebar-search-block');
+43: 
+44:     callsButton?.classList.toggle('active', isCalls);
+45:     callsList?.classList.toggle('hidden', !isCalls);
+46:     chatList?.classList.toggle('hidden', resolved !== 'chats');
+47:     contactList?.classList.toggle('hidden', resolved !== 'contacts');
+48:     requestList?.classList.toggle('hidden', resolved !== 'requests');
+===== snapshot/socket.io.js (2 matches) =====
+--- lines 1136-1152 match 1144 ---
+1136:   }(Polling);
+1137:   var Request = /*#__PURE__*/function (_Emitter) {
+1138:     /**
+1139:      * Request constructor
+1140:      *
+1141:      * @param {Object} options
+1142:      * @package
+1143:      */
+1144:     function Request(createRequest, uri, opts) {
+1145:       var _this4;
+1146:       _this4 = _Emitter.call(this) || this;
+1147:       _this4.createRequest = createRequest;
+1148:       installTimerFunctions(_this4, opts);
+1149:       _this4._opts = opts;
+1150:       _this4._method = opts.method || "GET";
+1151:       _this4._uri = uri;
+1152:       _this4._data = undefined !== opts.data ? opts.data : null;
+--- lines 1322-1338 match 1330 ---
+1322:       var _this6;
+1323:       _this6 = _BaseXHR.call(this, opts) || this;
+1324:       var forceBase64 = opts && opts.forceBase64;
+1325:       _this6.supportsBinary = hasXHR2 && !forceBase64;
+1326:       return _this6;
+1327:     }
+1328:     _inheritsLoose(XHR, _BaseXHR);
+1329:     var _proto3 = XHR.prototype;
+1330:     _proto3.request = function request() {
+1331:       var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+1332:       _extends(opts, {
+1333:         xd: this.xd
+1334:       }, this.opts);
+1335:       return new Request(newRequest, this.uri(), opts);
+1336:     };
+1337:     return XHR;
+1338:   }(BaseXHR);
