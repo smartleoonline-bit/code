@@ -1,0 +1,34 @@
+name: Fix WORKSPACE16-FIX1 source
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/fix-workspace16-source.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply safe source corrections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('workspace16-fixed1/files/frontend/workspace16-fixed1.js')
+          s=p.read_text('utf-8')
+          s=s.replace("    if (Number.isFinite(Number(message?.width))) body.width = Number(message.width);\n    if (Number.isFinite(Number(message?.height))) body.height = Number(message.height);\n", "")
+          p.write_text(s,'utf-8')
+          PY
+      - name: Commit
+        shell: bash
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add workspace16-fixed1/files/frontend/workspace16-fixed1.js
+          if git diff --cached --quiet; then echo no-changes; else git commit -m 'Tighten forwarding payload'; git push; fi
