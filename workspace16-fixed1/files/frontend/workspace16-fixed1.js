@@ -403,8 +403,6 @@
     if (Number.isFinite(Number(message?.file_size))) body.fileSize = Number(message.file_size);
     if (Number.isFinite(Number(message?.duration_ms))) body.durationMs = Number(message.duration_ms);
     if (kind === 'voice' && Array.isArray(message?.waveform)) body.waveform = message.waveform;
-    if (Number.isFinite(Number(message?.width))) body.width = Number(message.width);
-    if (Number.isFinite(Number(message?.height))) body.height = Number(message.height);
     return body;
   }
 
