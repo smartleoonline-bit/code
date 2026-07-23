@@ -17,6 +17,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check workspace16/files/frontend/workspace16-fixes.js
+          bash -n workspace16/install.sh
+
       - name: Build archive
         shell: bash
         run: |
