@@ -1,0 +1,88 @@
+name: Build WORKSPACE16-FIX1
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'workspace16-fixed1/**'
+      - '.github/workflows/build-workspace16-fixed1.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check workspace16-fixed1/files/frontend/workspace16-fixed1.js
+          python3 -m py_compile workspace16-fixed1/patch.py
+          bash -n workspace16-fixed1/install.sh
+          rm -rf workspace16-fixed1/__pycache__
+
+          grep -q "workspace16fix1" workspace16-fixed1/files/frontend/workspace16-fixed1.js
+          grep -q "workspace14-editable-avatar::after" workspace16-fixed1/files/frontend/workspace16-fixed1.css
+          grep -q "data-workspace16-message-action = 'forward'\|dataset.workspace16MessageAction = 'forward'" workspace16-fixed1/files/frontend/workspace16-fixed1.js
+          grep -q "'/chats/private'" workspace16-fixed1/files/frontend/workspace16-fixed1.js
+          grep -q "workspace/chats" workspace16-fixed1/files/frontend/workspace16-fixed1.js
+          grep -q "workspace16-video-quality" workspace16-fixed1/files/frontend/workspace16-fixed1.js
+
+      - name: Verify index patch is isolated
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp snapshot/index.html /tmp/meetus-index.html
+          python3 workspace16-fixed1/patch.py /tmp/meetus-index.html
+          test "$(grep -c 'workspace16-fixed1.css' /tmp/meetus-index.html)" -eq 1
+          test "$(grep -c 'workspace16-fixed1.js' /tmp/meetus-index.html)" -eq 1
+          grep -q 'workspace15-fixes.js' /tmp/meetus-index.html
+          grep -q 'workspace15-fixes.css' /tmp/meetus-index.html
+          ! grep -q 'workspace16-fixes.js' /tmp/meetus-index.html
+          ! grep -q 'workspace16-fixes.css' /tmp/meetus-index.html
+
+      - name: Package archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          PACKAGE='meetus-telegram-discussions-v06252-community2tg11workspace16-fixed1'
+          rm -rf build dist
+          mkdir -p "build/$PACKAGE" dist
+          cp -a workspace16-fixed1/. "build/$PACKAGE/"
+          chmod 0755 "build/$PACKAGE/install.sh" "build/$PACKAGE/patch.py"
+          rm -rf "build/$PACKAGE/__pycache__"
+          (
+            cd "build/$PACKAGE"
+            find . -type f ! -name MANIFEST.sha256 -print0 | sort -z | xargs -0 sha256sum > MANIFEST.sha256
+            sha256sum -c MANIFEST.sha256
+          )
+          tar -czf "dist/$PACKAGE.tar.gz" -C build "$PACKAGE"
+          sha256sum "dist/$PACKAGE.tar.gz" > "dist/$PACKAGE.tar.gz.sha256"
+          tar -tzf "dist/$PACKAGE.tar.gz" | grep -q "$PACKAGE/install.sh"
+          tar -tzf "dist/$PACKAGE.tar.gz" | grep -q "$PACKAGE/files/frontend/workspace16-fixed1.js"
+          tar -tzf "dist/$PACKAGE.tar.gz" | grep -q "$PACKAGE/files/frontend/workspace16-fixed1.css"
+
+      - name: Commit package
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add dist
+          if git diff --cached --quiet; then
+            echo 'Package unchanged'
+          else
+            git commit -m 'Build WORKSPACE16-FIX1 archive'
+            git push
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: meetus-workspace16-fixed1
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 30
