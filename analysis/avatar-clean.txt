@@ -1,0 +1,226 @@
+===== snapshot/app.js (2 matches) =====
+--- 431-455 hit 443 ---
+431: const friendRemoveModal = $("friendRemoveModal");
+432: const friendRemoveClose = $("friendRemoveClose");
+433: const friendRemoveCancel = $("friendRemoveCancel");
+434: const friendRemoveTargetLabel = $("friendRemoveTargetLabel");
+435: const friendRemoveConfirmInput = $("friendRemoveConfirmInput");
+436: const friendRemoveConfirm = $("friendRemoveConfirm");
+437: const friendRemoveStatus = $("friendRemoveStatus");
+438: 
+439: const communityManageModal = $("communityManageModal");
+440: const communityManageClose = $("communityManageClose");
+441: const communityManageTitle = $("communityManageTitle");
+442: const communityManageType = $("communityManageType");
+443: const communityManageAvatar = $("communityManageAvatar");
+444: const communityManageName = $("communityManageName");
+445: const communityManageDescription = $("communityManageDescription");
+446: const communityManageUsername = $("communityManageUsername");
+447: const communityManageRole = $("communityManageRole");
+448: const communityManageMemberCount = $("communityManageMemberCount");
+449: const communitySettingsControls = $("communitySettingsControls");
+450: const communityMembersVisibleInput = $("communityMembersVisibleInput");
+451: const permissionTextInput = $("permissionTextInput");
+452: const permissionReactionsInput = $("permissionReactionsInput");
+453: const permissionVoiceInput = $("permissionVoiceInput");
+454: const permissionMediaInput = $("permissionMediaInput");
+455: const permissionFilesInput = $("permissionFilesInput");
+--- 5064-5088 hit 5076 ---
+5064: }
+5065: 
+5066: function applyCommunityInfo(info) {
+5067:   state.managedCommunityInfo = info;
+5068:   const title = info.title || "Сообщество";
+5069:   communityManageTitle.textContent = info.type === "channel" ? "Информация о канале" : "Информация о группе";
+5070:   communityManageType.textContent = info.linked_chat_id ? "Связанное сообщество" : info.type === "channel" ? "Канал" : "Группа";
+5071:   communityManageName.textContent = title;
+5072:   communityManageDescription.textContent = info.description || "Описание не заполнено";
+5073:   communityManageUsername.textContent = info.username ? `@${info.username}` : "";
+5074:   communityManageMemberCount.textContent = `${info.member_count} участников`;
+5075:   communityManageRole.textContent = info.viewer_role === "owner" ? "Вы владелец" : info.viewer_role === "admin" ? "Вы администратор" : "Вы участник";
+5076:   setAvatarElement(communityManageAvatar, title, info.avatar_key);
+5077:   communitySettingsControls.classList.toggle("hidden", !info.canEditSettings);
+5078:   communityInviteControls.classList.toggle("hidden", !info.canManage);
+5079:   communityMembersVisibleInput.checked = Boolean(info.members_visible);
+5080:   permissionTextInput.checked = Boolean(info.members_can_send_text);
+5081:   permissionReactionsInput.checked = Boolean(info.members_can_send_reactions);
+5082:   permissionVoiceInput.checked = Boolean(info.members_can_send_voice);
+5083:   permissionMediaInput.checked = Boolean(info.members_can_send_media);
+5084:   permissionFilesInput.checked = Boolean(info.members_can_send_files);
+5085:   renderCommunityManageMembers(info);
+5086: 
+5087:   communityBansSection.classList.toggle("hidden", !info.canManage);
+5088:   communityLeaveButton.classList.toggle("hidden", info.viewer_role === "owner");
+===== snapshot/workspace13-fixes.js (10 matches) =====
+--- 70-94 hit 82 ---
+70:     if (!byId('workspace13PinsModal')) {
+71:       document.body.insertAdjacentHTML('beforeend', `
+72:         <div id="workspace13PinsModal" class="workspace13-modal hidden" role="dialog" aria-modal="true">
+73:           <section class="workspace13-card workspace13-pins-card">
+74:             <header><div><h3>Закреплённые сообщения</h3><small id="workspace13PinsSubtitle"></small></div><button type="button" data-workspace13-close="pins">×</button></header>
+75:             <div id="workspace13PinsList" class="workspace13-pins-list"></div>
+76:           </section>
+77:         </div>
+78:         <div id="workspace13ProfileModal" class="workspace13-modal hidden" role="dialog" aria-modal="true">
+79:           <section class="workspace13-card workspace13-profile-card">
+80:             <header><div><h3 id="workspace13ProfileTitle">Редактировать чат</h3><small>Видят все участники</small></div><button type="button" data-workspace13-close="profile">×</button></header>
+81:             <div class="workspace13-profile-body">
+82:               <div class="workspace13-avatar-editor">
+83:                 <div id="workspace13AvatarPreview" class="workspace13-avatar-preview"><span>Г</span></div>
+84:                 <div><button id="workspace13AvatarChoose" type="button">Выбрать аватарку</button><button id="workspace13AvatarRemove" type="button" class="danger-soft">Удалить</button></div>
+85:                 <input id="workspace13AvatarInput" type="file" accept="image/*" hidden>
+86:               </div>
+87:               <label class="workspace13-field"><span>Описание</span><textarea id="workspace13Description" maxlength="1000" rows="6" placeholder="Расскажите о канале или группе"></textarea><small><b id="workspace13DescriptionCount">0</b>/1000</small></label>
+88:             </div>
+89:             <footer><button type="button" data-workspace13-close="profile">Отмена</button><button id="workspace13ProfileSave" type="button" class="primary">Сохранить</button></footer>
+90:           </section>
+91:         </div>`);
+92: 
+93:       document.addEventListener('click', (event) => {
+94:         const close = event.target.closest('[data-workspace13-close]');
+--- 153-177 hit 165 ---
+153:   function refreshProfileAction() {
+154:     const action = document.querySelector('[data-workspace13-action="profile"]');
+155:     const chat = window.state?.activeChat;
+156:     const visible = chat && chat.type !== 'private' && ['owner', 'admin'].includes(chat.role);
+157:     action?.classList.toggle('hidden', !visible);
+158:   }
+159: 
+160:   function profileAvatarUrl(key) {
+161:     return key ? `/api/media/${encodeURIComponent(key)}` : '';
+162:   }
+163: 
+164:   function setProfileAvatar(fileOrNull) {
+165:     const preview = byId('workspace13AvatarPreview');
+166:     if (!preview) return;
+167:     if (rt.profileObjectUrl) URL.revokeObjectURL(rt.profileObjectUrl);
+168:     rt.profileObjectUrl = null;
+169:     rt.profileFile = fileOrNull;
+170:     preview.innerHTML = '';
+171:     if (fileOrNull instanceof File) {
+172:       rt.profileObjectUrl = URL.createObjectURL(fileOrNull);
+173:       preview.innerHTML = `<img src="${esc(rt.profileObjectUrl)}" alt="Новая аватарка">`;
+174:       preview.dataset.avatarKey = '';
+175:       preview.dataset.removeAvatar = '0';
+176:     } else {
+177:       preview.innerHTML = '<span>×</span>';
+--- 219-243 hit 231 ---
+219:       xhr.ontimeout = () => reject(new Error('Загрузка аватарки заняла слишком много времени'));
+220:       xhr.send(form);
+221:     });
+222:   }
+223: 
+224:   async function saveProfile() {
+225:     const chat = window.state?.activeChat;
+226:     if (!chat) return;
+227:     const save = byId('workspace13ProfileSave');
+228:     save.disabled = true;
+229:     save.textContent = 'Сохраняем…';
+230:     try {
+231:       const preview = byId('workspace13AvatarPreview');
+232:       let avatarKey = preview.dataset.removeAvatar === '1' ? null : (preview.dataset.avatarKey || null);
+233:       if (rt.profileFile) avatarKey = await uploadAvatar(rt.profileFile);
+234:       const profile = await api(`/chats/${encodeURIComponent(chat.id)}/profile`, 'PATCH', {
+235:         description: byId('workspace13Description').value,
+236:         avatarKey,
+237:       });
+238:       applyProfile(chat.id, profile);
+239:       closeModal('profile');
+240:       notice('Аватарка и описание сохранены');
+241:     } finally {
+242:       save.disabled = false;
+243:       save.textContent = 'Сохранить';
+===== snapshot/workspace14-fixes.js (7 matches) =====
+--- 1-14 hit 2 ---
+1: /* MEETUS 0.6.25.2 COMMUNITY2-TG11-WORKSPACE14
+2:  * Community avatars on creation, owner/admin profile editing from info panel,
+3:  * a dedicated pinned-messages button in the chat header and compact uploaded audio.
+4:  */
+5: (() => {
+6:   'use strict';
+7: 
+8:   /* MEETUS_WORKSPACE14_CREATE_CROP15 */
+9: 
+10:   const VERSION = '0.6.25.2-community2tg11workspace14';
+11:   const runtime = {
+12:     installed: false,
+13:     createAvatarFile: null,
+14:     createAvatarUrl: null,
+--- 263-287 hit 275 ---
+263:         action.classList.remove('hidden');
+264:         action.click();
+265:       } else {
+266:         notice('Редактор оформления пока не загрузился. Обновите страницу.', true);
+267:       }
+268:     });
+269:   }
+270: 
+271:   function applyManagedPermissions(info) {
+272:     const canEdit = Boolean(info?.canEditSettings || info?.canManage || ['owner', 'admin'].includes(info?.viewer_role));
+273:     const card = byId('workspace14CommunityEditCard');
+274:     card?.classList.toggle('hidden', !canEdit);
+275:     const avatar = byId('communityManageAvatar');
+276:     avatar?.classList.toggle('workspace14-editable-avatar', canEdit);
+277:     if (avatar) avatar.title = canEdit ? 'Изменить аватар' : '';
+278: 
+279:     try {
+280:       const managed = state?.managedCommunity;
+281:       if (managed && info?.viewer_role) managed.role = info.viewer_role;
+282:       if (state?.activeChat?.id === managed?.id && info?.viewer_role) state.activeChat.role = info.viewer_role;
+283:     } catch {}
+284: 
+285:     const action = document.querySelector('[data-workspace13-action="profile"]');
+286:     if (action) action.classList.toggle('hidden', !canEdit);
+287:     try { window.meetusWorkspace13?.refreshProfileAction?.(); } catch {}
+--- 290-314 hit 302 ---
+290:   function wrapCommunityInfo() {
+291:     ensureCommunityEditCard();
+292:     if (!runtime.communityInfoWrapped && typeof applyCommunityInfo === 'function') {
+293:       runtime.communityInfoWrapped = true;
+294:       const baseApply = applyCommunityInfo;
+295:       applyCommunityInfo = function workspace14ApplyCommunityInfo(info) {
+296:         const result = baseApply.call(this, info);
+297:         ensureCommunityEditCard();
+298:         applyManagedPermissions(info);
+299:         return result;
+300:       };
+301:     }
+302:     const avatar = byId('communityManageAvatar');
+303:     if (avatar && avatar.dataset.workspace14Click !== '1') {
+304:       avatar.dataset.workspace14Click = '1';
+305:       avatar.addEventListener('click', () => {
+306:         if (!avatar.classList.contains('workspace14-editable-avatar')) return;
+307:         byId('workspace14CommunityEditButton')?.click();
+308:       });
+309:     }
+310:   }
+311: 
+312:   function ensurePinsButton() {
+313:     const actions = document.querySelector('.chat-header-actions');
+314:     const search = byId('chatSearchButton');
+--- 377-401 hit 389 ---
+377:     runtime.socketBound = true;
+378:     socket.on('workspace.pins.changed', () => window.setTimeout(syncPinsButton, 0));
+379:     socket.on('workspace.chat-profile.changed', (payload) => {
+380:       try {
+381:         if (payload?.chatId === state?.managedCommunity?.id && payload?.profile) {
+382:           if (state.managedCommunityInfo) {
+383:             state.managedCommunityInfo.description = payload.profile.description || '';
+384:             state.managedCommunityInfo.avatar_key = payload.profile.avatar_key || null;
+385:           }
+386:           const description = byId('communityManageDescription');
+387:           if (description) description.textContent = payload.profile.description || 'Описание не заполнено';
+388:           if (typeof setAvatarElement === 'function') {
+389:             setAvatarElement(byId('communityManageAvatar'), state.managedCommunity?.title || payload.profile.title || 'Сообщество', payload.profile.avatar_key);
+390:           }
+391:         }
+392:       } catch {}
+393:     });
+394:   }
+395: 
+396:   function install() {
+397:     if (runtime.installed) return;
+398:     runtime.installed = true;
+399:     bridgeState();
+400:     document.documentElement.dataset.meetusWorkspace14 = '1';
+401:     ensureCreateAvatarUi();

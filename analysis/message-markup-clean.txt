@@ -1,0 +1,942 @@
+===== snapshot/workspace4-fixes.js (4 matches) =====
+--- 201-225 hit 213 ---
+201:       notify(unpin ? 'Сообщение откреплено' : 'Сообщение закреплено');
+202:     } catch (error) {
+203:       notify(error?.message || 'Не удалось закрепить сообщение', true);
+204:     }
+205:   }
+206: 
+207:   function rememberMessage(message) {
+208:     fix.lastContextMessage = message || null;
+209:     refreshContextActions(message);
+210:   }
+211: 
+212:   function installContextMenuHook() {
+213:     if (fix.hooked || typeof openMessageContextMenu !== 'function') return;
+214:     fix.hooked = true;
+215:     const original = openMessageContextMenu;
+216:     openMessageContextMenu = function workspace4OpenContext(message, trigger) {
+217:       fix.lastContextMessage = message;
+218:       const result = original.call(this, message, trigger);
+219:       refreshContextActions(message);
+220:       requestAnimationFrame(() => refreshContextActions(message));
+221:       return result;
+222:     };
+223: 
+224:     document.addEventListener('pointerdown', (event) => {
+225:       const action = event.target.closest?.('[data-workspace4-message-action]');
+--- 387-411 hit 399 ---
+387:   async function openDeepLinkReliably() {
+388:     if (fix.deepLinkRunning) return;
+389:     const params = new URLSearchParams(location.search);
+390:     const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+391:     const chatId = params.get('chat') || hash.get('chat');
+392:     const messageId = params.get('message') || hash.get('message');
+393:     if (!chatId || !messageId) return;
+394:     if (typeof state === 'undefined' || !state.user) return;
+395:     fix.deepLinkRunning = true;
+396:     try {
+397:       if (typeof openSearchMessageResult === 'function') {
+398:         await openSearchMessageResult(chatId, messageId);
+399:         const target = $('messageArea')?.querySelector(`[data-message-id="${CSS.escape(messageId)}"]`);
+400:         if (!target) throw new Error('Сообщение не найдено или нет доступа');
+401:         target.classList.add('workspace4-deep-link-target');
+402:         setTimeout(() => target.classList.remove('workspace4-deep-link-target'), 3000);
+403:         history.replaceState({}, '', location.pathname || '/');
+404:       }
+405:     } catch (error) {
+406:       notify(error?.message || 'Не удалось открыть сообщение по ссылке', true);
+407:     } finally {
+408:       fix.deepLinkRunning = false;
+409:     }
+410:   }
+411: 
+===== snapshot/app.js (15 matches) =====
+--- 6318-6342 hit 6330 ---
+6318:     );
+6319:   }
+6320: 
+6321:   if (!chat) return;
+6322: 
+6323:   searchInput.value = "";
+6324:   searchResults.classList.add("hidden");
+6325:   setSidebarMode("chats");
+6326: 
+6327:   await openChat(chat);
+6328: 
+6329:   let target = messageArea.querySelector(
+6330:     `[data-message-id="${CSS.escape(messageId)}"]`,
+6331:   );
+6332: 
+6333:   if (!target) {
+6334:     try {
+6335:       const context = await request(
+6336:         `/chats/${chatId}/messages/${messageId}/context?limit=100`,
+6337:       );
+6338: 
+6339:       state.activeMessages = context;
+6340:       state.searchContextActive = true;
+6341:       messageArea.innerHTML = "";
+6342:       context.forEach(appendMessage);
+--- 7318-7342 hit 7330 ---
+7318:   replyComposerBar.classList.remove("hidden");
+7319:   messageInput.focus();
+7320: }
+7321: 
+7322: function clearReplyMessage() {
+7323:   state.replyToMessage = null;
+7324:   replyComposerBar.classList.add("hidden");
+7325:   replyComposerText.textContent = "";
+7326: }
+7327: 
+7328: function scrollToMessage(messageId) {
+7329:   const target = messageArea.querySelector(
+7330:     `[data-message-id="${CSS.escape(messageId)}"]`,
+7331:   );
+7332: 
+7333:   if (!target) return;
+7334: 
+7335:   target.scrollIntoView({
+7336:     block: "center",
+7337:     behavior: "smooth",
+7338:   });
+7339: 
+7340:   target.classList.add("message-highlight");
+7341:   setTimeout(() => target.classList.remove("message-highlight"), 1200);
+7342: }
+--- 7634-7658 hit 7646 ---
+7634:     }
+7635: 
+7636:     clearReplyMessage();
+7637:     closeMediaPreview();
+7638:   } catch (error) {
+7639:     setUploadStatus(error.message, true);
+7640:     setTimeout(() => setUploadStatus(""), 4000);
+7641:   } finally {
+7642:     mediaPreviewSend.disabled = false;
+7643:   }
+7644: }
+7645: 
+7646: function openMessageContextMenu(message, trigger) {
+7647:   state.contextMessage = message;
+7648: 
+7649:   const deletedForEveryone =
+7650:     isDeletedForEveryone(message);
+7651: 
+7652:   quickReactionRow.classList.toggle(
+7653:     "hidden",
+7654:     deletedForEveryone,
+7655:   );
+7656: 
+7657:   messageDownloadAction.classList.toggle(
+7658:     "hidden",
+--- 7819-7843 hit 7831 ---
+7819: function renderMessageReactions(messageId, reactions) {
+7820:   const message = state.activeMessages.find(
+7821:     (item) => item.id === messageId,
+7822:   );
+7823: 
+7824:   if (message) {
+7825:     message.reactions = Array.isArray(reactions)
+7826:       ? reactions.map(normalizeReaction)
+7827:       : [];
+7828:   }
+7829: 
+7830:   const row = messageArea.querySelector(
+7831:     `[data-message-id="${CSS.escape(messageId)}"]`,
+7832:   );
+7833:   const container = row?.querySelector(
+7834:     "[data-message-reactions]",
+7835:   );
+7836: 
+7837:   if (!container) return;
+7838: 
+7839:   const normalized = Array.isArray(reactions)
+7840:     ? reactions.map(normalizeReaction).filter(
+7841:         (item) => item.emoji && item.count > 0,
+7842:       )
+7843:     : [];
+--- 8143-8167 hit 8155 ---
+8143:           .metadata || {}
+8144:       ),
+8145:       ...(
+8146:         patch.metadata || {}
+8147:       ),
+8148:     },
+8149:   };
+8150: 
+8151:   state.activeMessages[index] = updated;
+8152: 
+8153:   const currentRow =
+8154:     messageArea.querySelector(
+8155:       `[data-message-id="${CSS.escape(
+8156:         messageId,
+8157:       )}"]`,
+8158:     );
+8159: 
+8160:   const nextRow =
+8161:     currentRow?.nextElementSibling ||
+8162:     null;
+8163: 
+8164:   currentRow?.remove();
+8165:   appendMessage(updated);
+8166: 
+8167:   const renderedRow =
+--- 8211-8235 hit 8223 ---
+8211: 
+8212: function removeMessageFromCurrentView(
+8213:   messageId,
+8214: ) {
+8215:   state.activeMessages =
+8216:     state.activeMessages.filter(
+8217:       (message) =>
+8218:         message.id !== messageId,
+8219:     );
+8220: 
+8221:   messageArea
+8222:     .querySelector(
+8223:       `[data-message-id="${CSS.escape(
+8224:         messageId,
+8225:       )}"]`,
+8226:     )
+8227:     ?.remove();
+8228: 
+8229:   if (!state.activeMessages.length) {
+8230:     messageArea.innerHTML =
+8231:       '<div class="empty-chat-history">Сообщений пока нет</div>';
+8232:   }
+8233: }
+8234: 
+8235: async function deleteMessageForScope(
+--- 8784-8808 hit 8796 ---
+8784:       aria-label="${title}"
+8785:     >${messageReceiptIcon(normalized)}</span>
+8786:   `;
+8787: }
+8788: 
+8789: function updateMessageReceipt(
+8790:   messageId,
+8791:   nextStatus,
+8792: ) {
+8793:   if (!nextStatus) return;
+8794: 
+8795:   const row = messageArea.querySelector(
+8796:     `[data-message-id="${messageId}"]`,
+8797:   );
+8798:   const receipt = row?.querySelector(
+8799:     "[data-message-receipt]",
+8800:   );
+8801: 
+8802:   if (!receipt) return;
+8803: 
+8804:   const current =
+8805:     receipt.dataset.receiptStatus ||
+8806:     "sent";
+8807:   const status = advancedReceiptStatus(
+8808:     current,
+--- 8849-8873 hit 8861 ---
+8849:   };
+8850: 
+8851:   if (immediate) {
+8852:     await perform();
+8853:   } else {
+8854:     state.readTimer = setTimeout(
+8855:       perform,
+8856:       120,
+8857:     );
+8858:   }
+8859: }
+8860: 
+8861: function appendMessage(message) {
+8862:   if (messageArea.querySelector(`[data-message-id="${message.id}"]`)) return;
+8863: 
+8864:   const mine = message.sender_id === state.user?.id;
+8865:   const row = document.createElement("div");
+8866:   row.className = `message-row ${mine ? "mine" : ""}`;
+8867:   row.dataset.messageId = message.id;
+8868: 
+8869:   const deletedForEveryone =
+8870:     isDeletedForEveryone(message);
+8871: 
+8872:   const text = deletedForEveryone
+8873:     ? deletedMessageMarkup()
+--- 8878-8902 hit 8890 ---
+8878:   row.innerHTML = `
+8879:     <div class="message-bubble ${message.media_key && !deletedForEveryone ? "has-media" : ""} ${
+8880:       deletedForEveryone ? "deleted-message-bubble" : ""
+8881:     } ${
+8882:       message.kind === "image" || message.kind === "video"
+8883:         ? "visual-media-bubble"
+8884:         : ""
+8885:     } ${isGifMessage(message) ? "gif-media-bubble" : ""} ${
+8886:       !deletedForEveryone && message.kind === "sticker"
+8887:         ? "sticker-only-bubble"
+8888:         : ""
+8889:     }">
+8890:       <button type="button" class="message-menu-trigger" title="Действия">
+8891:         <svg viewBox="0 0 24 24" aria-hidden="true">
+8892:           <path d="m7 10 5 5 5-5"/>
+8893:         </svg>
+8894:       </button>
+8895:       ${deletedForEveryone ? "" : replyMarkup(message)}
+8896:       ${deletedForEveryone ? "" : mediaMarkup(message)}
+8897:       ${text}
+8898:       <span class="message-meta">
+8899:         <span class="message-time">
+8900:           ${escapeHtml(formatTime(message.created_at))}
+8901:         </span>
+8902:         ${
+--- 9005-9029 hit 9017 ---
+9005:     });
+9006:   }
+9007: 
+9008:   bindReactionChips(row, message.id);
+9009: 
+9010:   const replyQuote = row.querySelector(".message-reply-quote");
+9011:   if (replyQuote) {
+9012:     replyQuote.addEventListener("click", () => {
+9013:       scrollToMessage(replyQuote.dataset.replyMessageId);
+9014:     });
+9015:   }
+9016: 
+9017:   const menuTrigger = row.querySelector(".message-menu-trigger");
+9018:   if (menuTrigger) {
+9019:     menuTrigger.addEventListener("click", (event) => {
+9020:       event.stopPropagation();
+9021:       openMessageContextMenu(message, menuTrigger);
+9022:     });
+9023:   }
+9024: 
+9025:   const voice = row.querySelector(".voice-message");
+9026:   if (voice) setupVoicePlayer(voice);
+9027: }
+9028: 
+9029: function scrollMessages(instant = false) {
+--- 12309-12333 hit 12321 ---
+12309:     toggleAttachmentMenu(false);
+12310:   }
+12311: 
+12312:   if (
+12313:     !contentPicker.contains(event.target) &&
+12314:     event.target !== emojiButton
+12315:   ) {
+12316:     toggleContentPicker(false);
+12317:   }
+12318: 
+12319:   if (
+12320:     !messageContextMenu.contains(event.target) &&
+12321:     !event.target.closest(".message-menu-trigger")
+12322:   ) {
+12323:     closeMessageContextMenu();
+12324:   }
+12325: });
+12326: 
+12327: attachmentButton.addEventListener("click", (event) => {
+12328:   event.stopPropagation();
+12329:   toggleAttachmentMenu();
+12330: });
+12331: 
+12332: attachmentMenu.addEventListener("click", (event) => {
+12333:   const action = event.target.closest("[data-attachment-action]")?.dataset.attachmentAction;
+===== snapshot/workspace6-fixes.js (1 matches) =====
+--- 174-198 hit 186 ---
+174:     let index = 0;
+175:     sets.flat().filter(Boolean).forEach((message) => {
+176:       const id = message?.id || message?.message_id;
+177:       if (!id) return;
+178:       const old = map.get(id);
+179:       map.set(id, { ...(old || {}), ...message, __ws6: old?.__ws6 ?? index++ });
+180:     });
+181:     return [...map.values()].sort((a, b) => messageStamp(a, a.__ws6) - messageStamp(b, b.__ws6) || a.__ws6 - b.__ws6).map(({ __ws6, ...message }) => message);
+182:   }
+183: 
+184:   function findMessage(messageId) {
+185:     const escaped = typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(messageId) : messageId.replace(/["\\]/g, '\\$&');
+186:     return document.querySelector(`[data-message-id="${escaped}"], [data-id="${escaped}"].message, #message-${escaped}`);
+187:   }
+188: 
+189:   function scrollContainer(target) {
+190:     let node = target?.parentElement;
+191:     while (node && node !== document.body) {
+192:       const style = getComputedStyle(node);
+193:       if (/(auto|scroll|overlay)/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 4) return node;
+194:       node = node.parentElement;
+195:     }
+196:     return byId('messageArea') || document.scrollingElement;
+197:   }
+198: 
+===== snapshot/workspace7-fixes.js (1 matches) =====
+--- 132-156 hit 144 ---
+132:     });
+133:     return [...map.values()]
+134:       .sort((a, b) => messageTime(a, a.__workspace7Index) - messageTime(b, b.__workspace7Index) || a.__workspace7Index - b.__workspace7Index)
+135:       .map(({ __workspace7Index, ...message }) => message);
+136:   }
+137: 
+138:   function escapedId(value) {
+139:     return typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(value) : String(value).replace(/["\\]/g, '\\$&');
+140:   }
+141: 
+142:   function findMessage(messageId) {
+143:     const id = escapedId(messageId);
+144:     return document.querySelector(`[data-message-id="${id}"], [data-id="${id}"].message, #message-${id}`);
+145:   }
+146: 
+147:   async function waitForMessage(messageId, timeout = 6000) {
+148:     const started = performance.now();
+149:     while (performance.now() - started < timeout) {
+150:       const target = findMessage(messageId);
+151:       if (target) return target;
+152:       await sleep(40);
+153:     }
+154:     return null;
+155:   }
+156: 
+===== snapshot/tg9-enhancements.js (1 matches) =====
+--- 70-94 hit 82 ---
+70: 
+71:       bubble.style.setProperty("--tg9-media-width", `${renderedBefore}px`);
+72:     };
+73: 
+74:     if (image.complete && image.naturalWidth) apply();
+75:     else image.addEventListener("load", apply, { once: true });
+76:   }
+77: 
+78:   function decorateRows() {
+79:     cancelAnimationFrame(decorateFrame);
+80:     decorateFrame = requestAnimationFrame(() => {
+81:       document
+82:         .querySelectorAll("#messageArea > .message-row[data-message-id]")
+83:         .forEach((row) => {
+84:           decorateEmojiRow(row);
+85:           compactLandscapeMedia(row);
+86:         });
+87:     });
+88:   }
+89: 
+90:   const area = document.getElementById("messageArea");
+91:   if (area) {
+92:     new MutationObserver(decorateRows).observe(area, {
+93:       childList: true,
+94:       subtree: true,
+===== snapshot/tg8-enhancements.js (1 matches) =====
+--- 32-56 hit 44 ---
+32:   }
+33: 
+34:   let dividerFrame = 0;
+35:   function rebuildDateSeparators() {
+36:     cancelAnimationFrame(dividerFrame);
+37:     dividerFrame = requestAnimationFrame(() => {
+38:       document
+39:         .querySelectorAll("#messageArea > .message-date-divider")
+40:         .forEach((divider) => divider.remove());
+41: 
+42:       let previousKey = "";
+43:       messageArea
+44:         .querySelectorAll(":scope > .message-row[data-message-id]")
+45:         .forEach((row) => {
+46:           const message = state.activeMessages.find(
+47:             (item) => item.id === row.dataset.messageId,
+48:           );
+49:           if (!message) return;
+50:           const key = dayKey(message.created_at);
+51:           row.dataset.messageDay = key;
+52:           if (!key || key === previousKey) return;
+53: 
+54:           const divider = document.createElement("div");
+55:           divider.className = "message-date-divider";
+56:           divider.dataset.messageDay = key;
+===== snapshot/tg6-enhancements.js (1 matches) =====
+--- 143-167 hit 155 ---
+143:     const block = searchInput?.closest(".sidebar-search-block");
+144:     block?.classList.toggle("hidden", mode === "requests");
+145:   }
+146: 
+147:   setSidebarMode = function tg6SetSidebarMode(mode) {
+148:     const result = originalSetSidebarMode.apply(this, arguments);
+149:     updateSidebarSearchVisibility(mode);
+150:     return result;
+151:   };
+152: 
+153:   function decorateStickerBubble(message) {
+154:     if (!message?.id || message.kind !== "sticker") return;
+155:     const row = messageArea?.querySelector(`[data-message-id="${CSS.escape(message.id)}"]`);
+156:     row?.classList.add("sticker-only-message");
+157:     row?.querySelector(".message-bubble")?.classList.add("sticker-only-bubble");
+158:   }
+159: 
+160:   appendMessage = function tg6AppendMessage(message) {
+161:     const result = originalAppendMessage(message);
+162:     decorateStickerBubble(message);
+163:     return result;
+164:   };
+165: 
+166:   function ensureGifPreview() {
+167:     let backdrop = document.getElementById("tg6GifPreviewBackdrop");
+===== snapshot/telegram-discussions.js (4 matches) =====
+--- 186-210 hit 198 ---
+186:     container.querySelectorAll(".voice-message").forEach(setupVoicePlayer);
+187:   }
+188: 
+189:   function bindCommunity2Media(root) {
+190:     if (!root) return;
+191:     const source = community2.thread?.sourceMessage;
+192:     bindVisualMessageMedia(root.querySelector(".community2-source-card"), source);
+193: 
+194:     root.querySelectorAll("[data-community2-comment-id]").forEach((row) => {
+195:       const comment = findThreadComment(row.dataset.community2CommentId);
+196:       if (!comment) return;
+197:       bindVisualMessageMedia(row, comment);
+198:       row.querySelector(".message-menu-trigger")?.addEventListener("click", (event) => {
+199:         event.stopPropagation();
+200:         openThreadContextMenu(comment, event.currentTarget);
+201:       });
+202:       row.querySelector("[data-community2-jump-parent]")?.addEventListener("click", () => {
+203:         focusThreadMessage(comment.reply_to_id);
+204:       });
+205:       row.querySelectorAll("[data-reaction-emoji]").forEach((button) => {
+206:         button.addEventListener("click", () => toggleThreadReaction(comment, button.dataset.reactionEmoji));
+207:       });
+208:       row.querySelector("[data-community2-restore]")?.addEventListener("click", (event) => {
+209:         event.preventDefault();
+210:         event.stopPropagation();
+--- 269-293 hit 281 ---
+269:             }
+270:           </div>
+271:         `
+272:       : `
+273:           ${replyQuoteMarkup(comment)}
+274:           ${mediaPreviewMarkup(comment)}
+275:           ${comment.text ? `<div class="message-text">${linkifyMessageText(comment.text)}</div>` : ""}
+276:         `;
+277: 
+278:     return `
+279:       <div class="message-row community2-thread-message ${mine ? "mine" : ""}" data-community2-comment-id="${escapeHtml(comment.id)}">
+280:         <div class="message-bubble ${hasMedia ? "has-media" : ""} ${!deleted && ["image", "video"].includes(comment.kind) ? "visual-media-bubble" : ""} ${!deleted && isGifMessage(comment) ? "gif-media-bubble" : ""} ${!deleted && comment.kind === "sticker" ? "sticker-only-bubble" : ""}">
+281:           <button type="button" class="message-menu-trigger" title="Действия">
+282:             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+283:           </button>
+284:           <div class="community2-thread-sender">
+285:             ${avatarMarkup(comment.sender_avatar_key, sender, "community2-thread-avatar")}
+286:             <strong>${escapeHtml(sender)}</strong>
+287:             ${role ? `<span>${escapeHtml(role)}</span>` : ""}
+288:           </div>
+289:           ${deletedBody}
+290:           <span class="message-meta">
+291:             ${edited && !deleted ? '<span class="message-edited-label">изменено</span>' : ""}
+292:             <span class="message-time">${escapeHtml(formatTime(comment.created_at || comment.createdAt))}</span>
+293:             ${mine ? messageReceiptMarkup(comment.receipt_status || "sent") : ""}
+--- 1691-1715 hit 1703 ---
+1691:   };
+1692: 
+1693:   const originalRenderChats = renderChats;
+1694:   renderChats = function community2RenderChats(...args) {
+1695:     const result = renderChatsWithoutHiddenGroups(originalRenderChats, this, args);
+1696:     renderRepliesShortcut();
+1697:     return result;
+1698:   };
+1699: 
+1700:   const originalAppendMessage = appendMessage;
+1701:   appendMessage = function community2AppendMessage(message) {
+1702:     const result = originalAppendMessage(message);
+1703:     const row = messageArea.querySelector(`[data-message-id="${CSS.escape(message.id)}"]`);
+1704:     decorateChannelDiscussionMessage(row, message);
+1705:     return result;
+1706:   };
+1707: 
+1708:   const originalOpenChat = openChat;
+1709:   openChat = async function community2OpenChat(chat) {
+1710:     if (isHiddenDiscussionChat(chat)) return;
+1711:     closeWorkspace();
+1712:     return originalOpenChat(chat);
+1713:   };
+1714: 
+1715:   document.addEventListener("click", (event) => {
+===== snapshot/workspace13-fixes.js (3 matches) =====
+--- 444-468 hit 456 ---
+444: 
+445:   function wrapHooks() {
+446:     if (!rt.openWrapped && typeof openChat === 'function') {
+447:       rt.openWrapped = true;
+448:       const base = openChat;
+449:       openChat = async function workspace13OpenChat(...args) {
+450:         const result = await base.apply(this, args);
+451:         refreshProfileAction();
+452:         await loadPins().catch((error) => console.warn('WORKSPACE13 pins load', error));
+453:         return result;
+454:       };
+455:     }
+456:     if (!rt.contextWrapped && typeof openMessageContextMenu === 'function') {
+457:       rt.contextWrapped = true;
+458:       const base = openMessageContextMenu;
+459:       openMessageContextMenu = function workspace13Context(message, trigger) {
+460:         const result = base.call(this, message, trigger);
+461:         refreshPinMenuLabel(message);
+462:         return result;
+463:       };
+464:     }
+465:   }
+466: 
+467:   function bindSocket() {
+468:     if (rt.socketBound || typeof socket === 'undefined' || !socket?.on) return;
+===== snapshot/voice-transcription.js (3 matches) =====
+--- 9-33 hit 21 ---
+9:   }
+10: 
+11:   function toast(text, error = false) {
+12:     document.querySelector('.voice-transcription-toast')?.remove();
+13:     const node = document.createElement('div');
+14:     node.className = `voice-transcription-toast${error ? ' error' : ''}`;
+15:     node.textContent = text;
+16:     document.body.appendChild(node);
+17:     setTimeout(() => node.remove(), 3600);
+18:   }
+19: 
+20:   function rowFromTrigger(trigger) {
+21:     return trigger?.closest('[data-message-id], [data-community2-comment-id]') || null;
+22:   }
+23: 
+24:   function messageIdFromRow(row) {
+25:     return row?.dataset.messageId || row?.dataset.community2CommentId || null;
+26:   }
+27: 
+28:   function isVoiceRow(row) {
+29:     return Boolean(row?.querySelector('.voice-message'));
+30:   }
+31: 
+32:   function setCurrentRow(row) {
+33:     context.row = row;
+--- 125-149 hit 137 ---
+125:       body.textContent = payload?.text || 'Речь не распознана';
+126:       panel.dataset.loaded = '1';
+127:       panel.classList.remove('loading');
+128:     } catch (error) {
+129:       panel.classList.remove('loading');
+130:       panel.classList.add('error');
+131:       body.textContent = error.message || 'Не удалось выполнить транскрибацию';
+132:       toast(body.textContent, true);
+133:     }
+134:   }
+135: 
+136:   document.addEventListener('pointerdown', (event) => {
+137:     const trigger = event.target.closest('.message-menu-trigger');
+138:     if (!trigger) return;
+139:     ensureButtons();
+140:     setCurrentRow(rowFromTrigger(trigger));
+141:   }, true);
+142: 
+143:   document.addEventListener('click', (event) => {
+144:     const trigger = event.target.closest('.message-menu-trigger');
+145:     if (!trigger) return;
+146:     ensureButtons();
+147:     setCurrentRow(rowFromTrigger(trigger));
+148:   }, true);
+149: 
+===== snapshot/message-editing.js (4 matches) =====
+--- 1-19 hit 7 ---
+1: /* MEETUS 0.6.25.2 COMMUNITY2-TG5 — own-message editing everywhere */
+2: (() => {
+3:   "use strict";
+4: 
+5:   let boundSocket = null;
+6:   const originalAppendMessage = appendMessage;
+7:   const originalOpenMessageContextMenu = openMessageContextMenu;
+8:   const originalSendTextMessage = sendTextMessage;
+9:   const originalSetReplyMessage = setReplyMessage;
+10:   const originalOpenChat = openChat;
+11:   const originalConnectSocket = connectSocket;
+12: 
+13:   function ensureEditingDom() {
+14:     if (!("editMessage" in state)) state.editMessage = null;
+15: 
+16:     if (!document.getElementById("editComposerBar")) {
+17:       const replyBar = document.getElementById("replyComposerBar");
+18:       const bar = document.createElement("div");
+19:       bar.id = "editComposerBar";
+--- 43-67 hit 55 ---
+43:         <span>Редактировать</span>
+44:       `;
+45:       copyAction?.parentElement?.insertBefore(button, copyAction);
+46:     }
+47:   }
+48: 
+49:   function editedAt(message) {
+50:     return message?.edited_at || message?.editedAt || null;
+51:   }
+52: 
+53:   function decorateEditedMessage(message) {
+54:     if (!editedAt(message) || isDeletedForEveryone(message)) return;
+55:     const row = messageArea?.querySelector(`[data-message-id="${CSS.escape(message.id)}"]`);
+56:     const meta = row?.querySelector(".message-meta");
+57:     if (!meta || meta.querySelector(".message-edited-label")) return;
+58:     const label = document.createElement("span");
+59:     label.className = "message-edited-label";
+60:     label.textContent = "изменено";
+61:     const time = meta.querySelector(".message-time");
+62:     meta.insertBefore(label, time || meta.firstChild);
+63:   }
+64: 
+65:   appendMessage = function tg4AppendMessage(message) {
+66:     const result = originalAppendMessage(message);
+67:     decorateEditedMessage(message);
+--- 96-120 hit 108 ---
+96:     state.editMessage = message;
+97:     const preview = document.getElementById("editComposerText");
+98:     if (preview) preview.textContent = messageSummary(message);
+99:     document.getElementById("editComposerBar")?.classList.remove("hidden");
+100:     messageInput.value = message.text || "";
+101:     messageInput.placeholder = message.media_key ? "Добавить или изменить подпись" : "Измените сообщение";
+102:     resizeMessageInput();
+103:     updateComposerAction();
+104:     messageInput.focus();
+105:     messageInput.setSelectionRange(messageInput.value.length, messageInput.value.length);
+106:   }
+107: 
+108:   openMessageContextMenu = function tg4OpenMessageContextMenu(message, trigger) {
+109:     ensureEditingDom();
+110:     const result = originalOpenMessageContextMenu(message, trigger);
+111:     document.getElementById("messageEditAction")?.classList.toggle("hidden", !canEditMessage(message));
+112:     return result;
+113:   };
+114: 
+115:   setReplyMessage = function tg4SetReplyMessage(message) {
+116:     clearEditMessage();
+117:     return originalSetReplyMessage(message);
+118:   };
+119: 
+120:   async function saveEditedMessage() {
+===== snapshot/tg5-enhancements.js (5 matches) =====
+--- 1-23 hit 11 ---
+1: /* MEETUS 0.6.25.2 COMMUNITY2-TG5 — recovery, 10-minute delete window, user search and new-chat menu */
+2: (() => {
+3:   "use strict";
+4: 
+5:   const TEN_MINUTES_MS = 10 * 60 * 1000;
+6:   let boundSocket = null;
+7:   let contactSearchTimer = null;
+8:   let userSearchTimer = null;
+9: 
+10:   const originalAppendMessage = appendMessage;
+11:   const originalOpenMessageContextMenu = openMessageContextMenu;
+12:   const originalConnectSocket = connectSocket;
+13:   const originalSetSidebarMode = setSidebarMode;
+14: 
+15:   function messageMetadata(message) {
+16:     return message?.metadata && typeof message.metadata === "object"
+17:       ? message.metadata
+18:       : {};
+19:   }
+20: 
+21:   function isTombstone(message) {
+22:     return Boolean(messageMetadata(message).deletedForEveryone);
+23:   }
+--- 64-88 hit 76 ---
+64:   function remainingLabel(message) {
+65:     const deadline = restoreUntil(message);
+66:     if (!deadline) return "";
+67:     const seconds = Math.max(0, Math.ceil((deadline.getTime() - Date.now()) / 1000));
+68:     const minutes = Math.floor(seconds / 60);
+69:     const rest = String(seconds % 60).padStart(2, "0");
+70:     return `${minutes}:${rest}`;
+71:   }
+72: 
+73:   function decorateRecovery(message) {
+74:     if (!message?.id) return;
+75:     const row = messageArea?.querySelector(
+76:       `[data-message-id="${CSS.escape(message.id)}"]`,
+77:     );
+78:     if (!row) return;
+79: 
+80:     row.classList.toggle("message-restorable", canRestore(message));
+81:     row.querySelector("[data-restore-message]")?.remove();
+82: 
+83:     if (!canRestore(message)) return;
+84: 
+85:     const deleted = row.querySelector(".message-deleted-text");
+86:     if (!deleted) return;
+87: 
+88:     const button = document.createElement("button");
+--- 102-126 hit 114 ---
+102:       event.stopPropagation();
+103:       restoreMessage(message);
+104:     });
+105:     deleted.appendChild(button);
+106:   }
+107: 
+108:   appendMessage = function tg5AppendMessage(message) {
+109:     const result = originalAppendMessage(message);
+110:     decorateRecovery(message);
+111:     return result;
+112:   };
+113: 
+114:   openMessageContextMenu = function tg5OpenMessageContextMenu(message, trigger) {
+115:     document.getElementById("messageRestoreAction")?.classList.toggle(
+116:       "hidden",
+117:       !canRestore(message),
+118:     );
+119:     const result = originalOpenMessageContextMenu(message, trigger);
+120:     messageDeleteEveryoneAction?.classList.toggle(
+121:       "hidden",
+122:       !canDeleteForEveryone(message),
+123:     );
+124:     return result;
+125:   };
+126: 
+--- 160-184 hit 172 ---
+160:     } else {
+161:       removeMessageFromCurrentView(message.id);
+162:     }
+163: 
+164:     await loadChats(false);
+165:   };
+166: 
+167:   async function restoreMessage(message) {
+168:     const chatId = state.activeChat?.id || message.chat_id;
+169:     if (!chatId || !message?.id || !canRestore(message)) return;
+170: 
+171:     const button = messageArea?.querySelector(
+172:       `[data-message-id="${CSS.escape(message.id)}"] [data-restore-message]`,
+173:     );
+174:     if (button) button.disabled = true;
+175: 
+176:     try {
+177:       const restored = await request(
+178:         `/chats/${chatId}/messages/${message.id}/restore`,
+179:         { method: "POST", body: JSON.stringify({}) },
+180:       );
+181:       closeMessageContextMenu();
+182:       replaceMessageInCurrentView(message.id, restored);
+183:       await loadChats(false);
+184:     } catch (error) {
+===== snapshot/workspace.js (5 matches) =====
+--- 500-524 hit 512 ---
+500:     const canComments = state.activeChat?.type === 'channel' && ['owner', 'admin'].includes(state.activeChat?.role);
+501:     if (!message || !canComments) return;
+502:     const current = await readCommentsSetting(message.id, true);
+503:     const result = await api(`/messages/${message.id}/comments`, 'POST', { commentsEnabled: !current });
+504:     const enabled = result.commentsEnabled !== false;
+505:     ws.commentSettings.set(message.id, enabled);
+506:     applyCommentStateToRow(message.id, enabled);
+507:     toast(enabled ? 'Комментарии включены' : 'Комментарии отключены');
+508:   }
+509: 
+510:   function applyCommentStateToRow(messageId, enabled) {
+511:     ws.commentSettings.set(messageId, enabled);
+512:     const row = messageArea.querySelector(`[data-message-id="${CSS.escape(messageId)}"]`);
+513:     if (!row) return;
+514:     row.dataset.commentsEnabled = enabled ? '1' : '0';
+515:     row.classList.toggle('workspace-comments-disabled', !enabled);
+516:     const commentSelectors = '[data-community2-open-thread],[data-open-thread],.community2-comment-button,.community2-channel-comment-row,.telegram-comment-row,.channel-comment-button';
+517:     row.querySelectorAll(commentSelectors).forEach((node) => node.classList.toggle('hidden', !enabled));
+518:     if (!enabled && !row.querySelector('.workspace-comments-off')) {
+519:       row.querySelector('.message-bubble')?.insertAdjacentHTML('beforeend', '<span class="workspace-comments-off">Комментарии отключены</span>');
+520:     }
+521:     if (enabled) row.querySelector('.workspace-comments-off')?.remove();
+522:     const canManage = state.activeChat?.type === 'channel' && ['owner', 'admin'].includes(state.activeChat?.role);
+523:     if (canManage) {
+524:       let toggle = row.querySelector('.workspace-comment-toggle-chip');
+--- 766-790 hit 778 ---
+766:       finally { state.chats = all; enhanceChatRows(); enforcePinnedChatOrder(); renderFolderBar(); }
+767:     };
+768: 
+769:     const baseOpenChat = openChat;
+770:     openChat = async function workspaceOpenChat(chat, ...args) {
+771:       const result = await baseOpenChat.call(this, chat, ...args);
+772:       ensurePinnedBannerPlacement();
+773:       await Promise.all([loadPinnedMessage(), loadContentProtection()]);
+774:       hardenProtectedMedia(messageArea);
+775:       return result;
+776:     };
+777: 
+778:     const baseOpenContext = openMessageContextMenu;
+779:     openMessageContextMenu = function workspaceMessageMenu(message, trigger) {
+780:       const result = baseOpenContext.call(this, message, trigger);
+781:       refreshContextActions(message);
+782:       if (ws.contentProtected) messageDownloadAction?.classList.add('hidden');
+783:       return result;
+784:     };
+785: 
+786:     const baseUploadBlob = uploadBlob;
+787:     uploadBlob = async function workspaceUploadBlob(blob, fileName, kind, ...rest) {
+788:       const row = addUploadPlaceholder(fileName, kind);
+789:       try { return await baseUploadBlob.call(this, blob, fileName, kind, ...rest); }
+790:       finally { row.remove(); }
+--- 879-903 hit 891 ---
+879:         toast('Копирование отключено защитой контента', true);
+880:       }
+881:     }, true);
+882:     document.addEventListener('keydown', (event) => {
+883:       if (!ws.contentProtected) return;
+884:       if ((event.ctrlKey || event.metaKey) && ['s', 'p'].includes(event.key.toLowerCase())) {
+885:         event.preventDefault();
+886:         toast('Сохранение отключено защитой контента', true);
+887:       }
+888:     }, true);
+889:     messageArea.addEventListener('click', (event) => {
+890:       const commentButton = event.target.closest('[data-community2-open-thread],[data-open-thread],.community2-comment-button,.community2-channel-comment-row,.telegram-comment-row,.channel-comment-button');
+891:       const row = commentButton?.closest('[data-message-id]');
+892:       if (commentButton && row && ws.commentSettings.get(row.dataset.messageId) === false) {
+893:         event.preventDefault();
+894:         event.stopImmediatePropagation();
+895:         toast('Комментарии к этой публикации отключены', true);
+896:       }
+897:     }, true);
+898:   }
+899: 
+900:   function boot() {
+901:     injectUi();
+902:     installHooks();
+903:     const wait = setInterval(() => {
+--- 930-954 hit 942 ---
+930:           await loadChats(false);
+931:           chat = state.chats.find((item) => item.id === chatId);
+932:         }
+933:         if (!chat) throw new Error('Нет доступа к этому каналу или группе');
+934:         await openChat(chat);
+935:         const context = await request(`/chats/${chatId}/messages/${messageId}/context?limit=100`);
+936:         state.activeMessages = context;
+937:         state.searchContextActive = true;
+938:         messageArea.innerHTML = '';
+939:         context.forEach(appendMessage);
+940:         requestAnimationFrame(() => scrollToMessage(messageId));
+941:       }
+942:       const target = messageArea?.querySelector(`[data-message-id="${CSS.escape(messageId)}"]`);
+943:       if (target) {
+944:         target.classList.add('message-search-target');
+945:         setTimeout(() => target.classList.remove('message-search-target'), 2600);
+946:       }
+947:       history.replaceState({}, '', location.pathname || '/');
+948:       return true;
+949:     } catch (error) {
+950:       toast(error.message || 'Не удалось открыть сообщение', true);
+951:       return false;
+952:     }
+953:   }
+954: 
+===== snapshot/workspace5-fixes.js (2 matches) =====
+--- 631-655 hit 643 ---
+631:       closeFolderRenameModal();
+632:       window.MeetusWorkspace.renderFolderBar();
+633:       window.MeetusWorkspace.openFolderDrawer();
+634:       requestAnimationFrame(enhanceFolderDrawer);
+635:       notify('Название папки изменено');
+636:     } catch (error) {
+637:       notify(error?.message || 'Не удалось переименовать папку', true);
+638:     }
+639:   }
+640: 
+641:   function findMessageTarget(messageId) {
+642:     const escaped = window.CSS?.escape ? CSS.escape(messageId) : messageId.replace(/["\\]/g, '\\$&');
+643:     return byId('messageArea')?.querySelector(`[data-message-id="${escaped}"]`)
+644:       || byId('community2WorkspaceBody')?.querySelector(`[data-community2-comment-id="${escaped}"],[data-message-id="${escaped}"]`)
+645:       || null;
+646:   }
+647: 
+648:   async function waitForMessageTarget(messageId, timeoutMs = 5500) {
+649:     const started = Date.now();
+650:     while (Date.now() - started < timeoutMs) {
+651:       const target = findMessageTarget(messageId);
+652:       if (target) return target;
+653:       await new Promise((resolve) => setTimeout(resolve, 100));
+654:     }
+655:     return null;
