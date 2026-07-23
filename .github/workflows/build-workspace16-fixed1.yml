@@ -25,12 +25,12 @@ jobs:
           bash -n workspace16-fixed1/install.sh
           rm -rf workspace16-fixed1/__pycache__
 
-          grep -q "workspace16fix1" workspace16-fixed1/files/frontend/workspace16-fixed1.js
-          grep -q "workspace14-editable-avatar::after" workspace16-fixed1/files/frontend/workspace16-fixed1.css
-          grep -q "data-workspace16-message-action = 'forward'\|dataset.workspace16MessageAction = 'forward'" workspace16-fixed1/files/frontend/workspace16-fixed1.js
-          grep -q "'/chats/private'" workspace16-fixed1/files/frontend/workspace16-fixed1.js
-          grep -q "workspace/chats" workspace16-fixed1/files/frontend/workspace16-fixed1.js
-          grep -q "workspace16-video-quality" workspace16-fixed1/files/frontend/workspace16-fixed1.js
+          grep -Fq "workspace16fix1" workspace16-fixed1/files/frontend/workspace16-fixed1.js
+          grep -Fq "workspace14-editable-avatar::after" workspace16-fixed1/files/frontend/workspace16-fixed1.css
+          grep -Fq "button.dataset.workspace16MessageAction = 'forward'" workspace16-fixed1/files/frontend/workspace16-fixed1.js
+          grep -Fq "request('/chats/private'" workspace16-fixed1/files/frontend/workspace16-fixed1.js
+          grep -Fq "applyCommunityProfileImmediately" workspace16-fixed1/files/frontend/workspace16-fixed1.js
+          grep -Fq "workspace16-video-quality" workspace16-fixed1/files/frontend/workspace16-fixed1.js
 
       - name: Verify index patch is isolated
         shell: bash
