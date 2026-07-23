@@ -1,0 +1,19 @@
+/* MEETUS 0.6.25.2 COMMUNITY2-TG10-CALLS6 — VOICE TRANSCRIPTION */
+.voice-transcription-menu-action svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.voice-transcription-panel{grid-column:1/-1;margin-top:9px;padding:10px 11px;border-radius:12px;background:rgba(7,10,15,.18);border:1px solid rgba(255,255,255,.1);max-width:560px;color:inherit}
+.voice-transcription-panel.hidden{display:none!important}
+.voice-transcription-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.voice-transcription-head strong{font-size:12px;letter-spacing:.01em;opacity:.82}
+.voice-transcription-head button{border:0;border-radius:8px;padding:5px 8px;background:rgba(255,255,255,.1);color:inherit;font-size:11px;cursor:pointer}
+.voice-transcription-body{font-size:14px;line-height:1.42;white-space:pre-wrap;overflow-wrap:anywhere}
+.voice-transcription-panel.loading .voice-transcription-body{opacity:.68}
+.voice-transcription-panel.error{border-color:rgba(239,82,102,.45)}
+.voice-transcription-toast{position:fixed;z-index:12000;left:50%;bottom:88px;transform:translateX(-50%);max-width:min(92vw,520px);padding:10px 15px;border-radius:12px;background:#202630;color:#fff;box-shadow:0 14px 40px rgba(0,0,0,.4);font-size:13px;text-align:center}
+.voice-transcription-toast.error{background:#7e2e3c}
+.voice-message:has(.voice-transcription-panel:not(.hidden)){height:auto!important;min-height:unset!important;grid-template-rows:auto auto auto!important}
+.voice-message:has(.voice-transcription-panel:not(.hidden))>.voice-transcription-panel{grid-column:1/-1;width:100%}
+@media(max-width:700px){
+  .voice-transcription-panel{padding:9px 10px;margin-top:8px;max-width:100%}
+  .voice-transcription-body{font-size:13px}
+  .voice-transcription-toast{bottom:76px}
+}

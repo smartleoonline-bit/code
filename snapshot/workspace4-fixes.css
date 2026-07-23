@@ -1,0 +1,27 @@
+/* MEETUS 0.6.25.2 COMMUNITY2-TG11-WORKSPACE4 */
+.workspace4-context-actions{display:contents}
+.workspace4-context-actions>button{width:100%;display:flex;align-items:center;gap:12px;min-height:44px;border:0;padding:0 14px;background:transparent;color:inherit;text-align:left;cursor:pointer}
+.workspace4-context-actions>button:hover{background:rgba(255,255,255,.055)}
+.workspace4-context-actions svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.workspace4-format-controls{position:relative;flex:0 0 auto;display:flex;align-items:center}
+.workspace4-format-toggle{width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;color:#9fa5b1;font-size:13px;font-weight:700;cursor:pointer}
+.workspace4-format-toggle:hover,.workspace4-format-controls:focus-within .workspace4-format-toggle{background:rgba(255,255,255,.07);color:#fff}
+.workspace4-format-menu{position:absolute;z-index:70;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);display:flex;align-items:center;gap:3px;padding:6px;border:1px solid rgba(255,255,255,.09);border-radius:13px;background:#20242c;box-shadow:0 18px 48px rgba(0,0,0,.48)}
+.workspace4-format-menu.hidden{display:none!important}
+.workspace4-format-menu button{width:36px;height:34px;border:0;border-radius:9px;background:transparent;color:#eef0f5;cursor:pointer}
+.workspace4-format-menu button:hover{background:rgba(128,105,232,.22);color:#fff}
+.workspace4-format-controls.compact .workspace4-format-toggle{width:36px;height:36px}
+.workspace4-modal{position:fixed;inset:0;z-index:2500;display:grid;place-items:center;padding:16px;background:rgba(4,7,12,.72);backdrop-filter:blur(9px)}
+.workspace4-modal.hidden{display:none!important}
+.workspace4-card{width:min(470px,calc(100vw - 24px));display:grid;gap:13px;padding:18px;border:1px solid rgba(137,111,239,.27);border-radius:20px;background:#1b1f27;color:#fff;box-shadow:0 28px 90px rgba(0,0,0,.55)}
+.workspace4-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.workspace4-card-head strong{font-size:19px}.workspace4-card-head>button{width:34px;height:34px;border:0;border-radius:50%;background:#2b3039;color:#fff;font-size:21px;cursor:pointer}
+.workspace4-card label{display:grid;gap:7px;color:#a6acb6;font-size:13px}.workspace4-card input{width:100%;height:44px;box-sizing:border-box;border:1px solid #353b47;border-radius:12px;padding:0 12px;background:#10141b;color:#fff;font:inherit;outline:0}.workspace4-card input:focus{border-color:#8069e8;box-shadow:0 0 0 3px rgba(128,105,232,.14)}
+.workspace4-card-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:2px}.workspace4-card-actions button{min-height:42px;border:0;border-radius:12px;background:#30343e;color:#fff;cursor:pointer}.workspace4-card-actions button.primary{background:#8069e8;font-weight:700}
+.workspace4-deep-link-target{outline:2px solid #a18cff!important;outline-offset:5px!important;filter:drop-shadow(0 0 18px rgba(128,105,232,.48))}
+#composer .workspace4-format-controls{order:0}
+#community2ThreadForm .workspace4-format-controls{position:relative}
+@media(max-width:700px){
+  .workspace4-format-menu{position:fixed;left:8px;right:8px;bottom:calc(72px + env(safe-area-inset-bottom));transform:none;justify-content:center}
+  .workspace4-card{width:calc(100vw - 16px);border-radius:18px;padding:15px}
+  .workspace4-card-actions{grid-template-columns:1fr 1fr}
+}

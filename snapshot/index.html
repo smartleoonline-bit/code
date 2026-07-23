@@ -1,0 +1,1894 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111b21">
+  <meta name="color-scheme" content="dark">
+  <title>Meetus Messenger</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/styles.css?v=0.6.25.2-community2tg10calls6fix1">
+  <link rel="stylesheet" href="/message-editing.css?v=0.6.25.2-community2tg10calls6fix1">
+  <link rel="stylesheet" href="/tg5-enhancements.css?v=0.6.25.2-community2tg10calls6fix1">
+  <link rel="stylesheet" href="/tg6-enhancements.css?v=0.6.25.2-community2tg10calls6fix1">
+  <link rel="stylesheet" href="/tg7-enhancements.css?v=0.6.25.2-community2tg10calls6fix1">
+  <link rel="stylesheet" href="/tg8-enhancements.css?v=0.6.25.2-community2tg10calls6fix1">
+  <link rel="stylesheet" href="/tg9-enhancements.css?v=0.6.25.2-community2tg10calls6fix1">
+  <link rel="stylesheet" href="/telegram-discussions.css?v=0.6.25.2-community2tg10calls6fix1">
+
+<script>
+/* MEETUS_REMOVE_LEGACY_TELEGRAM_WORKER */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", async () => {
+    try {
+      const registrations =
+        await navigator.serviceWorker
+          .getRegistrations();
+
+      for (const registration of registrations) {
+        const scriptUrl =
+          registration.active?.scriptURL ||
+          registration.waiting?.scriptURL ||
+          registration.installing?.scriptURL ||
+          "";
+
+        if (
+          scriptUrl.includes("sw-DSWyEYsn.js") ||
+          scriptUrl.includes("/sw-")
+        ) {
+          await registration.unregister();
+        }
+      }
+
+      for (const cacheName of await caches.keys()) {
+        if (
+          cacheName.startsWith("tweb") ||
+          cacheName.startsWith("cached")
+        ) {
+          await caches.delete(cacheName);
+        }
+      }
+    } catch (error) {
+      console.warn(
+        "Legacy worker cleanup:",
+        error,
+      );
+    }
+  });
+}
+</script>
+  <link rel="stylesheet" href="/calls.css?v=0.6.25.2-community2tg11workspace1">
+  <link rel="stylesheet" href="/voice-transcription.css?v=0.6.25.2-community2tg10calls6fix1">
+  <link rel="stylesheet" href="/workspace.css?v=0.6.25.2-community2tg11workspace5">
+  <link rel="stylesheet" href="/workspace4-fixes.css?v=0.6.25.2-community2tg11workspace5">
+  <link rel="stylesheet" href="/workspace5-fixes.css?v=0.6.25.2-community2tg11workspace5fix4">
+  <link rel="stylesheet" href="/workspace6-fixes.css?v=0.6.25.2-community2tg11workspace6">
+  <link rel="stylesheet" href="/workspace7-fixes.css?v=0.6.25.2-community2tg11workspace7">
+  <link rel="stylesheet" href="/workspace8-fixes.css?v=0.6.25.2-community2tg11workspace8">
+  <link rel="stylesheet" href="/workspace9-fixes.css?v=0.6.25.2-community2tg11workspace9">
+  <link rel="stylesheet" href="/workspace10-fixes.css?v=0.6.25.2-community2tg11workspace10">
+  <link rel="stylesheet" href="/workspace11-fixes.css?v=0.6.25.2-community2tg11workspace11">
+  <link rel="stylesheet" href="/workspace12-fixes.css?v=0.6.25.2-community2tg11workspace12">
+  <link rel="stylesheet" href="/workspace13-fixes.css?v=0.6.25.2-community2tg11workspace13">
+  <link rel="stylesheet" href="/workspace14-fixes.css?v=0.6.25.2-community2tg11workspace14">
+  <link rel="stylesheet" href="/workspace15-fixes.css?v=0.6.25.2-community2tg11workspace15">
+</head>
+<body class="app-booting">
+  <div id="bootShield" class="boot-shield">
+    <div class="boot-logo">M</div>
+    <span>Meetus</span>
+  </div>
+  <div id="app">
+    <section id="authScreen" class="auth-screen">
+      <div class="auth-card auth-card-wide">
+        <div class="brand-mark">M</div>
+
+        <div id="authTabs" class="auth-tabs">
+          <button id="loginTabButton" type="button" class="auth-tab active">
+            Вход
+          </button>
+          <button id="registerTabButton" type="button" class="auth-tab">
+            Регистрация
+          </button>
+        </div>
+
+        <form id="loginForm" class="auth-panel">
+          <h1>Вход в Meetus</h1>
+          <p>Выберите email или номер телефона. Код придёт на почту аккаунта.</p>
+
+          <div class="recovery-methods login-methods">
+            <button id="loginEmailMethod" type="button" class="recovery-method active">
+              По email
+            </button>
+            <button id="loginPhoneMethod" type="button" class="recovery-method">
+              По телефону
+            </button>
+          </div>
+
+          <div id="loginEmailBlock">
+            <label>
+              <span>Email</span>
+              <input
+                id="loginEmailInput"
+                type="email"
+                placeholder="name@example.com"
+                autocomplete="email"
+              >
+            </label>
+          </div>
+
+          <div id="loginPhoneBlock" class="hidden">
+            <div class="auth-field">
+              <span class="auth-field-label">Номер телефона</span>
+
+              <div class="phone-country-row">
+                <select
+                  id="loginCountrySelect"
+                  class="country-select"
+                  aria-label="Страна"
+                ></select>
+
+                <div class="phone-number-box">
+                  <span id="loginDialCode" class="dial-code">+7</span>
+                  <input
+                    id="loginPhoneInput"
+                    type="tel"
+                    inputmode="numeric"
+                    placeholder="700 000 00 00"
+                    autocomplete="tel-national"
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button id="loginSubmitButton" type="submit" class="primary-button">
+            Получить код
+          </button>
+
+          <button id="openRecoveryButton" type="button" class="text-button auth-link-button">
+            Восстановить доступ
+          </button>
+        </form>
+
+        <form id="registerForm" class="auth-panel hidden">
+          <h1>Создать аккаунт</h1>
+          <p>Код подтверждения отправим на указанную почту</p>
+
+          <label>
+            <span>Имя</span>
+            <input
+              id="registerNameInput"
+              type="text"
+              placeholder="Ваше имя"
+              autocomplete="name"
+              maxlength="120"
+              required
+            >
+          </label>
+
+          <label>
+            <span>Email</span>
+            <input
+              id="registerEmailInput"
+              type="email"
+              placeholder="name@example.com"
+              autocomplete="email"
+              required
+            >
+          </label>
+
+          <div class="auth-field">
+            <span class="auth-field-label">Телефон</span>
+
+            <div class="phone-country-row">
+              <select
+                id="registerCountrySelect"
+                class="country-select"
+                aria-label="Страна"
+              ></select>
+
+              <div class="phone-number-box">
+                <span id="registerDialCode" class="dial-code">+7</span>
+                <input
+                  id="registerPhoneInput"
+                  type="tel"
+                  inputmode="numeric"
+                  placeholder="700 000 00 00"
+                  autocomplete="tel-national"
+                  required
+                >
+              </div>
+            </div>
+          </div>
+
+          <label>
+            <span>@username — обязательно</span>
+            <input
+              id="registerUsernameInput"
+              type="text"
+              placeholder="Например alexander2026"
+              autocomplete="username"
+              minlength="6"
+              maxlength="32"
+              pattern="[A-Za-z0-9]{6,32}"
+              required
+            >
+          </label>
+
+          <div id="registerUsernameStatus" class="username-status">
+            Только английские буквы и цифры, минимум 6 символов
+          </div>
+
+          <div id="registrationConflict" class="auth-conflict hidden">
+            <strong id="registrationConflictTitle">Аккаунт уже существует</strong>
+            <span id="registrationConflictText"></span>
+            <button id="conflictRecoveryButton" type="button" class="secondary-button">
+              Восстановить доступ
+            </button>
+          </div>
+
+          <button id="registerSubmitButton" type="submit" class="primary-button" disabled>
+            Зарегистрироваться
+          </button>
+        </form>
+
+        <form id="recoveryForm" class="auth-panel hidden">
+          <h1>Восстановление доступа</h1>
+          <p>Код всегда отправляется на подтверждённую почту аккаунта</p>
+
+          <div class="recovery-methods">
+            <button id="recoveryEmailMethod" type="button" class="recovery-method active">
+              По email
+            </button>
+            <button id="recoveryPhoneMethod" type="button" class="recovery-method">
+              По телефону
+            </button>
+          </div>
+
+          <div id="recoveryEmailBlock">
+            <label>
+              <span>Email аккаунта</span>
+              <input
+                id="recoveryEmailInput"
+                type="email"
+                placeholder="name@example.com"
+                autocomplete="email"
+              >
+            </label>
+          </div>
+
+          <div id="recoveryPhoneBlock" class="hidden">
+            <div class="auth-field">
+              <span class="auth-field-label">Телефон аккаунта</span>
+
+              <div class="phone-country-row">
+                <select
+                  id="recoveryCountrySelect"
+                  class="country-select"
+                  aria-label="Страна"
+                ></select>
+
+                <div class="phone-number-box">
+                  <span id="recoveryDialCode" class="dial-code">+7</span>
+                  <input
+                    id="recoveryPhoneInput"
+                    type="tel"
+                    inputmode="numeric"
+                    placeholder="700 000 00 00"
+                    autocomplete="tel-national"
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button id="recoverySubmitButton" type="submit" class="primary-button">
+            Восстановить доступ
+          </button>
+
+          <button id="recoveryBackButton" type="button" class="secondary-button">
+            Назад ко входу
+          </button>
+        </form>
+
+        <form id="authCodeForm" class="auth-panel hidden">
+          <h1 id="authCodeTitle">Введите код</h1>
+          <p id="authCodeDescription">Письмо отправлено</p>
+
+          <label>
+            <span>Шестизначный код</span>
+            <input
+              id="authCodeInput"
+              class="otp-input"
+              type="text"
+              inputmode="numeric"
+              maxlength="6"
+              placeholder="000000"
+              autocomplete="one-time-code"
+              required
+            >
+          </label>
+
+          <button id="authCodeSubmitButton" type="submit" class="primary-button">
+            Подтвердить
+          </button>
+
+          <button id="authCodeBackButton" type="button" class="secondary-button">
+            Назад
+          </button>
+
+          <button id="authResendButton" type="button" class="text-button auth-link-button" disabled>
+            Отправить повторно через 60 сек.
+          </button>
+
+          <div id="testCodeBox" class="test-code-box hidden"></div>
+        </form>
+
+        <div id="authError" class="error-text"></div>
+      </div>
+    </section>
+
+    <main id="messengerScreen" class="messenger hidden">
+      <aside id="sidebar" class="sidebar">
+        <header class="sidebar-top">
+          <button id="selfAvatar" type="button" class="avatar avatar-self avatar-button" title="Профиль">M</button>
+
+          <div class="sidebar-top-actions">
+            <button id="refreshButton" type="button" class="icon-button" title="Обновить">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 11a8 8 0 1 0-2.34 5.66M20 4v7h-7"/>
+              </svg>
+            </button>
+
+            <button id="newChatButton" type="button" class="icon-button" title="Новый чат">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+                <path d="M12 7v8M8 11h8"/>
+              </svg>
+            </button>
+
+            <button id="menuButton" type="button" class="icon-button" title="Меню">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="5" r="1.5"/>
+                <circle cx="12" cy="12" r="1.5"/>
+                <circle cx="12" cy="19" r="1.5"/>
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <div id="mainMenu" class="main-menu hidden">
+          <button type="button" data-main-action="profile">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+            <span>Профиль</span>
+          </button>
+
+          <button type="button" data-main-action="group">
+            <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M14 20a5 5 0 0 1 7 0"/></svg>
+            <span>Создать группу</span>
+          </button>
+
+          <button type="button" data-main-action="channel">
+            <svg viewBox="0 0 24 24"><path d="m4 13 13-6v10L4 13zM8 14v5M17 10l3-2M17 14l3 2"/></svg>
+            <span>Создать канал</span>
+          </button>
+
+          <button type="button" data-main-action="linked">
+            <svg viewBox="0 0 24 24"><path d="M9 15 15 9M7 17l-2 2a3 3 0 0 1-4-4l4-4a3 3 0 0 1 4 0M17 7l2-2a3 3 0 0 1 4 4l-4 4a3 3 0 0 1-4 0"/></svg>
+            <span>Канал + группа</span>
+          </button>
+
+          <div class="main-menu-divider"></div>
+
+          <button type="button" data-main-action="mute">
+            <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 1 1 3v3l2 3H3l2-3v-3a7 7 0 0 1 11-5M9 21h6M4 4l16 16"/></svg>
+            <span id="mainMenuMuteLabel">Беззвучный режим</span>
+          </button>
+
+          <button type="button" data-main-action="lock">
+            <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            <span>Блокировка приложения</span>
+          </button>
+
+          <div class="main-menu-divider"></div>
+
+          <button type="button" data-main-action="logout" class="menu-danger">
+            <svg viewBox="0 0 24 24"><path d="M10 4H4v16h6M14 8l4 4-4 4M18 12H8"/></svg>
+            <span>Выйти</span>
+          </button>
+        </div>
+
+        <div class="sidebar-search-block">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/>
+              <path d="m20 20-4-4"/>
+            </svg>
+            <input id="searchInput" type="search" placeholder="Поиск или новый чат" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="sidebar-mode-tabs">
+          <button id="chatsTabButton" type="button" class="active">Чаты</button>
+          <button id="contactsTabButton" type="button">Контакты</button>
+          <button id="requestsTabButton" type="button">
+            Запросы
+            <span id="requestsBadge" class="sidebar-tab-badge hidden">0</span>
+          </button>
+        </div>
+
+        <div id="searchResults" class="search-results hidden"></div>
+        <div id="chatList" class="chat-list"></div>
+        <div id="contactList" class="chat-list hidden"></div>
+        <div id="requestList" class="chat-list hidden"></div>
+      </aside>
+
+      <section id="chatPane" class="chat-pane">
+        <header class="chat-header">
+          <button id="backButton" type="button" class="icon-button mobile-back" title="Назад">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m15 18-6-6 6-6"/>
+            </svg>
+          </button>
+
+          <div id="chatAvatar" class="avatar">M</div>
+
+          <button id="chatHeaderInfo" type="button" class="chat-header-info">
+            <strong id="chatTitle">Meetus Messenger</strong>
+            <span id="chatStatus">Выберите чат слева</span>
+          </button>
+
+          <div class="chat-header-actions">
+            <button
+              id="chatAddContactButton"
+              type="button"
+              class="icon-button hidden"
+              title="Добавить в контакты"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="9" cy="8" r="3"/>
+                <path d="M3 20a6 6 0 0 1 12 0M18 8v6M15 11h6"/>
+              </svg>
+            </button>
+
+            <button id="chatCallButton" type="button" class="icon-button" title="Звонок" aria-label="Звонок">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7.4 3.5 10 7.7 8.2 9.5c1.2 2.4 3.9 5.1 6.3 6.3l1.8-1.8 4.2 2.6-.8 3.2c-.2.8-.9 1.3-1.7 1.2C10.2 20.1 3.9 13.8 3 6c-.1-.8.4-1.5 1.2-1.7z"/>
+              </svg>
+            </button>
+
+            <button id="chatSearchButton" type="button" class="icon-button" title="Поиск по сообщениям">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"/>
+                <path d="m20 20-4-4"/>
+              </svg>
+            </button>
+
+            <button
+              id="chatMenuButton"
+              type="button"
+              class="icon-button"
+              title="Меню чата"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="5" r="1.5"/>
+                <circle cx="12" cy="12" r="1.5"/>
+                <circle cx="12" cy="19" r="1.5"/>
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <div id="chatHeaderMenu" class="chat-header-menu hidden">
+          <button type="button" data-chat-menu-action="info">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M12 11v6M12 7h.01"/>
+            </svg>
+            <span>Информация</span>
+          </button>
+
+          <button type="button" data-chat-menu-action="shared">
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="16" rx="2"/>
+              <path d="m6 16 4-4 3 3 2-2 3 3M16 8h.01"/>
+            </svg>
+            <span>Медиа, ссылки и документы</span>
+          </button>
+
+          <button type="button" data-chat-menu-action="mute">
+            <svg viewBox="0 0 24 24">
+              <path d="M18 8a6 6 0 0 1 1 3v3l2 3H3l2-3v-3a7 7 0 0 1 11-5M9 21h6M4 4l16 16"/>
+            </svg>
+            <span id="chatMenuMuteLabel">Без звука</span>
+          </button>
+
+          <div class="chat-header-menu-divider"></div>
+
+          <button type="button" data-chat-menu-action="clear" class="chat-menu-danger">
+            <svg viewBox="0 0 24 24">
+              <path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6"/>
+            </svg>
+            <span>Очистить весь чат</span>
+          </button>
+        </div>
+
+        <div id="chatSearchPanel" class="chat-search-panel hidden">
+          <button id="chatSearchClose" type="button" class="icon-button" title="Закрыть поиск">
+            <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+
+          <div class="chat-search-input-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/>
+              <path d="m20 20-4-4"/>
+            </svg>
+            <input
+              id="chatSearchInput"
+              type="search"
+              placeholder="Поиск только в этом чате"
+              autocomplete="off"
+            >
+          </div>
+
+          <span id="chatSearchCount" class="chat-search-count"></span>
+        </div>
+
+        <div id="chatSearchResults" class="chat-search-results hidden"></div>
+
+        <div id="emptyState" class="empty-state">
+          <div class="empty-logo">M</div>
+          <h2>Meetus Messenger</h2>
+          <p>Выберите чат или найдите пользователя через поиск.</p>
+        </div>
+
+        <div id="messageArea" class="message-area hidden"></div>
+
+        <div id="uploadStatus" class="upload-status hidden"></div>
+
+        <div id="communityPermissionBar" class="community-permission-bar hidden">
+          <span id="communityPermissionText"></span>
+        </div>
+
+        <div id="privateLimitBar" class="private-limit-bar hidden">
+          <span id="privateLimitText"></span>
+          <button id="privateLimitContactButton" type="button">
+            Добавить в контакты
+          </button>
+        </div>
+
+        <form id="composer" class="composer hidden">
+          <input id="documentInput" class="hidden" type="file">
+          <input id="mediaInput" class="hidden" type="file" accept="image/*,video/*" multiple>
+          <input id="cameraInput" class="hidden" type="file" accept="image/*" capture="environment">
+          <input id="videoCaptureInput" class="hidden" type="file" accept="video/*" capture="environment">
+          <input id="audioInput" class="hidden" type="file" accept="audio/*">
+
+          <div id="replyComposerBar" class="reply-composer-bar hidden">
+            <div class="reply-composer-line"></div>
+            <div class="reply-composer-content">
+              <strong id="replyComposerTitle">Ответ</strong>
+              <span id="replyComposerText"></span>
+            </div>
+            <button id="replyComposerClose" type="button" class="reply-composer-close" title="Отменить ответ">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m7 7 10 10M17 7 7 17"/>
+              </svg>
+            </button>
+          </div>
+
+          <button id="attachmentButton" type="button" class="composer-icon attachment-plus" title="Добавить">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+          </button>
+
+          <button id="emojiButton" type="button" class="composer-icon" title="Эмодзи">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"/>
+              <circle cx="9" cy="10" r="1"/>
+              <circle cx="15" cy="10" r="1"/>
+              <path d="M8 15c1.1 1.2 2.4 1.8 4 1.8s2.9-.6 4-1.8"/>
+            </svg>
+          </button>
+
+          <div class="composer-field">
+            <textarea id="messageInput" rows="1" placeholder="Введите сообщение"></textarea>
+          </div>
+
+          <button id="actionButton" type="button" class="composer-action" title="Записать голосовое">
+            <svg id="micIcon" class="action-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="9" y="3" width="6" height="11" rx="3"/>
+              <path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/>
+            </svg>
+
+            <svg id="sendIcon" class="action-svg hidden" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m22 2-7 20-4-9-9-4z"/>
+              <path d="M22 2 11 13"/>
+            </svg>
+          </button>
+        </form>
+
+        <div id="attachmentMenu" class="attachment-menu hidden">
+          <button type="button" data-attachment-action="document">
+            <span class="attachment-menu-icon document">
+              <svg viewBox="0 0 24 24"><path d="M6 2h8l4 4v16H6zM14 2v5h5"/></svg>
+            </span>
+            <span>Документ</span>
+          </button>
+
+          <button type="button" data-attachment-action="media">
+            <span class="attachment-menu-icon media">
+              <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m6 16 4-4 3 3 2-2 3 3M16 8h.01"/></svg>
+            </span>
+            <span>Фото и видео</span>
+          </button>
+
+          <button type="button" data-attachment-action="camera">
+            <span class="attachment-menu-icon camera">
+              <svg viewBox="0 0 24 24"><path d="M4 7h4l2-3h4l2 3h4v13H4z"/><circle cx="12" cy="13" r="4"/></svg>
+            </span>
+            <span>Снять фото</span>
+          </button>
+
+          <button type="button" data-attachment-action="video-camera">
+            <span class="attachment-menu-icon camera">
+              <svg viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="2"/><path d="m17 10 4-2v8l-4-2z"/></svg>
+            </span>
+            <span>Записать видео</span>
+          </button>
+
+          <button type="button" data-attachment-action="audio">
+            <span class="attachment-menu-icon audio">
+              <svg viewBox="0 0 24 24"><path d="M9 18V5l10-2v13M9 9l10-2M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM16 19a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
+            </span>
+            <span>Аудио</span>
+          </button>
+        </div>
+
+        <div id="contentPicker" class="content-picker hidden">
+          <header class="content-picker-tabs">
+            <button type="button" data-picker-tab="emoji" class="active" title="Эмодзи">😊</button>
+            <button type="button" data-picker-tab="gif" title="GIF">GIF</button>
+            <button type="button" data-picker-tab="sticker" title="Стикеры">◉</button>
+            <button id="contentPickerClose" type="button" class="content-picker-close" title="Закрыть">×</button>
+          </header>
+
+          <div id="contentPickerSearchRow" class="content-picker-search-row hidden">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <input id="contentPickerSearch" type="search" placeholder="Поиск GIF">
+          </div>
+
+          <div id="contentPickerBody" class="content-picker-body"></div>
+          <div id="contentPickerStatus" class="content-picker-status"></div>
+        </div>
+
+        <div id="recordBar" class="record-bar hidden">
+          <button id="recordDeleteButton" type="button" class="record-delete" title="Удалить запись">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14"/>
+            </svg>
+          </button>
+
+          <div class="record-timer">
+            <span class="record-dot"></span>
+            <span id="recordTimer">0:00</span>
+          </div>
+
+          <div id="recordWave" class="record-wave" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+
+          <button id="recordPauseButton" type="button" class="record-pause" title="Пауза">
+            <svg id="pauseIcon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5v14M16 5v14"/>
+            </svg>
+            <svg id="resumeIcon" class="hidden" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m8 5 11 7-11 7z"/>
+            </svg>
+          </button>
+
+          <button id="recordSendButton" type="button" class="record-send" title="Отправить">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m22 2-7 20-4-9-9-4z"/>
+              <path d="M22 2 11 13"/>
+            </svg>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <div id="imageEditorModal" class="image-editor-modal hidden" role="dialog" aria-modal="true">
+      <header class="image-editor-header">
+        <button id="imageEditorClose" type="button" class="viewer-action" title="Закрыть">
+          <svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+
+        <strong>Редактор изображения</strong>
+
+        <button id="imageEditorSave" type="button" class="editor-save-button">
+          Готово
+        </button>
+      </header>
+
+      <div class="image-editor-toolbar">
+        <button type="button" data-editor-tool="draw" class="active">
+          <svg viewBox="0 0 24 24"><path d="m4 20 4-1 11-11-3-3L5 16z"/></svg>
+          <span>Рисовать</span>
+        </button>
+
+        <button type="button" data-editor-tool="blur">
+          <svg viewBox="0 0 24 24"><path d="M4 5h4v4H4zM10 5h4v4h-4zM16 5h4v4h-4zM4 11h4v4H4zM10 11h4v4h-4zM16 11h4v4h-4zM4 17h4v4H4zM10 17h4v4h-4zM16 17h4v4h-4z"/></svg>
+          <span>Замазка</span>
+        </button>
+
+        <button id="imageEditorText" type="button">
+          <svg viewBox="0 0 24 24"><path d="M5 5h14M12 5v14M8 19h8"/></svg>
+          <span>Текст</span>
+        </button>
+
+        <button id="imageEditorSticker" type="button">
+          <span class="editor-toolbar-emoji">😊</span>
+          <span>Стикер</span>
+        </button>
+
+        <button id="imageEditorUndo" type="button">
+          <svg viewBox="0 0 24 24"><path d="m9 7-5 5 5 5M5 12h8c4 0 6 2 6 6"/></svg>
+          <span>Отмена</span>
+        </button>
+
+        <button id="imageEditorReset" type="button">
+          <svg viewBox="0 0 24 24"><path d="M4 4v6h6M20 20v-6h-6M6.5 17.5a8 8 0 0 0 12-3.5M17.5 6.5A8 8 0 0 0 5.5 10"/></svg>
+          <span>Сбросить</span>
+        </button>
+
+        <label class="editor-color-control" title="Цвет">
+          <input id="imageEditorColor" type="color" value="#ffffff">
+        </label>
+
+        <label class="editor-size-control">
+          <span>Размер</span>
+          <input id="imageEditorSize" type="range" min="4" max="80" value="18">
+        </label>
+      </div>
+
+      <main id="imageEditorStage" class="image-editor-stage">
+        <canvas id="imageEditorCanvas"></canvas>
+      </main>
+
+      <div id="imageEditorStickerTray" class="image-editor-sticker-tray hidden"></div>
+    </div>
+
+    <div id="mediaPreviewModal" class="media-preview-modal hidden" role="dialog" aria-modal="true">
+      <header class="media-preview-header">
+        <button id="mediaPreviewClose" type="button" class="viewer-action" title="Закрыть">
+          <svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+
+        <div class="media-preview-heading">
+          <strong>Предпросмотр</strong>
+          <span id="mediaPreviewCounter">1 из 1</span>
+        </div>
+
+        <div class="media-preview-header-actions">
+          <button id="mediaPreviewEdit" type="button" class="viewer-action" title="Редактировать фото">
+            <svg viewBox="0 0 24 24"><path d="m4 20 4.5-1 10-10-3.5-3.5-10 10zM13.8 6.7l3.5 3.5"/></svg>
+          </button>
+
+          <button id="mediaPreviewAdd" type="button" class="viewer-action" title="Добавить ещё">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <main class="media-preview-stage">
+        <img id="mediaPreviewImage" class="media-preview-content hidden" alt="">
+        <video id="mediaPreviewVideo" class="media-preview-content hidden" controls playsinline></video>
+
+        <button id="mediaPreviewPrev" type="button" class="media-preview-nav previous">‹</button>
+        <button id="mediaPreviewNext" type="button" class="media-preview-nav next">›</button>
+      </main>
+
+      <footer class="media-preview-footer">
+        <div id="mediaPreviewThumbnails" class="media-preview-thumbnails"></div>
+
+        <div class="media-preview-caption-row">
+          <button
+            id="mediaPreviewEmojiButton"
+            type="button"
+            class="media-preview-emoji-button"
+            title="Добавить смайл"
+            aria-label="Добавить смайл"
+            aria-expanded="false"
+          >😊</button>
+
+          <div
+            id="mediaPreviewEmojiPicker"
+            class="media-preview-emoji-picker hidden"
+          >
+            <div class="media-preview-emoji-title">
+              <strong>Смайлы</strong>
+              <span>Нажмите, чтобы вставить в подпись</span>
+            </div>
+
+            <div
+              id="mediaPreviewEmojiGrid"
+              class="media-preview-emoji-grid"
+            ></div>
+          </div>
+
+          <textarea
+            id="mediaPreviewCaption"
+            rows="1"
+            maxlength="20000"
+            placeholder="Добавить подпись"
+          ></textarea>
+
+          <button id="mediaPreviewSend" type="button" class="media-preview-send" title="Отправить">
+            <svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg>
+          </button>
+        </div>
+      </footer>
+    </div>
+
+    <div id="messageContextMenu" class="message-context-menu hidden">
+      <div id="quickReactionRow" class="quick-reaction-row">
+        <button type="button" data-quick-reaction="👍">👍</button>
+        <button type="button" data-quick-reaction="❤️">❤️</button>
+        <button type="button" data-quick-reaction="😂">😂</button>
+        <button type="button" data-quick-reaction="😮">😮</button>
+        <button type="button" data-quick-reaction="😢">😢</button>
+        <button type="button" data-quick-reaction="🙏">🙏</button>
+        <button
+          id="moreReactionButton"
+          type="button"
+          class="more-reaction-button"
+          title="Выбрать другую реакцию"
+        >
+          <svg viewBox="0 0 24 24">
+            <path d="m7 10 5 5 5-5"/>
+          </svg>
+        </button>
+      </div>
+
+      <button type="button" data-message-action="reply">
+        <svg viewBox="0 0 24 24"><path d="m9 7-5 5 5 5M5 12h8c4 0 6 2 6 6"/></svg>
+        <span>Ответить</span>
+      </button>
+
+      <button type="button" data-message-action="copy">
+        <svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3"/></svg>
+        <span>Копировать</span>
+      </button>
+
+      <button id="messageDownloadAction" type="button" data-message-action="download">
+        <svg viewBox="0 0 24 24"><path d="M12 3v13m0 0 5-5m-5 5-5-5M4 21h16"/></svg>
+        <span>Скачать</span>
+      </button>
+
+      <button type="button" data-message-action="info">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg>
+        <span>Данные о сообщении</span>
+      </button>
+
+      <div class="message-context-divider"></div>
+
+      <button
+        id="messageDeleteMeAction"
+        type="button"
+        data-message-action="delete-me"
+        class="message-delete-action"
+      >
+        <svg viewBox="0 0 24 24">
+          <path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14"/>
+        </svg>
+        <span>Удалить у меня</span>
+      </button>
+
+      <button
+        id="messageDeleteEveryoneAction"
+        type="button"
+        data-message-action="delete-everyone"
+        class="message-delete-action"
+      >
+        <svg viewBox="0 0 24 24">
+          <path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14"/>
+          <path d="m10 12 4 4M14 12l-4 4"/>
+        </svg>
+        <span>Удалить у всех</span>
+      </button>
+    </div>
+
+    <div id="reactionPicker" class="reaction-picker hidden">
+      <header class="reaction-picker-header">
+        <div class="reaction-picker-title">
+          <span>☺</span>
+          <strong>Выберите реакцию</strong>
+        </div>
+
+        <button id="reactionPickerClose" type="button" class="icon-button">
+          ×
+        </button>
+      </header>
+
+      <div class="reaction-picker-search">
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="7"/>
+          <path d="m20 20-4-4"/>
+        </svg>
+        <input
+          id="reactionPickerSearch"
+          type="search"
+          autocomplete="off"
+          placeholder="Поиск эмоции"
+        >
+      </div>
+
+      <div id="reactionPickerGrid" class="reaction-picker-grid"></div>
+    </div>
+
+    <div id="chatClearModal" class="modal-backdrop hidden">
+      <section class="small-settings-modal chat-clear-modal" role="dialog" aria-modal="true">
+        <header class="settings-header">
+          <div>
+            <strong>Очистить весь чат?</strong>
+            <span id="chatClearTargetLabel"></span>
+          </div>
+
+          <button id="chatClearClose" type="button" class="icon-button">×</button>
+        </header>
+
+        <div class="chat-clear-body">
+          <p>
+            Все сообщения исчезнут только у вас. У собеседника история останется.
+          </p>
+
+          <label class="settings-field">
+            <span>Для подтверждения напишите «Да»</span>
+            <input
+              id="chatClearConfirmInput"
+              type="text"
+              autocomplete="off"
+              placeholder="Да"
+            >
+          </label>
+
+          <div class="chat-clear-actions">
+            <button id="chatClearCancel" type="button" class="secondary-button">
+              Отмена
+            </button>
+
+            <button id="chatClearConfirm" type="button" class="danger-button">
+              Очистить чат
+            </button>
+          </div>
+
+          <div id="chatClearStatus" class="settings-hint"></div>
+        </div>
+      </section>
+    </div>
+
+    <div id="chatDeleteModal" class="modal-backdrop hidden">
+      <section class="small-settings-modal chat-delete-modal" role="dialog" aria-modal="true">
+        <header class="settings-header">
+          <div>
+            <strong>Удалить чат?</strong>
+            <span id="chatDeleteTargetLabel"></span>
+          </div>
+
+          <button id="chatDeleteClose" type="button" class="icon-button">×</button>
+        </header>
+
+        <div class="chat-delete-body">
+          <p>
+            Чат и история исчезнут только у вас. Новое сообщение снова вернёт
+            диалог в список.
+          </p>
+
+          <label class="settings-field">
+            <span>Для подтверждения напишите «Да»</span>
+            <input
+              id="chatDeleteConfirmInput"
+              type="text"
+              autocomplete="off"
+              placeholder="Да"
+            >
+          </label>
+
+          <div class="chat-delete-actions">
+            <button id="chatDeleteCancel" type="button" class="secondary-button">
+              Отмена
+            </button>
+
+            <button id="chatDeleteConfirm" type="button" class="danger-button">
+              Удалить чат
+            </button>
+          </div>
+
+          <div id="chatDeleteStatus" class="settings-hint"></div>
+        </div>
+      </section>
+    </div>
+
+    <div id="messageInfoModal" class="modal-backdrop hidden">
+      <section class="message-info-modal">
+        <header class="settings-header">
+          <div>
+            <strong>Данные о сообщении</strong>
+            <span id="messageInfoKind"></span>
+          </div>
+          <button id="messageInfoClose" type="button" class="icon-button" title="Закрыть">×</button>
+        </header>
+
+        <div class="message-info-body">
+          <div class="message-info-preview" id="messageInfoPreview"></div>
+
+          <div class="message-info-row">
+            <span>Отправлено</span>
+            <strong id="messageInfoSentAt"></strong>
+          </div>
+
+          <div class="message-info-row">
+            <span>Статус</span>
+            <strong id="messageInfoStatus"></strong>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="mediaViewer" class="media-viewer hidden" role="dialog" aria-modal="true">
+      <header class="viewer-header">
+        <div class="viewer-heading">
+          <strong id="viewerTitle">Медиа</strong>
+          <span id="viewerCounter"></span>
+        </div>
+
+        <div class="viewer-actions">
+          <button id="viewerZoomButton" type="button" class="viewer-action" title="Увеличить">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M11 8v6M8 11h6m6 9-4-4"/></svg>
+          </button>
+          <a id="viewerDownload" class="viewer-action" href="#" download title="Скачать">
+            <svg viewBox="0 0 24 24"><path d="M12 3v13m0 0 5-5m-5 5-5-5M4 21h16"/></svg>
+          </a>
+          <button id="viewerCloseButton" type="button" class="viewer-action" title="Закрыть">
+            <svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <button id="viewerPrevButton" type="button" class="viewer-nav viewer-prev" aria-label="Предыдущее медиа">‹</button>
+
+      <div id="viewerScroll" class="viewer-scroll">
+        <img id="viewerImage" class="viewer-image" alt="">
+
+        <div id="viewerVideoShell" class="viewer-video-shell hidden">
+          <video
+            id="viewerVideo"
+            class="viewer-video"
+            preload="metadata"
+            playsinline
+          ></video>
+
+          <button
+            id="viewerVideoCenterPlay"
+            type="button"
+            class="viewer-video-center-play"
+            aria-label="Воспроизвести"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m8 5 11 7-11 7z"/>
+            </svg>
+          </button>
+
+          <div id="viewerVideoControls" class="viewer-video-controls">
+            <button
+              id="viewerVideoPlayButton"
+              type="button"
+              class="video-control-button"
+              title="Воспроизвести"
+            >
+              <svg class="video-play-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m8 5 11 7-11 7z"/>
+              </svg>
+              <svg class="video-pause-icon hidden" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 5h4v14H7zM14 5h4v14h-4z"/>
+              </svg>
+            </button>
+
+            <span id="viewerVideoCurrent" class="video-time">0:00</span>
+
+            <input
+              id="viewerVideoProgress"
+              class="viewer-video-progress"
+              type="range"
+              min="0"
+              max="1000"
+              value="0"
+              aria-label="Перемотка видео"
+            >
+
+            <span id="viewerVideoDuration" class="video-time">0:00</span>
+
+            <button
+              id="viewerVideoMuteButton"
+              type="button"
+              class="video-control-button"
+              title="Выключить звук"
+            >
+              <svg class="video-volume-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 9h4l5-4v14l-5-4H4zM16 9c1.3 1.6 1.3 4.4 0 6M19 6c3.1 3.2 3.1 8.8 0 12"/>
+              </svg>
+              <svg class="video-muted-icon hidden" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 9h4l5-4v14l-5-4H4zM17 9l5 5M22 9l-5 5"/>
+              </svg>
+            </button>
+
+            <input
+              id="viewerVideoVolume"
+              class="viewer-video-volume"
+              type="range"
+              min="0"
+              max="100"
+              value="100"
+              aria-label="Громкость"
+            >
+
+            <button
+              id="viewerVideoSpeedButton"
+              type="button"
+              class="video-speed-button"
+              title="Скорость воспроизведения"
+            >1×</button>
+
+            <button
+              id="viewerVideoFullscreenButton"
+              type="button"
+              class="video-control-button"
+              title="Полный экран"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button id="viewerNextButton" type="button" class="viewer-nav viewer-next" aria-label="Следующее медиа">›</button>
+    </div>
+    <div id="communityModal" class="modal-backdrop hidden">
+      <section class="community-modal" role="dialog" aria-modal="true">
+        <header class="settings-header">
+          <div>
+            <strong id="communityModalTitle">Создать группу</strong>
+            <span id="communityModalHint">Добавьте название и участников</span>
+          </div>
+          <button id="communityModalClose" type="button" class="icon-button">×</button>
+        </header>
+
+        <form id="communityForm" class="community-form">
+          <label class="settings-field">
+            <span>Название</span>
+            <input id="communityTitleInput" type="text" maxlength="140" required>
+          </label>
+
+          <label id="communityDiscussionField" class="settings-field hidden">
+            <span>Название группы обсуждения</span>
+            <input id="communityDiscussionInput" type="text" maxlength="140">
+          </label>
+
+          <label class="settings-field">
+            <span>@username — необязательно</span>
+            <input
+              id="communityUsernameInput"
+              type="text"
+              maxlength="32"
+              placeholder="Только английские буквы и цифры"
+            >
+          </label>
+
+          <label class="settings-field">
+            <span>Описание</span>
+            <textarea id="communityDescriptionInput" rows="3" maxlength="2000"></textarea>
+          </label>
+
+          <div class="community-members-section">
+            <span class="community-label">Участники / подписчики</span>
+
+            <div class="search-box community-search-box">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+              <input id="communitySearchInput" type="search" placeholder="Имя, username или телефон">
+            </div>
+
+            <div id="communitySearchResults" class="community-search-results"></div>
+            <div id="communitySelectedMembers" class="community-selected-members"></div>
+          </div>
+
+          <div id="communityStatus" class="settings-hint"></div>
+
+          <button id="communitySubmitButton" type="submit" class="primary-button">
+            Создать
+          </button>
+        </form>
+      </section>
+    </div>
+
+    <div id="muteModal" class="modal-backdrop hidden">
+      <section class="small-settings-modal" role="dialog" aria-modal="true">
+        <header class="settings-header">
+          <div>
+            <strong>Беззвучный режим</strong>
+            <span>Звуки отправки и получения будут отключены</span>
+          </div>
+          <button id="muteModalClose" type="button" class="icon-button">×</button>
+        </header>
+
+        <div class="choice-list">
+          <button type="button" data-mute-minutes="10">10 минут</button>
+          <button type="button" data-mute-minutes="30">30 минут</button>
+          <button type="button" data-mute-minutes="60">1 час</button>
+          <button type="button" data-mute-minutes="240">4 часа</button>
+          <button type="button" data-mute-minutes="480">8 часов</button>
+          <button type="button" data-mute-minutes="1440">24 часа</button>
+          <button type="button" data-mute-minutes="forever">Навсегда</button>
+          <button id="muteDisableButton" type="button" class="choice-danger">Включить звуки</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="chatMuteModal" class="modal-backdrop hidden">
+      <section class="small-settings-modal" role="dialog" aria-modal="true">
+        <header class="settings-header">
+          <div>
+            <strong>Без звука</strong>
+            <span id="chatMuteDescription">Уведомления этого чата будут отключены</span>
+          </div>
+          <button id="chatMuteClose" type="button" class="icon-button">×</button>
+        </header>
+
+        <div class="choice-list">
+          <button type="button" data-chat-mute-minutes="10">10 минут</button>
+          <button type="button" data-chat-mute-minutes="30">30 минут</button>
+          <button type="button" data-chat-mute-minutes="60">1 час</button>
+          <button type="button" data-chat-mute-minutes="240">4 часа</button>
+          <button type="button" data-chat-mute-minutes="480">8 часов</button>
+          <button type="button" data-chat-mute-minutes="1440">24 часа</button>
+          <button type="button" data-chat-mute-minutes="forever">Навсегда</button>
+          <button id="chatMuteDisable" type="button" class="choice-danger">
+            Включить звук
+          </button>
+        </div>
+
+        <div id="chatMuteStatus" class="settings-hint"></div>
+      </section>
+    </div>
+
+    <form id="pinSetupBrowserForm" class="hidden" aria-hidden="true"><input type="text" name="username" autocomplete="username" value="meetus-pin" tabindex="-1" aria-hidden="true"></form>
+    <form id="pinUnlockBrowserForm" class="hidden" aria-hidden="true"><input type="text" name="username" autocomplete="username" value="meetus-pin" tabindex="-1" aria-hidden="true"></form>
+
+    <div id="appLockSettingsModal" class="modal-backdrop hidden">
+      <section class="small-settings-modal" role="dialog" aria-modal="true">
+        <header class="settings-header">
+          <div>
+            <strong>Блокировка приложения</strong>
+            <span>Четырёхзначный PIN запрашивается после каждого обновления страницы</span>
+          </div>
+          <button id="appLockSettingsClose" type="button" class="icon-button">×</button>
+        </header>
+
+        <div class="pin-settings-body">
+          <div id="pinSetupFields">
+            <label class="settings-field">
+              <span>Новый PIN</span>
+              <input id="pinSetupInput" form="pinSetupBrowserForm" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="new-password">
+            </label>
+
+            <label class="settings-field">
+              <span>Повторите PIN</span>
+              <input id="pinConfirmInput" form="pinSetupBrowserForm" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="new-password">
+            </label>
+
+            <button id="pinEnableButton" type="button" class="primary-button">
+              Включить блокировку
+            </button>
+          </div>
+
+          <div id="pinEnabledActions" class="hidden">
+            <div class="pin-enabled-card">
+              <strong>Блокировка включена</strong>
+              <span>PIN будет запрошен при следующем открытии или обновлении страницы.</span>
+            </div>
+
+            <button id="pinLockNowButton" type="button" class="primary-button">
+              Заблокировать сейчас
+            </button>
+
+            <button id="pinChangeButton" type="button" class="secondary-button">
+              Изменить PIN
+            </button>
+
+            <button id="pinDisableButton" type="button" class="danger-button">
+              Отключить блокировку
+            </button>
+          </div>
+
+          <div id="pinSettingsStatus" class="settings-hint"></div>
+        </div>
+      </section>
+    </div>
+
+    <div id="pinUnlockOverlay" class="pin-unlock-overlay hidden">
+      <div class="pin-unlock-card">
+        <div class="pin-lock-icon">
+          <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        </div>
+
+        <h2>Meetus заблокирован</h2>
+        <p>Введите четырёхзначный PIN</p>
+
+        <input
+          id="pinUnlockInput"
+          class="pin-unlock-input"
+          form="pinUnlockBrowserForm"
+          type="password"
+          inputmode="numeric"
+          maxlength="4"
+          placeholder="••••"
+          autocomplete="current-password"
+        >
+
+        <button id="pinUnlockButton" type="button" class="primary-button">
+          Открыть
+        </button>
+
+        <button id="pinResetLogoutButton" type="button" class="text-button">
+          Выйти и сбросить PIN
+        </button>
+
+        <div id="pinUnlockStatus" class="error-text"></div>
+      </div>
+    </div>
+
+    <div id="contactRequestModal" class="modal-backdrop hidden">
+      <section class="small-settings-modal" role="dialog" aria-modal="true">
+        <header class="settings-header">
+          <div>
+            <strong>Добавить в контакты</strong>
+            <span id="contactRequestTargetLabel"></span>
+          </div>
+          <button id="contactRequestClose" type="button" class="icon-button">×</button>
+        </header>
+
+        <div class="contact-request-body">
+          <label class="settings-field">
+            <span>Как сохранить имя у себя</span>
+            <input id="contactRequestNameInput" type="text" maxlength="120">
+          </label>
+
+          <p class="settings-hint">
+            Собеседник получит запрос. После принятия откроются номер телефона,
+            email и переписка без ограничения.
+          </p>
+
+          <button id="contactRequestSendButton" type="button" class="primary-button">
+            Отправить запрос
+          </button>
+
+          <div id="contactRequestStatus" class="settings-hint"></div>
+        </div>
+      </section>
+    </div>
+
+    <div id="friendRemoveModal" class="modal-backdrop hidden">
+      <section class="small-settings-modal friend-remove-modal" role="dialog" aria-modal="true">
+        <header class="settings-header">
+          <div>
+            <strong>Удалить из друзей?</strong>
+            <span id="friendRemoveTargetLabel"></span>
+          </div>
+
+          <button id="friendRemoveClose" type="button" class="icon-button">×</button>
+        </header>
+
+        <div class="friend-remove-body">
+          <p>
+            Контактные данные снова будут скрыты, а лимит сообщений
+            для пользователей не в друзьях снова начнёт действовать.
+          </p>
+
+          <label class="settings-field">
+            <span>Для подтверждения напишите «Да»</span>
+            <input
+              id="friendRemoveConfirmInput"
+              type="text"
+              autocomplete="off"
+              placeholder="Да"
+            >
+          </label>
+
+          <div class="friend-remove-actions">
+            <button id="friendRemoveCancel" type="button" class="secondary-button">
+              Отмена
+            </button>
+
+            <button id="friendRemoveConfirm" type="button" class="danger-button">
+              Удалить
+            </button>
+          </div>
+
+          <div id="friendRemoveStatus" class="settings-hint"></div>
+        </div>
+      </section>
+    </div>
+
+    <div
+      id="chatSharedPanel"
+      class="modal-backdrop chat-shared-side-backdrop hidden"
+    >
+      <section
+        class="chat-shared-side-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Медиа, ссылки и документы"
+      >
+        <header class="chat-shared-header">
+          <button
+            id="chatSharedClose"
+            type="button"
+            class="icon-button"
+            title="Закрыть"
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="m6 6 12 12M18 6 6 18"/>
+            </svg>
+          </button>
+
+          <div>
+            <strong>Все материалы</strong>
+            <span id="chatSharedTitle"></span>
+          </div>
+        </header>
+
+        <nav class="chat-shared-tabs">
+          <button type="button" data-shared-tab="media" class="active">
+            Медиа
+          </button>
+          <button type="button" data-shared-tab="files">
+            Документы
+          </button>
+          <button type="button" data-shared-tab="links">
+            Ссылки
+          </button>
+        </nav>
+
+        <div id="chatSharedContent" class="chat-shared-content">
+          <div class="loading">Загружаем…</div>
+        </div>
+      </section>
+    </div>
+
+    <div
+      id="userProfileModal"
+      class="modal-backdrop user-profile-side-backdrop hidden"
+    >
+      <section
+        class="user-profile-modal user-profile-side-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Профиль пользователя"
+      >
+        <header class="user-profile-panel-header">
+          <button
+            id="userProfileClose"
+            type="button"
+            class="icon-button"
+            title="Закрыть профиль"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m6 6 12 12M18 6 6 18"/>
+            </svg>
+          </button>
+
+          <div>
+            <strong>Профиль</strong>
+            <span id="viewProfileRelationship"></span>
+          </div>
+        </header>
+
+        <div class="view-profile-body user-profile-panel-scroll">
+          <section class="user-profile-hero">
+            <div id="viewProfileAvatar" class="avatar view-profile-avatar">M</div>
+            <h2 id="viewProfileName">Пользователь</h2>
+            <div id="viewProfileUsername" class="view-profile-username"></div>
+            <p id="viewProfileBio" class="view-profile-bio"></p>
+          </section>
+
+          <section class="view-profile-private user-profile-info-card">
+            <div>
+              <span>Телефон</span>
+              <strong id="viewProfilePhone">Скрыт</strong>
+            </div>
+            <div>
+              <span>Email</span>
+              <strong id="viewProfileEmail">Скрыт</strong>
+            </div>
+          </section>
+
+          <div id="viewProfilePrivacyHint" class="profile-privacy-hint"></div>
+
+          <section class="user-profile-actions">
+            <button id="viewProfileContactButton" type="button" class="primary-button">
+              Добавить в контакты
+            </button>
+
+            <button id="viewProfileAcceptButton" type="button" class="primary-button hidden">
+              Принять запрос
+            </button>
+
+            <button id="viewProfileRemoveButton" type="button" class="danger-button hidden">
+              Удалить из друзей
+            </button>
+
+            <button
+              id="viewProfileBlockButton"
+              type="button"
+              class="danger-button user-block-button"
+            >
+              Заблокировать пользователя
+            </button>
+          </section>
+
+          <div id="viewProfileStatus" class="settings-hint"></div>
+        </div>
+      </section>
+    </div>
+
+    <div id="communityManageModal" class="modal-backdrop telegram-side-backdrop hidden">
+      <section class="community-manage-modal telegram-info-panel" role="dialog" aria-modal="true">
+        <header class="telegram-panel-header">
+          <button id="communityManageClose" type="button" class="icon-button" title="Закрыть">
+            <svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
+          </button>
+          <div>
+            <strong id="communityManageTitle">Информация</strong>
+            <span id="communityManageType"></span>
+          </div>
+        </header>
+
+        <div class="community-manage-scroll telegram-panel-scroll">
+          <section class="telegram-profile-hero">
+            <div id="communityManageAvatar" class="avatar telegram-community-avatar">G</div>
+            <h2 id="communityManageName"></h2>
+            <div id="communityManageMemberCount" class="telegram-member-count"></div>
+            <p id="communityManageDescription"></p>
+            <div id="communityManageUsername" class="telegram-username"></div>
+            <div id="communityManageRole" class="telegram-role"></div>
+          </section>
+
+          <section id="communitySettingsControls" class="telegram-settings-card hidden">
+            <div class="telegram-section-title">Настройки владельца</div>
+
+            <label class="telegram-toggle-row">
+              <span>
+                <strong>Показывать участников</strong>
+                <small>Когда выключено, список видят только владелец и администраторы</small>
+              </span>
+              <input id="communityMembersVisibleInput" type="checkbox">
+              <i></i>
+            </label>
+
+            <div class="telegram-section-title permission-heading">Что разрешено обычным участникам</div>
+
+            <label class="telegram-toggle-row"><span><strong>Текстовые сообщения</strong></span><input id="permissionTextInput" type="checkbox"><i></i></label>
+            <label class="telegram-toggle-row"><span><strong>Эмодзи, реакции, GIF и стикеры</strong></span><input id="permissionReactionsInput" type="checkbox"><i></i></label>
+            <label class="telegram-toggle-row"><span><strong>Голосовые сообщения</strong></span><input id="permissionVoiceInput" type="checkbox"><i></i></label>
+            <label class="telegram-toggle-row"><span><strong>Фото и видео</strong></span><input id="permissionMediaInput" type="checkbox"><i></i></label>
+            <label class="telegram-toggle-row"><span><strong>Документы и файлы</strong></span><input id="permissionFilesInput" type="checkbox"><i></i></label>
+
+            <button id="saveCommunitySettingsButton" type="button" class="telegram-primary-button">Сохранить права</button>
+          </section>
+
+          <section id="communityMembersSection" class="telegram-settings-card">
+            <div class="telegram-card-heading">
+              <span class="telegram-section-title">Участники</span>
+              <span id="communityMembersVisibilityHint"></span>
+            </div>
+            <div id="communityMembersList" class="telegram-member-list"></div>
+          </section>
+
+          <section id="communityBansSection" class="telegram-settings-card hidden">
+            <div class="telegram-card-heading">
+              <span class="telegram-section-title">Чёрный список</span>
+              <span id="communityBansCount"></span>
+            </div>
+            <div id="communityBansList" class="community-blacklist-list"></div>
+          </section>
+
+          <section id="communityInviteControls" class="telegram-settings-card">
+            <div class="telegram-section-title">Добавить участника</div>
+            <div class="search-box telegram-search-box">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+              <input id="communityInviteUserSearch" type="search" placeholder="Имя или @username">
+            </div>
+            <div id="communityInviteUserResults" class="community-search-results"></div>
+
+            <div class="telegram-section-title permission-heading">Ссылка приглашения</div>
+            <div class="invite-settings-grid">
+              <label class="settings-field"><span>Количество приглашённых</span><input id="inviteMaxUsesInput" type="number" min="1" max="100000" value="10"></label>
+              <label class="settings-field"><span>Срок действия, дней</span><input id="inviteDaysInput" type="number" min="1" max="3650" value="7"></label>
+            </div>
+            <button id="createInviteLinkButton" type="button" class="telegram-primary-button">Создать ссылку</button>
+            <div id="createdInviteBox" class="created-invite-box hidden">
+              <input id="createdInviteUrl" type="text" readonly>
+              <button id="copyCreatedInviteButton" type="button" class="secondary-button compact">Копировать</button>
+            </div>
+            <div id="inviteLinksList" class="invite-links-list"></div>
+            <div id="communityManageStatus" class="settings-hint"></div>
+          </section>
+
+          <section id="communityExitSection" class="telegram-settings-card community-danger-card">
+            <button id="communityLeaveButton" type="button" class="community-leave-button hidden">Покинуть группу</button>
+            <button id="communityDeleteButton" type="button" class="community-delete-button hidden">Удалить группу</button>
+          </section>
+        </div>
+      </section>
+    </div>
+
+    <div id="communityMemberActionModal" class="modal-backdrop hidden">
+      <section class="settings-modal community-member-action-modal" role="dialog" aria-modal="true">
+        <header class="settings-header">
+          <div>
+            <strong>Управление участником</strong>
+            <span>Удаление или чёрный список</span>
+          </div>
+          <button id="communityMemberActionClose" type="button" class="icon-button">×</button>
+        </header>
+        <div class="community-member-action-body">
+          <div class="community-member-action-user">
+            <div id="communityMemberActionAvatar" class="avatar">U</div>
+            <div class="community-member-action-data">
+              <strong id="communityMemberActionName"></strong>
+              <span id="communityMemberActionRole"></span>
+            </div>
+          </div>
+          <div class="community-member-action-buttons">
+            <button id="communityMemberRoleButton" type="button" class="secondary-button community-action-role">Назначить администратором</button>
+            <button id="communityMemberRemoveButton" type="button" class="community-action-remove">Удалить из сообщества</button>
+            <button id="communityMemberBanButton" type="button" class="community-action-ban">Удалить и заблокировать</button>
+          </div>
+          <div id="communityMemberActionStatus" class="settings-hint"></div>
+        </div>
+      </section>
+    </div>
+
+    <div id="settingsModal" class="modal-backdrop hidden">
+      <section class="settings-modal" role="dialog" aria-modal="true">
+        <header class="settings-header">
+          <div>
+            <strong>Профиль и безопасность</strong>
+            <span id="settingsEmailLabel">Email не привязан</span>
+          </div>
+          <button id="settingsCloseButton" type="button" class="icon-button" title="Закрыть">×</button>
+        </header>
+
+        <div class="settings-scroll">
+          <section class="settings-section">
+            <h3>Профиль</h3>
+
+            <div class="profile-avatar-row">
+              <div id="settingsAvatar" class="avatar settings-avatar">M</div>
+              <div>
+                <input id="profileAvatarInput" class="hidden" type="file" accept="image/*">
+                <button id="profileAvatarButton" type="button" class="secondary-button compact">
+                  Изменить фотографию
+                </button>
+              </div>
+            </div>
+
+            <label class="settings-field">
+              <span>Имя</span>
+              <input id="profileNameInput" type="text">
+            </label>
+
+            <label class="settings-field">
+              <span>@username</span>
+              <input id="profileUsernameInput" type="text">
+            </label>
+
+            <label class="settings-field">
+              <span>О себе</span>
+              <textarea id="profileBioInput" rows="3"></textarea>
+            </label>
+
+            <label class="settings-field">
+              <span>Телефон в международном формате</span>
+              <input
+                id="profilePhoneInput"
+                type="tel"
+                inputmode="tel"
+                maxlength="16"
+                placeholder="+77001234567"
+              >
+            </label>
+
+            <div class="profile-private-info">
+              <div>
+                <span>Email</span>
+                <strong id="settingsEmailValue">—</strong>
+              </div>
+            </div>
+
+            <button id="saveProfileButton" type="button" class="primary-button">
+              Сохранить профиль
+            </button>
+
+            <div id="profileStatus" class="settings-hint"></div>
+          </section>
+
+          <section id="linkEmailSection" class="settings-section hidden">
+            <h3>Привязать email к текущему аккаунту</h3>
+            <p>
+              Это сохранит существующие чаты и переведёт аккаунт на безопасный вход по email.
+            </p>
+
+            <label class="settings-field">
+              <span>Email</span>
+              <input id="linkEmailInput" type="email">
+            </label>
+
+            <div class="link-email-row">
+              <input
+                id="linkEmailCodeInput"
+                type="text"
+                inputmode="numeric"
+                maxlength="6"
+                placeholder="Код"
+              >
+              <button id="linkEmailButton" type="button" class="secondary-button">
+                Получить код
+              </button>
+              <button id="verifyLinkEmailButton" type="button" class="primary-button hidden">
+                Подтвердить
+              </button>
+            </div>
+
+            <div id="linkEmailHint" class="settings-hint"></div>
+          </section>
+
+          <section
+            id="blockedUsersSection"
+            class="settings-section hidden"
+          >
+            <div class="section-heading">
+              <h3>Заблокированные пользователи</h3>
+              <span id="blockedUsersCount" class="blocked-users-count"></span>
+            </div>
+
+            <div id="blockedUsersList" class="blocked-users-list"></div>
+          </section>
+
+          <section class="settings-section">
+            <div class="section-heading">
+              <h3>Активные устройства</h3>
+              <button id="refreshSessionsButton" type="button" class="text-button">
+                Обновить
+              </button>
+            </div>
+
+            <div id="sessionsList" class="sessions-list"></div>
+
+            <button id="logoutAllButton" type="button" class="danger-button">
+              Завершить все остальные сессии
+            </button>
+          </section>
+
+          <section class="settings-section">
+            <button id="logoutButton" type="button" class="secondary-button">
+              Выйти на этом устройстве
+            </button>
+          </section>
+        </div>
+      </section>
+    </div>
+
+    <div id="avatarCropModal" class="modal-backdrop hidden">
+      <section class="avatar-crop-modal" role="dialog" aria-modal="true">
+        <header class="settings-header">
+          <div>
+            <strong>Фотография профиля</strong>
+            <span>Переместите фото и выберите масштаб</span>
+          </div>
+
+          <button
+            id="avatarCropCloseButton"
+            type="button"
+            class="icon-button"
+            title="Закрыть"
+          >×</button>
+        </header>
+
+        <div class="avatar-crop-content">
+          <div class="avatar-crop-stage">
+            <canvas
+              id="avatarCropCanvas"
+              width="360"
+              height="360"
+              aria-label="Предпросмотр круглого аватара"
+            ></canvas>
+            <div class="avatar-crop-ring" aria-hidden="true"></div>
+          </div>
+
+          <label class="avatar-zoom-field">
+            <span>Масштаб</span>
+            <input
+              id="avatarZoomInput"
+              type="range"
+              min="100"
+              max="300"
+              step="1"
+              value="100"
+            >
+          </label>
+
+          <div class="avatar-crop-actions">
+            <button
+              id="avatarCropCancelButton"
+              type="button"
+              class="secondary-button"
+            >
+              Отмена
+            </button>
+
+            <button
+              id="avatarCropSaveButton"
+              type="button"
+              class="primary-button"
+            >
+              Сохранить фотографию
+            </button>
+          </div>
+
+          <div id="avatarCropStatus" class="settings-hint"></div>
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+  <script src="/countries.js?v=0.6.25.2"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/app.js?v=0.6.25.2-community2tg10calls6fix1"></script>
+  <script src="/message-editing.js?v=0.6.25.2-community2tg10calls6fix1"></script>
+  <script src="/tg5-enhancements.js?v=0.6.25.2-community2tg10calls6fix1"></script>
+  <script src="/telegram-discussions.js?v=0.6.25.2-community2tg11workspace3"></script>
+  <script src="/tg6-enhancements.js?v=0.6.25.2-community2tg10calls6fix1"></script>
+  <script src="/tg7-enhancements.js?v=0.6.25.2-community2tg10calls6fix1"></script>
+  <script src="/tg8-enhancements.js?v=0.6.25.2-community2tg10calls6fix1"></script>
+  <script src="/tg9-enhancements.js?v=0.6.25.2-community2tg10calls6fix1"></script>
+  <script src="/media-editor.js?v=0.6.25.2"></script>
+  <!-- MEETUS 0.6.25.2 COMMUNITY2-TG10-CALLS7 -->
+  <script src="/livekit-client.umd.js?v=0.6.25.2-community2tg10calls6fix1"></script>
+  <script src="/calls.js?v=0.6.25.2-community2tg11workspace1"></script>
+  <script src="/voice-transcription.js?v=0.6.25.2-community2tg10calls6fix1"></script>
+  <script src="/workspace.js?v=0.6.25.2-community2tg11workspace5"></script>
+  <script src="/workspace4-fixes.js?v=0.6.25.2-community2tg11workspace5"></script>
+  <script src="/workspace5-fixes.js?v=0.6.25.2-community2tg11workspace15"></script>
+  <!-- MEETUS 0.6.25.2 COMMUNITY2-TG11-WORKSPACE5-FIX4 -->
+  <!-- MEETUS 0.6.25.2 COMMUNITY2-TG11-WORKSPACE6 -->
+  <script src="/workspace6-fixes.js?v=0.6.25.2-community2tg11workspace6"></script>
+  <!-- MEETUS 0.6.25.2 COMMUNITY2-TG11-WORKSPACE7 -->
+  <script src="/workspace7-fixes.js?v=0.6.25.2-community2tg11workspace7"></script>
+  <script src="/workspace9-fixes.js?v=0.6.25.2-community2tg11workspace9"></script>
+  <!-- MEETUS 0.6.25.2 COMMUNITY2-TG11-WORKSPACE15 -->
+  <script src="/workspace10-fixes.js?v=0.6.25.2-community2tg11workspace10"></script>
+  <script src="/workspace11-fixes.js?v=0.6.25.2-community2tg11workspace11"></script>
+  <script src="/workspace12-fixes.js?v=0.6.25.2-community2tg11workspace12"></script>
+  <!-- MEETUS 0.6.25.2 COMMUNITY2-TG11-WORKSPACE13 -->
+  <script src="/workspace13-fixes.js?v=0.6.25.2-community2tg11workspace15"></script>
+  <script src="/workspace14-fixes.js?v=0.6.25.2-community2tg11workspace15"></script>
+  <script src="/workspace15-fixes.js?v=0.6.25.2-community2tg11workspace15"></script>
+</body>
+</html>

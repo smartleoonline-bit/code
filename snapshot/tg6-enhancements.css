@@ -1,0 +1,309 @@
+/* MEETUS 0.6.25.2 COMMUNITY2-TG6 */
+
+/* Search tabs really filter their sections. */
+.global-search-section.hidden {
+  display: none !important;
+}
+
+.global-search-tabs button {
+  cursor: pointer;
+}
+
+/* There is no search in the contact requests tab. */
+.sidebar.tg6-requests-mode .sidebar-search-block,
+.sidebar .sidebar-search-block.hidden {
+  display: none !important;
+}
+
+.sidebar.tg6-requests-mode .sidebar-mode-tabs {
+  border-top: 0;
+}
+
+/* Compact GIF grid: vertical scrolling only. */
+.content-picker-body.gif-picker-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  grid-auto-flow: row !important;
+  align-content: start !important;
+  gap: 6px !important;
+  columns: initial !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.content-picker-body.gif-picker-grid .gif-result {
+  width: 100% !important;
+  height: 92px !important;
+  margin: 0 !important;
+  break-inside: auto !important;
+  border-radius: 7px !important;
+}
+
+.content-picker-body.gif-picker-grid .gif-result img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Sticker/large emoji messages never get an outgoing purple frame. */
+.message-row .message-bubble.sticker-only-bubble,
+.message-row.mine .message-bubble.sticker-only-bubble,
+.message-row .message-bubble:has(.message-sticker),
+.message-row.mine .message-bubble:has(.message-sticker) {
+  width: fit-content !important;
+  max-width: min(230px, 58vw) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 3px 2px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.message-row .sticker-only-bubble::before,
+.message-row.mine .sticker-only-bubble::before,
+.message-row .message-bubble:has(.message-sticker)::before {
+  display: none !important;
+}
+
+.sticker-only-bubble .message-sticker {
+  width: min(190px, 48vw) !important;
+}
+
+.sticker-only-bubble .message-meta {
+  margin-top: -18px;
+  margin-right: 3px;
+  padding: 2px 5px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.32);
+}
+
+/* Meetus confirmation modal. */
+.tg6-confirm-backdrop {
+  z-index: 3900 !important;
+  padding: 18px;
+  background: rgba(4, 6, 10, 0.68) !important;
+  backdrop-filter: blur(8px);
+}
+
+.tg6-confirm-modal {
+  width: min(430px, calc(100vw - 24px));
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 17px;
+  padding: 20px;
+  color: var(--text, #f7f7f8);
+  background: #1c1c1f;
+  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.58);
+}
+
+.tg6-confirm-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #b9adff;
+  background: rgba(135, 116, 225, 0.18);
+}
+
+.tg6-confirm-backdrop.danger .tg6-confirm-icon {
+  color: #ff8296;
+  background: rgba(255, 102, 125, 0.15);
+}
+
+.tg6-confirm-icon svg {
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tg6-confirm-copy {
+  min-width: 0;
+}
+
+.tg6-confirm-copy strong {
+  display: block;
+  font-size: 17px;
+}
+
+.tg6-confirm-copy p {
+  margin: 8px 0 0;
+  color: var(--muted, #a5a5aa);
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.tg6-confirm-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 7px;
+}
+
+.tg6-confirm-actions button {
+  min-width: 105px;
+  min-height: 39px;
+  border: 0;
+  border-radius: 10px;
+  padding: 0 16px;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tg6-confirm-cancel {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tg6-confirm-accept {
+  background: #8774e1;
+}
+
+.tg6-confirm-backdrop.danger .tg6-confirm-accept {
+  background: #e85d75;
+}
+
+/* GIF preview before sending. */
+.tg6-gif-preview-backdrop {
+  z-index: 3850 !important;
+  padding: 14px;
+  background: rgba(4, 6, 10, 0.7) !important;
+  backdrop-filter: blur(8px);
+}
+
+.tg6-gif-preview {
+  width: min(430px, calc(100vw - 20px));
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 17px;
+  color: var(--text, #f7f7f8);
+  background: #171718;
+  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.6);
+}
+
+.tg6-gif-preview > header {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: #1f1f20;
+}
+
+.tg6-gif-preview > header strong,
+.tg6-gif-preview > header span {
+  display: block;
+}
+
+.tg6-gif-preview > header span {
+  margin-top: 3px;
+  color: var(--muted, #99999f);
+  font-size: 11px;
+}
+
+.tg6-gif-preview-media {
+  height: min(350px, 48dvh);
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  background: #0e0e0f;
+}
+
+.tg6-gif-preview-media img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+.tg6-gif-preview-title,
+.tg6-gif-preview-status {
+  overflow: hidden;
+  padding: 0 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tg6-gif-preview-title {
+  padding-top: 11px;
+  font-weight: 700;
+}
+
+.tg6-gif-preview-status {
+  min-height: 27px;
+  padding-top: 5px;
+  color: var(--muted, #99999f);
+  font-size: 11px;
+}
+
+.tg6-gif-preview > footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  padding: 10px 14px 14px;
+}
+
+.tg6-gif-preview > footer button {
+  min-width: 105px;
+  min-height: 39px;
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tg6-gif-cancel {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tg6-gif-send {
+  background: #8774e1;
+}
+
+.tg6-gif-send:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+@media (max-width: 700px) {
+  .content-picker-body.gif-picker-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .content-picker-body.gif-picker-grid .gif-result {
+    height: 100px !important;
+  }
+
+  .tg6-confirm-modal {
+    padding: 16px;
+  }
+
+  .tg6-confirm-actions,
+  .tg6-gif-preview > footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tg6-confirm-actions button,
+  .tg6-gif-preview > footer button {
+    min-width: 0;
+  }
+}
+
+.content-picker-body.gif-picker-grid > .picker-empty {
+  grid-column: 1 / -1;
+}

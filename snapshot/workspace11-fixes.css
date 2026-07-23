@@ -1,0 +1,227 @@
+/* MEETUS 0.6.25.2 COMMUNITY2-TG11-WORKSPACE11 */
+
+/*
+ * MEDIA LAYOUT
+ * WORKSPACE10 calculated the correct aspect ratio, but an inherited flex/grid height
+ * could stretch the purple bubble far above the actual media. WORKSPACE11 makes
+ * the bubble intrinsic again and gives the wrapper and media one exact size.
+ */
+.message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"]{
+  box-sizing:border-box!important;
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:max-content!important;
+  grid-auto-rows:max-content!important;
+  align-items:start!important;
+  align-content:start!important;
+  justify-items:stretch!important;
+  justify-content:start!important;
+  gap:0!important;
+  inline-size:calc(var(--workspace11-media-width) + 6px)!important;
+  width:calc(var(--workspace11-media-width) + 6px)!important;
+  min-inline-size:0!important;
+  min-width:0!important;
+  block-size:auto!important;
+  height:auto!important;
+  min-block-size:0!important;
+  min-height:0!important;
+  max-block-size:none!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  flex:0 0 auto!important;
+  padding:3px!important;
+  overflow:visible!important;
+}
+.message-row.mine .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"]{
+  justify-self:end!important;
+  align-self:flex-end!important;
+}
+.message-row:not(.mine) .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"]{
+  justify-self:start!important;
+  align-self:flex-start!important;
+}
+.message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"] > .message-menu-trigger{
+  position:absolute!important;
+  z-index:8!important;
+  top:5px!important;
+  right:5px!important;
+  width:30px!important;
+  height:30px!important;
+  margin:0!important;
+  padding:0!important;
+  grid-row:auto!important;
+  transform:none;
+}
+.message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"] > .media-image-button,
+.message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"] > .media-video-button{
+  box-sizing:border-box!important;
+  position:relative!important;
+  display:block!important;
+  grid-column:1!important;
+  inline-size:var(--workspace11-media-width)!important;
+  width:var(--workspace11-media-width)!important;
+  min-inline-size:0!important;
+  min-width:0!important;
+  max-inline-size:100%!important;
+  max-width:100%!important;
+  block-size:auto!important;
+  height:auto!important;
+  min-block-size:0!important;
+  min-height:0!important;
+  max-block-size:none!important;
+  max-height:none!important;
+  aspect-ratio:var(--workspace11-media-ratio)!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:14px!important;
+  overflow:hidden!important;
+  background:#090c11!important;
+  transform:translateZ(0);
+}
+.message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"] .message-image,
+.message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"] .message-video-preview{
+  box-sizing:border-box!important;
+  display:block!important;
+  inline-size:100%!important;
+  width:100%!important;
+  block-size:100%!important;
+  height:100%!important;
+  min-block-size:0!important;
+  min-height:0!important;
+  max-inline-size:none!important;
+  max-width:none!important;
+  max-block-size:none!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  background:#090c11!important;
+  vertical-align:top!important;
+}
+.message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"] .message-text{
+  box-sizing:border-box!important;
+  width:calc(100% - 14px)!important;
+  margin:7px 7px 3px!important;
+  padding:0!important;
+  overflow-wrap:anywhere!important;
+}
+.message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"]:not(.workspace8-media-only) .message-meta{
+  margin:3px 7px 2px auto!important;
+}
+.message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"] .reply-preview,
+.message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"] .message-reply-preview,
+.message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"] .quoted-message{
+  box-sizing:border-box!important;
+  width:calc(100% - 10px)!important;
+  margin:4px 5px 6px!important;
+}
+
+/* POLISH: subtle, quick feedback instead of abrupt jumps. */
+:root{
+  --workspace11-ease:cubic-bezier(.2,.72,.22,1);
+  --workspace11-fast:140ms;
+  --workspace11-normal:210ms;
+}
+.chat-item,
+.sidebar-mode-tabs button,
+.composer,
+.composer button,
+.chat-header button,
+.message-menu-trigger,
+.workspace-folder-launcher,
+.workspace-folder-drawer button,
+.workspace-pinned-banner button,
+.message-context-menu button,
+.workspace-card button,
+.workspace9-modal-card button,
+.meetus-call-control{
+  transition:
+    background-color var(--workspace11-fast) var(--workspace11-ease),
+    border-color var(--workspace11-fast) var(--workspace11-ease),
+    color var(--workspace11-fast) var(--workspace11-ease),
+    opacity var(--workspace11-fast) var(--workspace11-ease),
+    box-shadow var(--workspace11-normal) var(--workspace11-ease),
+    transform var(--workspace11-fast) var(--workspace11-ease)!important;
+}
+.chat-item:hover{transform:translateX(2px)}
+.chat-item.active,.chat-item.selected{transform:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.035)}
+.sidebar-mode-tabs button:active,
+.composer button:active,
+.chat-header button:active,
+.message-menu-trigger:active,
+.workspace-folder-drawer button:active,
+.message-context-menu button:active,
+.workspace-card button:active,
+.workspace9-modal-card button:active,
+.meetus-call-control:active{transform:scale(.94)!important}
+.composer:focus-within{
+  border-color:rgba(141,118,239,.42)!important;
+  box-shadow:0 10px 32px rgba(0,0,0,.26),0 0 0 3px rgba(128,105,232,.08)!important;
+}
+.message-row .message-bubble{
+  transition:box-shadow var(--workspace11-normal) var(--workspace11-ease),transform var(--workspace11-fast) var(--workspace11-ease)!important;
+}
+@media(hover:hover) and (pointer:fine){
+  .message-row .message-bubble:hover{box-shadow:0 8px 24px rgba(0,0,0,.16)}
+  .message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"] > .media-image-button:hover,
+  .message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"] > .media-video-button:hover{
+    transform:translateZ(0) scale(1.006)!important;
+  }
+}
+.workspace-pinned-banner:not(.hidden){animation:workspace11-pin-in var(--workspace11-normal) var(--workspace11-ease) both}
+.message-context-menu:not(.hidden),
+.workspace-card,
+.workspace9-modal-card{animation:workspace11-pop-in 180ms var(--workspace11-ease) both}
+.message-row.workspace11-entering .message-bubble{animation:workspace11-message-in 190ms var(--workspace11-ease) both}
+.chat-item.workspace11-entering-chat{animation:workspace11-chat-in 180ms var(--workspace11-ease) both}
+
+@keyframes workspace11-message-in{
+  from{opacity:0;transform:translateY(7px) scale(.985)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes workspace11-chat-in{
+  from{opacity:0;transform:translateY(5px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes workspace11-pin-in{
+  from{opacity:0;transform:translateY(-5px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes workspace11-pop-in{
+  from{opacity:0;transform:translateY(6px) scale(.985)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* Modern, compact media chrome. */
+.message-video-play{
+  transition:transform var(--workspace11-fast) var(--workspace11-ease),background-color var(--workspace11-fast) var(--workspace11-ease),opacity var(--workspace11-fast) var(--workspace11-ease)!important;
+}
+.media-video-button:hover .message-video-play{transform:translate(-50%,-50%) scale(1.06)!important}
+.message-video-duration{
+  box-shadow:0 4px 14px rgba(0,0,0,.24)!important;
+}
+
+@media(max-width:700px){
+  .message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"]{
+    max-inline-size:calc(100vw - 16px)!important;
+    max-width:calc(100vw - 16px)!important;
+    border-radius:16px!important;
+  }
+  .message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"] > .media-image-button,
+  .message-row .message-bubble.visual-media-bubble[data-workspace11-media-fit="1"] > .media-video-button{
+    border-radius:13px!important;
+  }
+  .chat-item:hover{transform:none}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    scroll-behavior:auto!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+}

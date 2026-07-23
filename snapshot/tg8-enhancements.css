@@ -1,0 +1,214 @@
+/* MEETUS 0.6.25.2 COMMUNITY2-TG8 */
+
+/* WhatsApp-like day markers. */
+.message-date-divider {
+  position: sticky;
+  z-index: 2;
+  top: 8px;
+  width: max-content;
+  max-width: calc(100% - 28px);
+  margin: 10px auto 8px;
+  padding: 5px 10px;
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 999px;
+  color: rgba(255,255,255,.78);
+  background: rgba(31,31,33,.86);
+  box-shadow: 0 3px 12px rgba(0,0,0,.18);
+  backdrop-filter: blur(10px);
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Restore the emoji button on phones. */
+@media (max-width: 900px) {
+  #emojiButton {
+    display: grid !important;
+    place-items: center;
+  }
+
+  .composer {
+    gap: 2px !important;
+  }
+
+  .composer-icon {
+    width: 34px !important;
+    min-width: 34px !important;
+  }
+}
+
+/* Stable one-piece voice recording bar on every width. */
+.record-bar {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  grid-template-columns: 42px 76px minmax(72px, 1fr) 42px 44px !important;
+  align-items: center !important;
+  overflow: hidden !important;
+  isolation: isolate;
+}
+
+.record-bar > * {
+  min-width: 0;
+}
+
+.record-wave {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.record-timer {
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .record-bar {
+    min-height: 58px !important;
+    grid-template-columns: 38px 58px minmax(48px, 1fr) 38px 42px !important;
+    gap: 3px !important;
+    padding: 6px 7px calc(6px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .record-delete,
+  .record-pause,
+  .record-send {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .record-wave {
+    gap: 2px !important;
+  }
+
+  .record-wave i {
+    min-width: 1px !important;
+    max-width: 3px !important;
+  }
+}
+
+/* Use the browser's mature video controls and always contain the full frame. */
+.viewer-video-shell {
+  max-width: 100% !important;
+  max-height: calc(100dvh - 88px) !important;
+  background: #000 !important;
+}
+
+.viewer-video {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: calc(100dvh - 88px) !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+
+.viewer-video-controls,
+.viewer-video-center-play {
+  display: none !important;
+}
+
+@media (max-width: 700px) {
+  .viewer-scroll {
+    padding: 0 !important;
+  }
+
+  .viewer-video-shell,
+  .viewer-video {
+    max-height: calc(100dvh - 64px) !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* In-app lightweight camera. */
+.tg8-camera-modal {
+  position: fixed;
+  z-index: 2400;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 58px minmax(0,1fr) 86px;
+  color: #fff;
+  background: #08080a;
+}
+
+.tg8-camera-modal.hidden { display: none; }
+
+.tg8-camera-header,
+.tg8-camera-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(26,26,28,.96);
+}
+
+.tg8-camera-title strong,
+.tg8-camera-title small { display: block; }
+.tg8-camera-title small { margin-top: 2px; color: #aaa; font-size: 11px; }
+
+.tg8-camera-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #000;
+}
+
+.tg8-camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.tg8-camera-timer {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.62);
+  transform: translateX(-50%);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+
+.tg8-camera-close,
+.tg8-camera-switch {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(255,255,255,.08);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.tg8-camera-capture {
+  width: 62px;
+  height: 62px;
+  border: 5px solid #fff;
+  border-radius: 50%;
+  background: #8774e1;
+  box-shadow: 0 0 0 4px rgba(135,116,225,.28);
+  cursor: pointer;
+}
+
+.tg8-camera-modal.recording .tg8-camera-capture {
+  border-radius: 18px;
+  background: #ff5f74;
+}
+
+.tg8-camera-hint {
+  min-width: 82px;
+  color: #aaa;
+  font-size: 11px;
+  text-align: right;
+}

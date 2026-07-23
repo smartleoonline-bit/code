@@ -1,0 +1,109 @@
+/* MEETUS 0.6.25.2 COMMUNITY2-TG9 */
+
+/* Compact landscape media bubbles: no empty dark area to the right. */
+.message-bubble.visual-media-bubble.landscape-media-compact {
+  box-sizing: border-box !important;
+  width: calc(var(--tg9-media-width, 320px) + 8px) !important;
+  min-width: 0 !important;
+  max-width: min(468px, 76%) !important;
+  padding-right: 4px !important;
+  padding-left: 4px !important;
+}
+
+.landscape-media-compact .media-image-button {
+  box-sizing: border-box !important;
+  width: var(--tg9-media-width, auto) !important;
+  max-width: 100% !important;
+}
+
+.landscape-media-compact .message-image {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+
+/* Emoji-only messages: large emoji with no oversized bubble. */
+.message-bubble.emoji-only-bubble,
+.message-row.mine .message-bubble.emoji-only-bubble {
+  box-sizing: border-box !important;
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: min(360px, 78vw) !important;
+  padding: 1px 25px 16px 2px !important;
+  overflow: visible !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.message-bubble.emoji-only-bubble::before,
+.message-row.mine .message-bubble.emoji-only-bubble::before {
+  display: none !important;
+}
+
+.emoji-only-bubble .message-text.emoji-only-text {
+  padding: 0 !important;
+  color: inherit !important;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif !important;
+  font-size: 40px !important;
+  font-weight: 400 !important;
+  line-height: 1.05 !important;
+  letter-spacing: 1px !important;
+  white-space: pre-wrap !important;
+  word-break: normal !important;
+}
+
+.emoji-only-bubble.emoji-many .message-text.emoji-only-text {
+  font-size: 34px !important;
+}
+
+.emoji-only-bubble .message-meta {
+  right: 1px !important;
+  bottom: 0 !important;
+  min-height: 13px !important;
+  padding: 1px 4px !important;
+  border-radius: 7px !important;
+  background: rgba(20, 22, 25, .68) !important;
+  backdrop-filter: blur(5px);
+}
+
+.emoji-only-bubble .message-time {
+  color: rgba(255,255,255,.78) !important;
+}
+
+.emoji-only-bubble .message-menu-trigger {
+  top: 0 !important;
+  right: 1px !important;
+}
+
+.emoji-only-bubble .message-reactions {
+  margin-top: 2px !important;
+}
+
+@media (min-width: 701px) and (max-width: 1100px) {
+  .message-bubble.visual-media-bubble.landscape-media-compact {
+    max-width: min(348px, 72%) !important;
+  }
+
+  .emoji-only-bubble .message-text.emoji-only-text {
+    font-size: 39px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .message-bubble.visual-media-bubble.landscape-media-compact {
+    width: calc(var(--tg9-media-width, 240px) + 8px) !important;
+    max-width: min(258px, 72vw) !important;
+  }
+
+  .emoji-only-bubble .message-text.emoji-only-text {
+    font-size: 38px !important;
+  }
+
+  .emoji-only-bubble.emoji-many .message-text.emoji-only-text {
+    font-size: 31px !important;
+  }
+}

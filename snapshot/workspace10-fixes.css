@@ -1,0 +1,73 @@
+/* MEETUS 0.6.25.2 COMMUNITY2-TG11-WORKSPACE10 */
+
+/* The bubble and its media use exactly the same width. This removes the black/empty side fields. */
+.message-bubble.visual-media-bubble[data-workspace10-media-fit="1"]{
+  box-sizing:border-box!important;
+  display:inline-block!important;
+  flex:0 0 auto!important;
+  inline-size:calc(var(--workspace10-media-width) + 6px)!important;
+  width:calc(var(--workspace10-media-width) + 6px)!important;
+  min-inline-size:0!important;
+  min-width:0!important;
+  max-inline-size:calc(100vw - 24px)!important;
+  max-width:calc(100vw - 24px)!important;
+  align-self:flex-end!important;
+  overflow:visible!important;
+}
+.message-row:not(.mine) .message-bubble.visual-media-bubble[data-workspace10-media-fit="1"]{align-self:flex-start!important}
+.message-bubble.visual-media-bubble[data-workspace10-media-fit="1"] .media-image-button,
+.message-bubble.visual-media-bubble[data-workspace10-media-fit="1"] .media-video-button{
+  box-sizing:border-box!important;
+  display:block!important;
+  inline-size:var(--workspace10-media-width)!important;
+  width:var(--workspace10-media-width)!important;
+  max-inline-size:100%!important;
+  max-width:100%!important;
+  aspect-ratio:var(--workspace10-media-ratio)!important;
+  background:transparent!important;
+  overflow:hidden!important;
+}
+.message-bubble.visual-media-bubble[data-workspace10-media-fit="1"] .message-image,
+.message-bubble.visual-media-bubble[data-workspace10-media-fit="1"] .message-video-preview{
+  display:block!important;
+  inline-size:100%!important;
+  width:100%!important;
+  block-size:100%!important;
+  height:100%!important;
+  margin:0!important;
+}
+.message-bubble.visual-media-bubble[data-workspace10-media-fit="1"] .message-video-preview{
+  object-fit:cover!important;
+  object-position:center!important;
+  background:transparent!important;
+}
+
+/* On mobile the pinned message is anchored directly under the real chat header. */
+@media(max-width:700px){
+  #chatPane{position:relative!important}
+  #workspacePinnedBanner.workspace10-mobile-pin:not(.hidden){
+    position:absolute!important;
+    top:var(--workspace10-pin-top,60px)!important;
+    left:0!important;
+    right:0!important;
+    bottom:auto!important;
+    width:100%!important;
+    margin:0!important;
+    z-index:190!important;
+    display:flex!important;
+    border-radius:0!important;
+    box-sizing:border-box!important;
+    box-shadow:0 8px 22px rgba(0,0,0,.22)!important;
+  }
+  #chatPane.workspace10-has-mobile-pin #messageArea{
+    padding-top:58px!important;
+    scroll-padding-top:64px!important;
+  }
+  #workspacePinnedBanner.workspace10-mobile-pin>button:first-child{min-width:0!important;flex:1 1 auto!important}
+  #workspacePinnedBanner.workspace10-mobile-pin small{display:block!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+
+  .message-bubble.visual-media-bubble[data-workspace10-media-fit="1"]{
+    max-inline-size:calc(100vw - 18px)!important;
+    max-width:calc(100vw - 18px)!important;
+  }
+}

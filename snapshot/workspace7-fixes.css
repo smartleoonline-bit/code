@@ -1,0 +1,32 @@
+/* MEETUS 0.6.25.2 COMMUNITY2-TG11-WORKSPACE7 */
+.workspace7-jump-host{position:relative!important}
+.workspace7-message-area-hidden{opacity:0!important;pointer-events:none!important;scroll-behavior:auto!important}
+.workspace7-jump-overlay{position:absolute;z-index:35;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--chat-bg,#132638);color:#c7cad2;font-size:13px}
+.workspace7-jump-overlay.hidden{display:none!important}
+.workspace7-jump-spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.18);border-top-color:#8f78ef;border-radius:50%;animation:workspace7-spin .7s linear infinite}
+@keyframes workspace7-spin{to{transform:rotate(360deg)}}
+.message.workspace7-search-hit,.message-row.workspace7-search-hit,[data-message-id].workspace7-search-hit{animation:workspace7-search-hit 2.5s ease-out!important}
+@keyframes workspace7-search-hit{0%,28%{background-color:rgba(134,105,235,.28)}100%{background-color:transparent}}
+
+.sidebar-mode-tabs.meetus-sidebar-four-tabs{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;width:100%!important;max-width:100%!important;overflow:hidden!important;gap:3px!important}
+.sidebar-mode-tabs.meetus-sidebar-four-tabs button{min-width:0!important;width:auto!important;max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;padding-inline:4px!important}
+#callHistoryList{width:100%!important;max-width:100%!important;box-sizing:border-box!important;overflow-x:hidden!important}
+.workspace6-call-history-item{width:100%!important;max-width:100%!important;box-sizing:border-box!important;grid-template-columns:minmax(0,1fr) 36px 28px!important;gap:3px!important;overflow:visible!important}
+.workspace6-call-history-main-button{width:100%!important;min-width:0!important;max-width:100%!important;grid-template-columns:44px minmax(0,1fr) 58px!important;gap:8px!important;padding:7px 4px 7px 6px!important;overflow:hidden!important}
+.workspace6-call-history-main-button time{max-width:58px!important;overflow:hidden!important;text-overflow:ellipsis!important;text-align:right!important}
+.workspace6-call-history-copy{min-width:0!important;overflow:hidden!important}
+.workspace6-call-phone{width:34px!important;height:34px!important}
+.workspace6-call-menu-button{width:26px!important}
+html:not([data-meetus-sidebar-mode="calls"]) #callHistoryList{display:none!important}
+html[data-meetus-sidebar-mode="calls"] #chatList,
+html[data-meetus-sidebar-mode="calls"] #contactList,
+html[data-meetus-sidebar-mode="calls"] #requestList,
+html[data-meetus-sidebar-mode="calls"] #searchResults{display:none!important}
+html:not([data-meetus-sidebar-mode="chats"]) #workspaceFolderBar{display:none!important}
+
+@media(max-width:700px){
+  .workspace6-call-history-item{grid-template-columns:minmax(0,1fr) 34px 26px!important}
+  .workspace6-call-history-main-button{grid-template-columns:42px minmax(0,1fr) 50px!important;gap:6px!important}
+  .workspace6-call-history-main-button time{max-width:50px!important}
+  .sidebar-mode-tabs.meetus-sidebar-four-tabs button{font-size:10px!important;padding-inline:2px!important}
+}

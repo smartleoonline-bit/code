@@ -1,0 +1,301 @@
+/* MEETUS 0.6.25.2 COMMUNITY2-TG10-CALLS7 (base) */
+.meetus-call-hidden{display:none!important}
+.meetus-call-modal{position:fixed;inset:0;z-index:1600;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(4,8,14,.74);backdrop-filter:blur(10px)}
+.meetus-call-card{width:min(430px,calc(100vw - 28px));border:1px solid rgba(142,113,239,.28);border-radius:24px;background:#181b22;box-shadow:0 28px 90px rgba(0,0,0,.52);overflow:hidden;color:#fff}
+.meetus-call-card-head{padding:22px 22px 12px;text-align:center}.meetus-call-card-head h3{margin:0 0 6px;font-size:21px}.meetus-call-card-head p{margin:0;color:#9ca2ae;font-size:14px}
+.meetus-call-choice-list{display:grid;gap:10px;padding:14px 18px 18px}.meetus-call-choice{display:flex;align-items:center;gap:14px;width:100%;padding:14px 15px;border:0;border-radius:16px;background:#242833;color:#fff;text-align:left;cursor:pointer}.meetus-call-choice:hover{background:#2d3240}.meetus-call-choice svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8}.meetus-call-choice strong{display:block;font-size:15px}.meetus-call-choice span{display:block;margin-top:3px;color:#9da4b2;font-size:12px}
+.meetus-call-choice.primary{background:linear-gradient(135deg,#7864e9,#9b70ef)}.meetus-call-choice.primary span{color:rgba(255,255,255,.76)}.meetus-call-choice.stage{background:linear-gradient(135deg,#8c5adf,#cf6ab2)}
+.meetus-call-card-close{width:calc(100% - 36px);margin:0 18px 18px;padding:11px;border:0;border-radius:14px;background:#2b2f38;color:#d7d9df;cursor:pointer}
+.meetus-incoming-call{position:fixed;z-index:1700;top:22px;left:50%;transform:translateX(-50%);width:min(520px,calc(100vw - 24px));padding:14px 16px;border:1px solid rgba(145,116,239,.42);border-radius:20px;background:rgba(24,27,34,.97);box-shadow:0 25px 80px rgba(0,0,0,.55);display:flex;align-items:center;gap:14px;color:#fff}.meetus-incoming-call .avatar{flex:0 0 auto}.meetus-incoming-main{min-width:0;flex:1}.meetus-incoming-main strong{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meetus-incoming-main span{display:block;margin-top:3px;color:#aeb3bf;font-size:13px}.meetus-incoming-actions{display:flex;gap:8px}.meetus-incoming-actions button{width:46px;height:46px;border:0;border-radius:50%;display:grid;place-items:center;color:#fff;cursor:pointer}.meetus-incoming-actions svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:2}.meetus-incoming-decline{background:#e65365}.meetus-incoming-accept{background:#35bd78}
+.meetus-call-shell{position:fixed;inset:0;z-index:1500;display:grid;grid-template-rows:auto 1fr auto;background:radial-gradient(circle at 50% 20%,#24364a 0,#11161f 52%,#0b0f15 100%);color:#fff}.meetus-call-shell.minimized{inset:auto 18px 18px auto;width:min(390px,calc(100vw - 24px));height:82px;border:1px solid rgba(147,118,239,.35);border-radius:22px;overflow:hidden;box-shadow:0 22px 70px rgba(0,0,0,.55);grid-template-rows:1fr}.meetus-call-shell.minimized .meetus-call-stage,.meetus-call-shell.minimized .meetus-call-controls,.meetus-call-shell.minimized .meetus-call-side{display:none!important}.meetus-call-shell.minimized .meetus-call-top{height:82px;border:0}.meetus-call-top{height:68px;padding:0 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(14,18,24,.78);backdrop-filter:blur(16px)}.meetus-call-top-info{min-width:0;flex:1}.meetus-call-top-info strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meetus-call-top-info span{display:block;margin-top:3px;color:#aab1be;font-size:12px}.meetus-call-top button{width:40px;height:40px;border:0;border-radius:50%;background:#292e39;color:#fff;display:grid;place-items:center;cursor:pointer}.meetus-call-top button svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9}
+.meetus-call-body{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) auto}.meetus-call-stage{min-width:0;min-height:0;padding:14px;overflow:auto}.meetus-call-grid{min-height:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));grid-auto-rows:minmax(180px,1fr);gap:12px;align-content:center}.meetus-call-tile{position:relative;min-height:180px;border:1px solid rgba(255,255,255,.08);border-radius:20px;overflow:hidden;background:#202631;display:flex;align-items:center;justify-content:center}.meetus-call-tile.speaking{border-color:#54d592;box-shadow:0 0 0 2px rgba(84,213,146,.22)}.meetus-call-tile.screen{grid-column:1/-1;min-height:320px}.meetus-call-tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0b0d12}.meetus-call-tile.screen video{object-fit:contain}.meetus-call-avatar{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#7a62e8,#22a9bd);font-size:30px;font-weight:700}.meetus-call-tile-label{position:absolute;left:10px;right:10px;bottom:9px;display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:12px;background:rgba(8,11,16,.62);backdrop-filter:blur(8px);font-size:13px}.meetus-call-tile-label span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.meetus-call-role{margin-left:auto;padding:2px 7px;border-radius:999px;background:rgba(126,101,235,.72);font-size:10px}.meetus-call-muted{color:#ff7885}
+.meetus-call-side{width:330px;min-height:0;border-left:1px solid rgba(255,255,255,.08);background:rgba(15,19,26,.84);display:grid;grid-template-rows:auto 1fr}.meetus-call-tabs{display:flex;padding:10px;border-bottom:1px solid rgba(255,255,255,.07)}.meetus-call-tabs button{flex:1;padding:9px;border:0;border-radius:11px;background:transparent;color:#a9afba;cursor:pointer}.meetus-call-tabs button.active{background:#302b4b;color:#fff}.meetus-call-side-content{min-height:0;overflow:auto}.meetus-call-participants{padding:10px}.meetus-call-person{display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px}.meetus-call-person:hover{background:rgba(255,255,255,.045)}.meetus-call-person .avatar{width:38px;height:38px}.meetus-call-person-main{min-width:0;flex:1}.meetus-call-person-main strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meetus-call-person-main span{font-size:11px;color:#9ca3af}.meetus-call-hand{font-size:19px}.meetus-call-role-action{padding:6px 8px;border:0;border-radius:9px;background:#7060d8;color:#fff;font-size:11px;cursor:pointer}
+.meetus-call-chat{height:100%;display:grid;grid-template-rows:1fr auto}.meetus-call-chat-list{min-height:0;overflow:auto;padding:12px}.meetus-call-chat-message{margin:0 0 8px;padding:9px 10px;border-radius:12px;background:#242933;font-size:12px;line-height:1.35}.meetus-call-chat-message strong{display:block;margin-bottom:3px;color:#a995ff}.meetus-call-chat-compose{display:flex;gap:8px;padding:10px;border-top:1px solid rgba(255,255,255,.07)}.meetus-call-chat-compose input{min-width:0;flex:1;padding:10px 12px;border:1px solid #343a46;border-radius:12px;background:#1d212a;color:#fff}.meetus-call-chat-compose button{width:42px;border:0;border-radius:12px;background:#7864e9;color:#fff;cursor:pointer}
+.meetus-call-controls{min-height:82px;padding:12px 16px 16px;display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(180deg,rgba(13,17,23,.45),rgba(13,17,23,.94))}.meetus-call-control{position:relative;width:52px;height:52px;border:0;border-radius:50%;display:grid;place-items:center;background:#303641;color:#fff;cursor:pointer}.meetus-call-control svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9}.meetus-call-control.off{background:#eb5968}.meetus-call-control.active{background:#7160dd}.meetus-call-control.end{background:#e44c5e;width:60px;border-radius:18px}.meetus-call-control[disabled]{opacity:.42;cursor:not-allowed}.meetus-call-control-label{position:absolute;top:58px;left:50%;transform:translateX(-50%);font-size:10px;color:#aab0ba;white-space:nowrap}.meetus-call-hand-raised{background:#e5a93e!important;color:#17120a!important}
+.meetus-call-banner{margin:8px 12px;padding:10px 12px;border:1px solid rgba(128,104,232,.35);border-radius:14px;background:linear-gradient(135deg,rgba(91,70,186,.32),rgba(32,126,153,.24));display:flex;align-items:center;gap:10px}.meetus-call-banner-main{min-width:0;flex:1}.meetus-call-banner-main strong{display:block;font-size:13px}.meetus-call-banner-main span{display:block;margin-top:2px;color:#b5bac4;font-size:11px}.meetus-call-banner button{padding:8px 13px;border:0;border-radius:11px;background:#7d66e8;color:#fff;cursor:pointer}
+.meetus-call-toast{position:fixed;z-index:1800;left:50%;bottom:24px;transform:translateX(-50%);padding:11px 16px;border-radius:13px;background:#232832;color:#fff;box-shadow:0 15px 45px rgba(0,0,0,.4);font-size:13px}
+@media(max-width:900px){.meetus-call-side{position:absolute;inset:68px 0 82px auto;width:min(360px,100%);z-index:4;box-shadow:-15px 0 40px rgba(0,0,0,.35)}.meetus-call-grid{grid-template-columns:1fr 1fr;grid-auto-rows:minmax(160px,1fr)}.meetus-call-tile.screen{min-height:260px}}
+@media(max-width:700px){.meetus-incoming-call{top:auto;bottom:16px}.meetus-call-top{height:60px;padding:0 9px}.meetus-call-body{display:block}.meetus-call-stage{height:calc(100vh - 138px);padding:8px}.meetus-call-grid{grid-template-columns:1fr;grid-auto-rows:minmax(210px,1fr);gap:8px}.meetus-call-tile{min-height:210px;border-radius:16px}.meetus-call-tile.screen{min-height:240px}.meetus-call-controls{min-height:78px;padding:10px 8px 16px;gap:7px;overflow-x:auto;justify-content:flex-start}.meetus-call-control{flex:0 0 48px;width:48px;height:48px}.meetus-call-control-label{display:none}.meetus-call-side{inset:60px 0 78px 0;width:100%}.meetus-call-shell.minimized{left:8px;right:8px;bottom:8px;width:auto}.meetus-call-card{border-radius:20px}}
+
+/* MEETUS 0.6.25.2 COMMUNITY2-TG10-CALLS2 */
+.sidebar-mode-tabs.meetus-sidebar-four-tabs{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:3px!important}
+.sidebar-mode-tabs.meetus-sidebar-four-tabs button{padding-inline:5px!important;font-size:12px!important}
+.meetus-call-search-hidden{display:none!important}
+#callHistoryList{grid-row:4;min-height:0;height:auto;overflow-y:auto}
+.meetus-call-history-list{padding:6px!important}
+.meetus-call-history-item{width:100%;min-height:66px;display:grid;grid-template-columns:46px minmax(0,1fr) auto 34px;align-items:center;gap:10px;padding:7px 8px;border:0;border-radius:12px;background:transparent;color:var(--text,#f4f4f5);text-align:left;cursor:pointer}
+.meetus-call-history-item:hover{background:rgba(255,255,255,.055)}
+.meetus-call-history-item .avatar{width:44px;height:44px}
+.meetus-call-history-main{min-width:0}.meetus-call-history-main strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}.meetus-call-history-meta{display:flex;align-items:center;gap:5px;margin-top:4px;color:var(--muted,#9a9aa0);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meetus-call-history-meta svg{flex:0 0 15px;width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9}.meetus-call-history-item.missed .meetus-call-history-meta{color:#ff667d}.meetus-call-history-item time{align-self:start;margin-top:5px;color:var(--muted,#9a9aa0);font-size:10px;white-space:nowrap}.meetus-call-history-phone{width:32px;height:32px;display:grid;place-items:center;border-radius:50%;color:#a796f4;background:rgba(135,116,225,.14)}.meetus-call-history-phone svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9}
+.meetus-call-contact-only-hidden{display:none!important}
+
+.meetus-call-grid{grid-auto-flow:dense}
+.meetus-call-tile.camera{min-height:180px}
+.meetus-call-tile.screen{grid-column:1/-1;min-height:min(62vh,560px);background:#090b0f}
+.meetus-call-tile.screen video{object-fit:contain!important}
+.meetus-call-tile.camera video{object-fit:cover!important}
+.meetus-call-fullscreen{position:absolute;z-index:3;top:10px;right:10px;width:36px;height:36px;border:0;border-radius:10px;display:grid;place-items:center;color:#fff;background:rgba(8,11,16,.64);backdrop-filter:blur(8px);cursor:pointer;opacity:.72;transition:.16s ease}
+.meetus-call-fullscreen:hover{opacity:1;background:rgba(111,91,218,.85)}
+.meetus-call-fullscreen svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9}
+.meetus-call-tile:not(.has-video):not(.screen) .meetus-call-fullscreen{display:none}
+.meetus-call-tile-focused{position:fixed!important;inset:0!important;z-index:1900!important;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;border-radius:0!important;grid-column:auto!important}
+.meetus-call-tile-focused .meetus-call-fullscreen{position:fixed;top:14px;right:14px}
+
+@media(max-width:700px){
+  .sidebar-mode-tabs.meetus-sidebar-four-tabs button{font-size:11px!important;padding-inline:3px!important}
+  .meetus-call-history-item{grid-template-columns:44px minmax(0,1fr) auto 32px;gap:8px}
+  .meetus-call-grid{grid-template-columns:1fr!important;grid-auto-rows:auto!important;align-content:start!important}
+  .meetus-call-tile.camera{min-height:36dvh!important}
+  .meetus-call-tile.screen{grid-column:1!important;min-height:46dvh!important}
+  .meetus-call-tile.camera.has-video+.meetus-call-tile.screen{min-height:48dvh!important}
+  .meetus-call-fullscreen{width:38px;height:38px;opacity:1}
+}
+
+/* MEETUS 0.6.25.2 COMMUNITY2-TG10-CALLS3 */
+.meetus-call-shell,.meetus-call-shell *{box-sizing:border-box}
+.meetus-call-shell{width:100dvw;max-width:100dvw;height:100dvh;max-height:100dvh;overflow:hidden;grid-template-rows:64px minmax(0,1fr) 78px}
+.meetus-call-body{position:relative;display:block!important;min-width:0;min-height:0;overflow:hidden}
+.meetus-call-stage{position:absolute;inset:0;min-width:0;min-height:0;padding:10px;overflow:hidden}
+.meetus-call-grid{position:relative;width:100%;height:100%;min-height:0!important;display:block!important;overflow:hidden;isolation:isolate}
+.meetus-call-main-slot{position:absolute;inset:0;z-index:1;overflow:hidden;border-radius:20px;background:#0b0f15}
+.meetus-call-main-slot:empty::after{content:"Ожидаем видео…";position:absolute;inset:0;display:grid;place-items:center;color:#77808e;font-size:14px}
+.meetus-call-main-slot>.meetus-call-tile.meetus-call-primary{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:0!important;max-width:none!important;max-height:none!important;border-radius:20px!important;grid-column:auto!important}
+.meetus-call-main-slot>.meetus-call-tile.meetus-call-primary video{object-fit:cover}
+.meetus-call-main-slot>.meetus-call-tile.meetus-call-primary.screen video{object-fit:contain!important}
+.meetus-call-filmstrip{position:absolute;z-index:6;top:12px;left:12px;right:12px;height:104px;display:flex;align-items:stretch;gap:8px;padding:2px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent;pointer-events:auto}
+.meetus-call-filmstrip::-webkit-scrollbar{height:4px}.meetus-call-filmstrip::-webkit-scrollbar-thumb{background:rgba(255,255,255,.24);border-radius:999px}
+.meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail{position:relative!important;flex:0 0 152px;width:152px!important;height:96px!important;min-height:0!important;border-radius:14px!important;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,.34)}
+.meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail .meetus-call-avatar{width:54px;height:54px;font-size:18px}
+.meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail .meetus-call-tile-label{left:5px;right:5px;bottom:5px;padding:4px 6px;font-size:10px;border-radius:8px}
+.meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail .meetus-call-role{display:none}
+.meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail .meetus-call-fullscreen{display:none!important}
+.meetus-call-pip-layer{position:absolute;inset:0;z-index:8;pointer-events:none}
+.meetus-call-pip-layer>.meetus-call-tile.meetus-call-pip{position:absolute!important;width:clamp(130px,22vw,230px)!important;height:auto!important;aspect-ratio:1/1;min-height:0!important;border-radius:18px!important;pointer-events:auto;touch-action:none;user-select:none;cursor:grab;box-shadow:0 16px 44px rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.24)}
+.meetus-call-pip-layer>.meetus-call-tile.meetus-call-pip:active{cursor:grabbing}
+.meetus-call-pip-layer>.meetus-call-tile.meetus-call-pip .meetus-call-avatar{width:66px;height:66px;font-size:21px}
+.meetus-call-pip-layer>.meetus-call-tile.meetus-call-pip .meetus-call-tile-label{left:6px;right:6px;bottom:6px;padding:5px 7px;font-size:10px;border-radius:9px}
+.meetus-call-pip-layer>.meetus-call-tile.meetus-call-pip .meetus-call-role{display:none}
+.meetus-call-pip-layer>.meetus-call-tile.meetus-call-pip .meetus-call-fullscreen{width:32px;height:32px;top:7px;right:7px}
+.meetus-call-tile.meetus-call-primary,.meetus-call-tile.meetus-call-thumbnail,.meetus-call-tile.meetus-call-pip{display:flex!important}
+.meetus-call-tile.meetus-call-thumbnail:hover{border-color:rgba(143,119,239,.78)}
+.meetus-call-side{position:absolute!important;z-index:12;top:0;right:0;bottom:0;width:min(360px,100%);height:auto;box-shadow:-18px 0 50px rgba(0,0,0,.45)}
+.meetus-call-controls{width:100%;min-width:0;max-width:100%;min-height:78px;padding:10px max(12px,env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));justify-content:center;gap:clamp(7px,1.2vw,12px);overflow:visible}
+.meetus-call-control{flex:0 0 50px;width:50px;height:50px}
+.meetus-call-control.end{flex-basis:58px;width:58px}
+
+@media(max-width:700px){
+  .meetus-call-shell{grid-template-rows:58px minmax(0,1fr) calc(70px + env(safe-area-inset-bottom));width:100dvw!important;height:100dvh!important;left:0!important;right:0!important}
+  .meetus-call-top{width:100%;height:58px;padding:0 10px;gap:9px}
+  .meetus-call-top button{flex:0 0 38px;width:38px;height:38px}
+  .meetus-call-stage{padding:0}
+  .meetus-call-main-slot{border-radius:0}
+  .meetus-call-main-slot>.meetus-call-tile.meetus-call-primary{border-radius:0!important;border-left:0;border-right:0}
+  .meetus-call-filmstrip{top:8px;left:8px;right:8px;height:80px;gap:6px;padding:1px}
+  .meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail{flex-basis:112px;width:112px!important;height:72px!important;border-radius:11px!important}
+  .meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail .meetus-call-tile-label{font-size:9px;padding:3px 5px}
+  .meetus-call-pip-layer>.meetus-call-tile.meetus-call-pip{width:clamp(112px,31vw,142px)!important;border-radius:15px!important}
+  .meetus-call-controls{height:calc(70px + env(safe-area-inset-bottom));min-height:0;padding:7px max(8px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));gap:clamp(5px,2vw,9px);justify-content:center!important;overflow:hidden!important}
+  .meetus-call-control{flex:0 0 46px;width:46px;height:46px}
+  .meetus-call-control.end{flex-basis:52px;width:52px;border-radius:16px}
+  .meetus-call-control svg{width:22px;height:22px}
+  .meetus-call-side{top:0;bottom:0;left:0;right:0;width:100%;max-width:none}
+  .meetus-call-tile-label{left:8px;right:8px;bottom:8px}
+}
+
+@media(max-width:380px){
+  .meetus-call-controls{gap:4px;padding-left:6px;padding-right:6px}
+  .meetus-call-control{flex-basis:42px;width:42px;height:42px}
+  .meetus-call-control.end{flex-basis:48px;width:48px}
+  .meetus-call-top-info strong{font-size:14px}
+}
+
+
+/* MEETUS 0.6.25.2 COMMUNITY2-TG10-CALLS3-FIXED1 */
+.meetus-call-avatar{position:relative;overflow:hidden;isolation:isolate}
+.meetus-call-avatar>span{position:relative;z-index:1}
+.meetus-call-avatar>img{position:absolute;inset:0;z-index:2;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.avatar.has-avatar-image{position:relative;overflow:hidden}
+.avatar.has-avatar-image>span{position:relative;z-index:1}
+.avatar.has-avatar-image>img{position:absolute;inset:0;z-index:2;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.meetus-call-main-slot>.meetus-call-tile.meetus-call-primary:not(.has-video) .meetus-call-avatar{width:clamp(132px,22vw,230px);height:clamp(132px,22vw,230px);font-size:clamp(42px,7vw,76px);box-shadow:0 20px 70px rgba(0,0,0,.34)}
+.meetus-call-shell.meetus-call-private .meetus-call-main-slot>.meetus-call-tile.meetus-call-primary:not(.has-video){background:radial-gradient(circle at 50% 38%,rgba(75,99,126,.42),rgba(18,25,35,.92) 62%,#0b0f15 100%)}
+.meetus-call-shell.meetus-call-private .meetus-call-main-slot>.meetus-call-tile.meetus-call-primary:not(.has-video) .meetus-call-fullscreen{display:none!important}
+@media(max-width:700px){
+  .meetus-call-main-slot>.meetus-call-tile.meetus-call-primary:not(.has-video) .meetus-call-avatar{width:clamp(150px,48vw,210px);height:clamp(150px,48vw,210px);font-size:clamp(48px,16vw,70px)}
+}
+
+/* MEETUS 0.6.25.2 COMMUNITY2-TG10-CALLS4 */
+.meetus-call-tile.has-video>.meetus-call-avatar{display:none!important}
+.meetus-call-tile video{object-position:center center;background:#05070b}
+.meetus-call-main-slot>.meetus-call-tile.meetus-call-primary.camera video,
+.meetus-call-main-slot>.meetus-call-tile.meetus-call-primary.screen video{object-fit:contain!important}
+.meetus-call-filmstrip>.meetus-call-tile video,
+.meetus-call-pip-layer>.meetus-call-tile video{object-fit:contain!important}
+.meetus-call-main-slot{display:block}
+.meetus-call-main-slot.meetus-call-gallery{display:grid!important;gap:10px;padding:10px;overflow:auto;align-content:center;justify-content:center;grid-auto-rows:minmax(0,1fr)}
+.meetus-call-main-slot.meetus-call-gallery[data-tile-count="1"]{grid-template-columns:minmax(0,1fr)}
+.meetus-call-main-slot.meetus-call-gallery[data-tile-count="2"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+.meetus-call-main-slot.meetus-call-gallery[data-tile-count="3"],
+.meetus-call-main-slot.meetus-call-gallery[data-tile-count="4"]{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+.meetus-call-main-slot.meetus-call-gallery[data-tile-count="5"],
+.meetus-call-main-slot.meetus-call-gallery[data-tile-count="6"]{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+.meetus-call-main-slot.meetus-call-gallery[data-tile-count="7"],
+.meetus-call-main-slot.meetus-call-gallery[data-tile-count="8"],
+.meetus-call-main-slot.meetus-call-gallery[data-tile-count="9"]{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr))}
+.meetus-call-main-slot.meetus-call-gallery>.meetus-call-gallery-tile{position:relative!important;inset:auto!important;width:100%!important;height:100%!important;min-width:0!important;min-height:150px!important;max-width:none!important;max-height:none!important;border-radius:16px!important;cursor:pointer}
+.meetus-call-main-slot.meetus-call-gallery>.meetus-call-gallery-tile video{object-fit:contain!important}
+.meetus-call-main-slot.meetus-call-gallery>.meetus-call-gallery-tile .meetus-call-avatar{width:clamp(74px,10vw,118px);height:clamp(74px,10vw,118px);font-size:clamp(24px,3.2vw,40px)}
+.meetus-call-main-slot.meetus-call-gallery>.meetus-call-gallery-tile:hover{border-color:rgba(132,112,238,.72)}
+.meetus-call-tile[data-connection-quality="poor"]{box-shadow:inset 0 0 0 2px rgba(242,177,72,.65)}
+.meetus-call-tile[data-connection-quality="lost"]{box-shadow:inset 0 0 0 2px rgba(239,82,102,.75)}
+#meetusCallGridReset{background:#38324f}
+.meetus-call-main-slot>.meetus-call-tile.meetus-call-primary:not(.has-video){display:flex!important;align-items:center;justify-content:center}
+.meetus-call-main-slot>.meetus-call-tile.meetus-call-primary.has-video .meetus-call-tile-label{background:rgba(8,11,16,.68)}
+.meetus-call-pip-layer>.meetus-call-tile.meetus-call-pip{background:#090c11}
+.meetus-call-pip-layer>.meetus-call-tile.meetus-call-pip video{object-fit:contain!important}
+.meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail{background:#090c11}
+.meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail video{object-fit:contain!important}
+
+@media(max-width:900px){
+  .meetus-call-main-slot.meetus-call-gallery[data-tile-count="5"],
+  .meetus-call-main-slot.meetus-call-gallery[data-tile-count="6"],
+  .meetus-call-main-slot.meetus-call-gallery[data-tile-count="7"],
+  .meetus-call-main-slot.meetus-call-gallery[data-tile-count="8"],
+  .meetus-call-main-slot.meetus-call-gallery[data-tile-count="9"]{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none;grid-auto-rows:minmax(180px,1fr)}
+}
+
+@media(max-width:700px){
+  .meetus-call-main-slot.meetus-call-gallery{display:grid!important;grid-template-columns:1fr!important;grid-template-rows:none!important;grid-auto-rows:minmax(42dvh,1fr)!important;padding:6px;gap:6px;align-content:start;overflow-y:auto}
+  .meetus-call-main-slot.meetus-call-gallery>.meetus-call-gallery-tile{min-height:42dvh!important;border-radius:12px!important}
+  .meetus-call-main-slot>.meetus-call-tile.meetus-call-primary.camera video{object-fit:contain!important}
+  .meetus-call-main-slot>.meetus-call-tile.meetus-call-primary.screen video{object-fit:contain!important}
+  .meetus-call-filmstrip{background:linear-gradient(180deg,rgba(7,10,15,.72),transparent);border-radius:12px}
+  .meetus-call-pip-layer>.meetus-call-tile.meetus-call-pip{width:clamp(105px,29vw,138px)!important;aspect-ratio:3/4}
+  .meetus-call-controls{display:flex!important;justify-content:center!important;overflow:visible!important;white-space:nowrap}
+  .meetus-call-control{flex:0 0 44px!important;width:44px!important;height:44px!important}
+  .meetus-call-control.end{flex-basis:50px!important;width:50px!important}
+}
+
+/* MEETUS 0.6.25.2 COMMUNITY2-TG10-CALLS5 */
+#meetusCallInviteButton{background:#343047}
+#meetusCallInviteButton:disabled{opacity:.4;cursor:not-allowed}
+.meetus-call-invite-card{display:grid;grid-template-rows:auto minmax(100px,1fr) auto;max-height:min(680px,calc(100dvh - 28px))}
+.meetus-call-invite-list{min-height:120px;max-height:430px;overflow:auto;padding:4px 14px 12px;scrollbar-width:thin}
+.meetus-call-invite-person{display:grid;grid-template-columns:auto 44px minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 10px;border-radius:14px;cursor:pointer;transition:background .15s ease}
+.meetus-call-invite-person:hover{background:rgba(255,255,255,.055)}
+.meetus-call-invite-person input{position:absolute;opacity:0;pointer-events:none}
+.meetus-call-invite-avatar{position:relative;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:linear-gradient(135deg,#7762e5,#20a9bc);font-weight:700}
+.meetus-call-invite-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.meetus-call-invite-name{min-width:0;display:flex;flex-direction:column;gap:2px}
+.meetus-call-invite-name strong,.meetus-call-invite-name small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meetus-call-invite-name small{color:#929aa8;font-size:11px}
+.meetus-call-invite-check{width:26px;height:26px;border:1px solid rgba(255,255,255,.2);border-radius:50%;display:grid;place-items:center;color:transparent}
+.meetus-call-invite-person input:checked~.meetus-call-invite-check{background:#7863e5;border-color:#7863e5;color:#fff}
+.meetus-call-invite-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px 16px;border-top:1px solid rgba(255,255,255,.07)}
+.meetus-call-invite-actions .meetus-call-card-close{margin:0}
+.meetus-call-invite-submit{border:0;border-radius:13px;background:#7863e5;color:#fff;font-weight:700;cursor:pointer}
+.meetus-call-invite-submit:disabled{opacity:.45;cursor:not-allowed}
+
+.meetus-call-shell.meetus-call-has-screen .meetus-call-main-slot{inset:0}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-filmstrip{top:14px;left:14px;right:auto;width:max-content;max-width:calc(100% - 28px);height:104px;padding:4px;gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;background:rgba(8,11,16,.58);border:1px solid rgba(255,255,255,.08);border-radius:16px;backdrop-filter:blur(12px);box-shadow:0 12px 34px rgba(0,0,0,.34)}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-filmstrip::-webkit-scrollbar{display:none}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail{flex:0 0 148px;width:148px!important;height:94px!important;margin:0}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-main-slot>.meetus-call-tile.meetus-call-primary.screen{border-radius:16px!important}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-main-slot>.meetus-call-tile.meetus-call-primary.screen video{object-fit:contain!important}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-filmstrip>.meetus-call-tile.camera video{object-fit:contain!important}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-stage{padding:10px}
+.meetus-call-tile.has-video>.meetus-call-avatar{display:none!important}
+
+@media(max-width:700px){
+  .meetus-call-invite-card{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:18px}
+  .meetus-call-invite-list{max-height:none}
+  .meetus-call-shell.meetus-call-has-screen .meetus-call-stage{padding:0}
+  .meetus-call-shell.meetus-call-has-screen .meetus-call-filmstrip{top:8px;left:8px;max-width:calc(100% - 16px);height:84px;padding:3px;gap:6px;border-radius:13px}
+  .meetus-call-shell.meetus-call-has-screen .meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail{flex-basis:112px;width:112px!important;height:76px!important}
+  .meetus-call-shell.meetus-call-has-screen .meetus-call-main-slot>.meetus-call-tile.meetus-call-primary.screen{border-radius:0!important}
+  #meetusCallInviteButton{width:38px;height:38px}
+}
+
+
+/* MEETUS 0.6.25.2 COMMUNITY2-TG10-CALLS6 */
+.meetus-call-invite-card{grid-template-rows:auto auto auto minmax(120px,1fr) auto;width:min(560px,calc(100vw - 28px))}
+.meetus-call-invite-search{margin:0 16px 8px;height:46px;border:1px solid rgba(255,255,255,.09);border-radius:15px;background:#11151d;display:flex;align-items:center;gap:10px;padding:0 14px;color:#8e97a8;transition:border-color .15s,box-shadow .15s}
+.meetus-call-invite-search:focus-within{border-color:#7563db;box-shadow:0 0 0 3px rgba(117,99,219,.16)}
+.meetus-call-invite-search svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;flex:0 0 auto}
+.meetus-call-invite-search input{min-width:0;flex:1;border:0;outline:0;background:transparent;color:#f4f5f8;font:inherit}
+.meetus-call-invite-search input::placeholder{color:#707888}
+.meetus-call-invite-count{min-height:18px;padding:0 20px 7px;color:#7f8796;font-size:12px}
+.meetus-call-invite-list{max-height:min(48dvh,440px);padding-top:0}
+.meetus-call-invite-person{grid-template-columns:44px minmax(0,1fr) 28px;padding:10px 8px}
+.meetus-call-invite-person>input{position:absolute}
+.meetus-call-invite-name small{font-size:12px}
+
+/* Спокойная цельная сцена: без рваных пустот и случайного растягивания. */
+.meetus-call-shell{--call-panel:#0b1017;--call-tile:#111822;--call-border:rgba(255,255,255,.075)}
+.meetus-call-body{min-height:0;background:var(--call-panel)}
+.meetus-call-stage{min-height:0;padding:12px;background:radial-gradient(circle at 50% 25%,#172231 0,#0b1017 58%,#070a0f 100%)}
+.meetus-call-grid,.meetus-call-main-slot{min-width:0;min-height:0}
+.meetus-call-main-slot>.meetus-call-tile.meetus-call-primary{inset:0!important;width:100%!important;height:100%!important;border-radius:20px!important;border:1px solid var(--call-border);background:#05080d;box-shadow:0 18px 60px rgba(0,0,0,.3);overflow:hidden}
+.meetus-call-main-slot>.meetus-call-tile.meetus-call-primary video{width:100%;height:100%;object-fit:contain!important;background:#05080d}
+.meetus-call-pip-layer>.meetus-call-tile.meetus-call-pip{width:clamp(180px,18vw,270px)!important;aspect-ratio:16/10!important;border-radius:16px!important;border:2px solid rgba(255,255,255,.18);box-shadow:0 18px 44px rgba(0,0,0,.5);overflow:hidden;background:#0a0e14}
+.meetus-call-pip-layer>.meetus-call-tile.meetus-call-pip video{width:100%;height:100%;object-fit:cover!important}
+.meetus-call-filmstrip{gap:10px;padding:6px}
+.meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail{border-radius:14px!important;border:1px solid var(--call-border);overflow:hidden}
+.meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail video{width:100%;height:100%;object-fit:cover!important}
+.meetus-call-main-slot.meetus-call-gallery{gap:12px;padding:12px;place-content:center}
+.meetus-call-main-slot.meetus-call-gallery>.meetus-call-gallery-tile{border:1px solid var(--call-border)!important;background:var(--call-tile)!important;box-shadow:0 10px 28px rgba(0,0,0,.22)}
+.meetus-call-main-slot.meetus-call-gallery>.meetus-call-gallery-tile video{object-fit:contain!important;background:#070b10}
+.meetus-call-tile-label{left:10px!important;right:10px!important;bottom:9px!important;border-radius:10px!important;padding:7px 10px!important;background:linear-gradient(90deg,rgba(5,8,13,.82),rgba(5,8,13,.56))!important;backdrop-filter:blur(8px)}
+.meetus-call-controls{bottom:16px!important;padding:8px 12px!important;border-radius:24px;background:rgba(8,11,16,.76);border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(16px);box-shadow:0 14px 44px rgba(0,0,0,.35)}
+.meetus-call-control{transition:transform .15s,background .15s}
+.meetus-call-control:hover{transform:translateY(-2px)}
+
+@media(max-width:700px){
+  .meetus-call-invite-card{width:100vw;max-height:100dvh;height:100dvh;border-radius:0;grid-template-rows:auto auto auto minmax(0,1fr) auto}
+  .meetus-call-invite-search{margin:0 12px 7px}
+  .meetus-call-invite-list{max-height:none;padding:0 10px 10px}
+  .meetus-call-invite-actions{padding-bottom:max(14px,env(safe-area-inset-bottom))}
+  .meetus-call-top{padding-left:10px;padding-right:8px}
+  .meetus-call-stage{padding:0}
+  .meetus-call-main-slot>.meetus-call-tile.meetus-call-primary{border-radius:0!important;border-left:0;border-right:0}
+  .meetus-call-pip-layer>.meetus-call-tile.meetus-call-pip{width:clamp(112px,31vw,148px)!important;aspect-ratio:3/4!important;border-radius:14px!important}
+  .meetus-call-pip-layer>.meetus-call-tile.meetus-call-pip video{object-fit:cover!important}
+  .meetus-call-main-slot.meetus-call-gallery{grid-template-columns:1fr!important;grid-auto-rows:minmax(30dvh,1fr)!important;gap:6px;padding:6px;align-content:start}
+  .meetus-call-main-slot.meetus-call-gallery>.meetus-call-gallery-tile{min-height:30dvh!important;border-radius:14px!important}
+  .meetus-call-controls{left:8px!important;right:8px!important;bottom:max(8px,env(safe-area-inset-bottom))!important;transform:none!important;width:auto!important;justify-content:space-evenly!important;padding:8px!important;border-radius:20px}
+  .meetus-call-control{flex:0 0 48px!important;width:48px!important;height:48px!important}
+  .meetus-call-control.end{flex-basis:54px!important;width:54px!important}
+  .meetus-call-control-label{display:none!important}
+}
+
+
+/* MEETUS 0.6.25.2 COMMUNITY2-TG10-CALLS7 */
+.meetus-call-grid{position:relative!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important;align-content:stretch!important;min-height:100%!important;height:100%!important}
+.meetus-call-main-slot{position:relative!important;inset:auto!important;display:block;min-height:0;height:100%;border-radius:20px;background:#05080d}
+.meetus-call-filmstrip{position:relative!important;inset:auto!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;display:flex;align-items:stretch;gap:10px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important}
+.meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail{flex:0 0 148px;width:148px!important;height:92px!important;position:relative!important;margin:0!important}
+.meetus-call-pip-layer{position:absolute!important;inset:0!important;pointer-events:none}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-grid{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) auto!important;gap:12px!important}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-main-slot{grid-row:1;min-height:0}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-filmstrip{grid-row:2;padding-top:4px!important}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail{flex:0 0 176px;width:176px!important;height:104px!important}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-pip-layer{display:none!important}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-main-slot>.meetus-call-tile.meetus-call-primary.screen{border-radius:20px!important}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-filmstrip>.meetus-call-tile.camera video{object-fit:cover!important}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-filmstrip>.meetus-call-tile.screen video{object-fit:contain!important}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-filmstrip>.meetus-call-tile .meetus-call-fullscreen{display:none!important}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-stage{padding:12px!important}
+.meetus-call-shell.meetus-call-has-screen .meetus-call-main-slot>.meetus-call-tile.meetus-call-primary{box-shadow:0 16px 52px rgba(0,0,0,.28)}
+.meetus-call-control:hover{transform:translateY(-1px)}
+.meetus-call-top{box-shadow:0 1px 0 rgba(255,255,255,.04) inset}
+@media(max-width:700px){
+  .meetus-call-shell.meetus-call-has-screen .meetus-call-grid{grid-template-rows:auto minmax(0,1fr)!important;gap:8px!important}
+  .meetus-call-shell.meetus-call-has-screen .meetus-call-filmstrip{grid-row:1;padding:8px 0 0!important}
+  .meetus-call-shell.meetus-call-has-screen .meetus-call-main-slot{grid-row:2}
+  .meetus-call-shell.meetus-call-has-screen .meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail{flex-basis:126px;width:126px!important;height:82px!important}
+  .meetus-call-stage{height:calc(100dvh - 138px)!important;overflow:hidden!important}
+  .meetus-call-filmstrip>.meetus-call-tile.meetus-call-thumbnail{flex-basis:116px;width:116px!important;height:76px!important}
+}
+
+/* MEETUS 0.6.25.2 COMMUNITY2-TG11-WORKSPACE1 — STABLE CAMERA QUALITY */
+.meetus-call-quality{height:40px;display:flex;align-items:center;gap:7px;padding:0 10px;border-radius:20px;background:#292e39;color:#aeb4c0;font-size:11px}.meetus-call-quality select{max-width:78px;border:0;outline:0;background:transparent;color:#fff;font:inherit;cursor:pointer}.meetus-call-quality option{background:#20242d;color:#fff}@media(max-width:700px){.meetus-call-quality{height:36px;padding:0 8px}.meetus-call-quality span{display:none}.meetus-call-quality select{width:58px;font-size:10px}}

@@ -1,0 +1,75 @@
+/* MEETUS 0.6.25.2 COMMUNITY2-TG7 */
+
+/* Seamless profile/security scrolling. */
+.settings-modal {
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  background: #181819 !important;
+}
+
+.settings-header {
+  position: relative;
+  z-index: 2;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+  background: #1c1c1e !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.settings-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(145, 126, 236, 0.48) transparent;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  background: #181819;
+}
+
+.settings-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.settings-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.settings-scroll::-webkit-scrollbar-thumb {
+  min-height: 42px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(145, 126, 236, 0.5);
+  background-clip: padding-box;
+}
+
+.settings-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(162, 145, 249, 0.72);
+  background-clip: padding-box;
+}
+
+.settings-scroll .settings-section {
+  background: #202022 !important;
+}
+
+/* The camera actions remain clear in the attachment sheet. */
+.attachment-menu [data-attachment-action="camera"] .attachment-menu-icon,
+.attachment-menu [data-attachment-action="video-camera"] .attachment-menu-icon {
+  color: #c9beff;
+  background: rgba(135, 116, 225, 0.15);
+}
+
+@media (max-width: 700px) {
+  .settings-modal {
+    width: 100vw !important;
+    max-width: none !important;
+    max-height: 100dvh !important;
+    height: 100dvh !important;
+    border: 0;
+    border-radius: 0 !important;
+  }
+
+  .settings-scroll {
+    padding-right: 10px;
+    padding-bottom: calc(18px + env(safe-area-inset-bottom));
+  }
+
+  .community2-workspace {
+    transform: translateZ(0);
+  }
+}

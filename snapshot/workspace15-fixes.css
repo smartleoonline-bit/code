@@ -1,0 +1,135 @@
+/* MEETUS 0.6.25.2 COMMUNITY2-TG11-WORKSPACE15 */
+:root{
+  --workspace15-accent:#8b73ed;
+  --workspace15-panel:#1c2028;
+  --workspace15-border:rgba(151,129,239,.34);
+  --workspace15-ease:cubic-bezier(.2,.72,.25,1);
+}
+
+/* Rich community descriptions use the same visual editor as chat composers. */
+.workspace13-field>.workspace5-rich-editor,
+.settings-field>.workspace5-rich-editor:has(+ #communityDescriptionInput){
+  box-sizing:border-box;
+  width:100%;
+  min-height:142px;
+  max-height:320px;
+  overflow:auto;
+  padding:12px 13px;
+  border:1px solid #343a47;
+  border-radius:14px;
+  background:#10141b;
+  color:#fff;
+  font:inherit;
+  line-height:1.5;
+  outline:0;
+}
+.workspace13-field>.workspace5-rich-editor:focus,
+.settings-field>.workspace5-rich-editor:has(+ #communityDescriptionInput):focus{
+  border-color:var(--workspace15-accent);
+  box-shadow:0 0 0 3px rgba(139,115,237,.14);
+}
+.workspace13-field>.workspace5-rich-editor:empty::before,
+.settings-field>.workspace5-rich-editor:has(+ #communityDescriptionInput):empty::before{
+  content:attr(data-placeholder);
+  color:#697180;
+  pointer-events:none;
+}
+.workspace15-rich-description{
+  max-width:100%;
+  overflow-wrap:anywhere;
+  white-space:normal!important;
+  line-height:1.5!important;
+}
+.workspace15-rich-description a{color:#a995ff;text-decoration:none;font-weight:600}
+.workspace15-rich-description a:hover{text-decoration:underline}
+.workspace15-rich-description strong{font-weight:800;color:#fff}
+.workspace15-rich-description em{font-style:italic}.workspace15-rich-description u{text-underline-offset:3px}
+.workspace15-empty-description{color:#a4a9b2}
+
+/* Avatar cropper and Meetus title editor. */
+.workspace15-modal{
+  position:fixed;
+  inset:0;
+  z-index:3400;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  background:rgba(5,8,13,.78);
+  backdrop-filter:blur(13px);
+  animation:workspace15Fade .17s ease-out both;
+}
+.workspace15-modal.hidden{display:none!important}
+.workspace15-card{
+  width:min(560px,calc(100vw - 24px));
+  max-height:calc(100dvh - 24px);
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  overflow:hidden;
+  border:1px solid var(--workspace15-border);
+  border-radius:22px;
+  background:var(--workspace15-panel);
+  color:#fff;
+  box-shadow:0 28px 90px rgba(0,0,0,.58);
+  animation:workspace15Card .22s var(--workspace15-ease) both;
+}
+.workspace15-card>header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  min-height:68px;
+  padding:14px 18px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.workspace15-card>header h3{margin:0;font-size:20px}.workspace15-card>header small{display:block;margin-top:3px;color:#9299a6;font-size:12px}
+.workspace15-card>header>button{width:38px;height:38px;border:0;border-radius:50%;background:#2c313b;color:#fff;font-size:23px;cursor:pointer}
+.workspace15-card>footer{display:grid;grid-template-columns:1fr 1.2fr;gap:10px;padding:14px 18px 18px;border-top:1px solid rgba(255,255,255,.07)}
+.workspace15-card>footer button{min-height:44px;border:0;border-radius:13px;background:#303540;color:#fff;font-weight:750;cursor:pointer}
+.workspace15-card>footer button.primary{background:var(--workspace15-accent)}.workspace15-card button:disabled{opacity:.55;cursor:default}
+.workspace15-crop-body{min-height:0;overflow:auto;display:grid;justify-items:center;gap:16px;padding:20px}
+.workspace15-crop-viewport{
+  position:relative;
+  width:min(320px,72vw);
+  aspect-ratio:1;
+  overflow:hidden;
+  touch-action:none;
+  border-radius:50%;
+  background:#10141b;
+  cursor:grab;
+  box-shadow:0 0 0 2px var(--workspace15-accent),0 18px 55px rgba(0,0,0,.42);
+}
+.workspace15-crop-viewport:active{cursor:grabbing}
+.workspace15-crop-viewport img{position:absolute;display:block;max-width:none;user-select:none;pointer-events:none}
+.workspace15-crop-viewport>span{position:absolute;inset:0;border:1px solid rgba(255,255,255,.34);border-radius:50%;box-shadow:inset 0 0 0 999px rgba(0,0,0,.03);pointer-events:none}
+.workspace15-zoom{width:min(360px,100%);display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px;color:#aeb4bf;font-size:13px}
+.workspace15-zoom input{width:100%;accent-color:var(--workspace15-accent)}
+.workspace15-crop-body>small{color:#858d99;text-align:center}
+.workspace15-pin-title-body{padding:20px;display:grid;gap:8px}
+.workspace15-pin-title-body label{display:grid;gap:8px;color:#aeb4bf;font-size:13px}
+.workspace15-pin-title-body input{box-sizing:border-box;width:100%;height:48px;padding:0 14px;border:1px solid #363d4a;border-radius:13px;background:#10141b;color:#fff;font:inherit;outline:0}
+.workspace15-pin-title-body input:focus{border-color:var(--workspace15-accent);box-shadow:0 0 0 3px rgba(139,115,237,.14)}
+.workspace15-pin-title-body>small{justify-self:end;color:#7f8794}.workspace15-pin-title-body>small b{color:#b7bdc7}
+
+/* Pin actions and avatar pencil must stay above adjacent layers. */
+.workspace13-pin-row{overflow:visible!important}
+.workspace13-pin-open{min-width:0!important}
+.workspace13-pin-actions{position:relative!important;z-index:5!important;flex:0 0 auto!important;min-width:max-content!important;background:#21252e;border-radius:10px}
+.workspace13-pin-actions button{position:relative!important;z-index:6!important;display:grid!important;place-items:center!important;opacity:1!important;visibility:visible!important}
+.workspace13-pin-actions [data-pin-title]{color:#c9c0ff!important;font-size:18px!important;font-weight:800!important}
+#communityManageAvatar.workspace14-editable-avatar::after{z-index:8!important;box-shadow:0 5px 14px rgba(0,0,0,.38)}
+
+@keyframes workspace15Fade{from{opacity:0}to{opacity:1}}
+@keyframes workspace15Card{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+
+@media(max-width:700px){
+  .workspace15-modal{padding:0;align-items:end}
+  .workspace15-card{width:100vw;max-width:none;max-height:94dvh;border-radius:23px 23px 0 0;border-bottom:0}
+  .workspace15-card>header{min-height:62px;padding:12px 14px}
+  .workspace15-card>footer{padding:12px 12px max(14px,env(safe-area-inset-bottom))}
+  .workspace15-crop-body{padding:16px 12px}
+  .workspace15-crop-viewport{width:min(286px,76vw)}
+  .workspace13-pin-row{grid-template-columns:minmax(0,1fr)!important}
+  .workspace13-pin-actions{justify-self:end!important;margin:0 5px 5px!important}
+}
+
+@media(prefers-reduced-motion:reduce){.workspace15-modal,.workspace15-card{animation:none!important}}

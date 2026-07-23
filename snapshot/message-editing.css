@@ -1,0 +1,16 @@
+/* MEETUS 0.6.25.2 COMMUNITY2-TG5 — global editing */
+.edit-composer-bar {
+  --reply-accent: var(--accent, #7c5cff);
+}
+
+.message-edited-label {
+  margin-right: 4px;
+  color: currentColor;
+  opacity: 0.58;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+#messageEditAction.hidden {
+  display: none !important;
+}

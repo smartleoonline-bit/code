@@ -1,0 +1,232 @@
+/* MEETUS 0.6.25.2 COMMUNITY2-TG11-WORKSPACE13 */
+:root{
+  --workspace13-accent:#8b73ed;
+  --workspace13-panel:#191c23;
+  --workspace13-panel-2:#222630;
+  --workspace13-border:rgba(139,115,237,.26);
+  --workspace13-ease:cubic-bezier(.2,.72,.25,1);
+}
+
+/* "Открыть публикацию" больше не попадает под стрелку меню сообщения. */
+.channel-origin-card{
+  position:relative!important;
+  padding-right:46px!important;
+  min-width:0!important;
+}
+.channel-origin-card>div{min-width:0!important;flex:1 1 auto!important}
+.channel-origin-card>button{
+  flex:0 1 auto!important;
+  max-width:min(150px,38%)!important;
+  padding:6px 8px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.community2-thread-message .message-bubble>.message-menu-trigger,
+.message-bubble>.message-menu-trigger{
+  z-index:15!important;
+}
+
+/* Стрелки действий заметнее на ПК и телефоне. */
+.message-menu-trigger{
+  width:31px!important;
+  height:31px!important;
+  display:grid!important;
+  place-items:center!important;
+  opacity:.94!important;
+}
+.message-menu-trigger svg{
+  width:19px!important;
+  height:19px!important;
+  stroke-width:2.65!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.28));
+}
+.channel-comment-arrow{
+  font-size:40px!important;
+  line-height:.75!important;
+  font-weight:500!important;
+  transform:translateY(-1px)!important;
+  text-shadow:0 1px 1px rgba(0,0,0,.2);
+}
+
+/* Загруженное аудио не вылезает из пузыря на мобильном. */
+.workspace12-audio-file{
+  box-sizing:border-box!important;
+  width:min(470px,72vw)!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow:hidden!important;
+}
+.workspace12-audio-content{min-width:0!important}
+.workspace12-audio-title{min-width:0!important}
+.workspace12-audio-range{min-width:0!important;max-width:100%!important}
+.message-bubble:has(.workspace12-audio-file),
+.message-bubble:has(.workspace-audio-file){
+  box-sizing:border-box!important;
+  max-width:min(520px,78vw)!important;
+  overflow:hidden!important;
+}
+
+/* Общие модальные окна WORKSPACE13. */
+.workspace13-modal{
+  position:fixed;
+  inset:0;
+  z-index:2300;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  background:rgba(5,8,13,.76);
+  backdrop-filter:blur(12px);
+  animation:workspace13-fade .18s var(--workspace13-ease) both;
+}
+.workspace13-modal.hidden{display:none!important}
+.workspace13-card{
+  width:min(620px,calc(100vw - 24px));
+  max-height:min(760px,calc(100dvh - 24px));
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  overflow:hidden;
+  border:1px solid var(--workspace13-border);
+  border-radius:22px;
+  background:var(--workspace13-panel);
+  color:#fff;
+  box-shadow:0 28px 90px rgba(0,0,0,.56);
+  animation:workspace13-card .24s var(--workspace13-ease) both;
+}
+.workspace13-card>header{
+  min-height:68px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:15px 18px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.workspace13-card>header h3{margin:0;font-size:20px}
+.workspace13-card>header small{display:block;margin-top:3px;color:#9299a6;font-size:12px}
+.workspace13-card>header>button{
+  width:38px;height:38px;border:0;border-radius:50%;background:#2c313b;color:#fff;font-size:23px;cursor:pointer;
+  transition:transform .16s var(--workspace13-ease),background .16s var(--workspace13-ease);
+}
+.workspace13-card>header>button:hover{background:#363c48;transform:rotate(4deg)}
+.workspace13-card>footer{
+  display:grid;
+  grid-template-columns:1fr 1.2fr;
+  gap:10px;
+  padding:14px 18px 18px;
+  border-top:1px solid rgba(255,255,255,.07);
+}
+.workspace13-card>footer button{
+  min-height:44px;border:0;border-radius:13px;background:#303540;color:#fff;font-weight:700;cursor:pointer;
+}
+.workspace13-card>footer button.primary{background:var(--workspace13-accent)}
+.workspace13-card button:disabled{opacity:.45;cursor:default}
+
+/* Список нескольких закреплённых сообщений. */
+.workspace13-pins-card{height:min(680px,calc(100dvh - 24px))}
+.workspace13-pins-list{min-height:0;overflow:auto;padding:10px 12px 18px;scrollbar-gutter:stable}
+.workspace13-pin-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:8px;
+  margin:4px 0;
+  padding:6px;
+  border:1px solid transparent;
+  border-radius:15px;
+  background:#21252e;
+  transition:transform .18s var(--workspace13-ease),background .18s var(--workspace13-ease),border-color .18s var(--workspace13-ease);
+}
+.workspace13-pin-row:hover{transform:translateY(-1px);background:#272c37;border-color:rgba(139,115,237,.18)}
+.workspace13-pin-open{
+  min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;padding:8px;border:0;background:transparent;color:#fff;text-align:left;cursor:pointer;
+}
+.workspace13-pin-open>span:last-child{min-width:0;display:grid;gap:3px}
+.workspace13-pin-open strong,.workspace13-pin-open small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.workspace13-pin-open strong{font-size:13px}.workspace13-pin-open small{color:#979eaa;font-size:11px}
+.workspace13-pin-number{width:29px;height:29px;display:grid;place-items:center;border-radius:10px;background:#342e53;color:#bcaeff;font-size:12px;font-weight:800}
+.workspace13-pin-actions{display:flex;align-items:center;gap:3px}
+.workspace13-pin-actions button{
+  width:32px;height:32px;border:0;border-radius:9px;background:transparent;color:#b8bec9;font-size:17px;cursor:pointer;
+  transition:background .15s ease,color .15s ease,transform .15s ease;
+}
+.workspace13-pin-actions button:hover{background:rgba(139,115,237,.15);color:#fff;transform:translateY(-1px)}
+.workspace13-pin-actions [data-pin-delete]:hover{background:rgba(255,91,113,.14);color:#ff8da0}
+
+/* Баннер скрывается полностью, если закрепов нет. */
+.workspace-pinned-banner.hidden{display:none!important}
+.workspace-pinned-banner{
+  animation:workspace13-banner .22s var(--workspace13-ease) both;
+}
+.workspace-pinned-banner>button:first-child{min-width:0!important}
+.workspace-pinned-banner small{max-width:100%!important}
+
+/* Редактирование аватарки и описания канала/группы. */
+.chat-header-menu [data-workspace13-action] svg{
+  width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+}
+.workspace13-profile-body{min-height:0;overflow:auto;padding:18px;display:grid;gap:20px}
+.workspace13-avatar-editor{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:16px;padding:15px;border-radius:17px;background:#222630}
+.workspace13-avatar-preview{
+  width:92px;height:92px;display:grid;place-items:center;overflow:hidden;border:2px solid rgba(139,115,237,.5);border-radius:50%;
+  background:linear-gradient(145deg,#6f60db,#36a8c8);color:#fff;font-size:34px;font-weight:800;
+}
+.workspace13-avatar-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.workspace13-avatar-editor>div:last-of-type{display:flex;flex-wrap:wrap;gap:8px}
+.workspace13-avatar-editor button{min-height:38px;padding:0 13px;border:0;border-radius:11px;background:#353b48;color:#fff;cursor:pointer}
+.workspace13-avatar-editor button.danger-soft{background:rgba(255,91,113,.11);color:#ff98a7}
+.workspace13-field{display:grid;gap:7px;color:#aab0bb;font-size:13px}
+.workspace13-field textarea{
+  width:100%;box-sizing:border-box;resize:vertical;min-height:130px;max-height:320px;padding:12px 13px;border:1px solid #343a47;border-radius:14px;
+  background:#10141b;color:#fff;font:inherit;line-height:1.45;outline:0;
+}
+.workspace13-field textarea:focus{border-color:var(--workspace13-accent);box-shadow:0 0 0 3px rgba(139,115,237,.14)}
+.workspace13-field>small{justify-self:end;color:#7f8794}.workspace13-field>small b{color:#aeb4c0}
+
+@keyframes workspace13-fade{from{opacity:0}to{opacity:1}}
+@keyframes workspace13-card{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes workspace13-banner{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+
+@media(max-width:700px){
+  .channel-origin-card{padding-right:40px!important;gap:6px!important}
+  .channel-origin-card>button{max-width:42%!important;font-size:10px!important;padding:5px 4px!important}
+  .message-menu-trigger{width:34px!important;height:34px!important}
+  .message-menu-trigger svg{width:21px!important;height:21px!important;stroke-width:2.8!important}
+  .channel-comment-arrow{font-size:42px!important;font-weight:600!important}
+
+  .message-bubble:has(.workspace12-audio-file),
+  .message-bubble:has(.workspace-audio-file){
+    width:min(100%,calc(100vw - 18px))!important;
+    max-width:calc(100vw - 18px)!important;
+    box-sizing:border-box!important;
+  }
+  .workspace12-audio-file{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    gap:9px!important;
+    padding:7px!important;
+  }
+  .workspace12-audio-play{width:48px!important;height:48px!important;flex:0 0 48px!important}
+  .workspace12-audio-title strong{font-size:13px!important}
+  .workspace12-audio-range{width:100%!important}
+
+  .workspace13-modal{padding:0;align-items:end}
+  .workspace13-card{width:100vw;max-width:none;max-height:92dvh;border-radius:23px 23px 0 0;border-bottom:0}
+  .workspace13-pins-card{height:min(78dvh,700px)}
+  .workspace13-card>header{min-height:62px;padding:12px 14px}
+  .workspace13-card>footer{padding:12px 12px max(14px,env(safe-area-inset-bottom))}
+  .workspace13-pins-list{padding-inline:8px}
+  .workspace13-pin-row{grid-template-columns:minmax(0,1fr)}
+  .workspace13-pin-actions{justify-content:flex-end;padding:0 6px 5px}
+  .workspace13-pin-actions button{width:38px;height:36px}
+  .workspace13-profile-body{padding:13px}
+  .workspace13-avatar-editor{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .workspace13-avatar-editor>div:last-of-type{justify-content:center}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .workspace13-modal,.workspace13-card,.workspace13-pin-row,.workspace-pinned-banner{animation:none!important;transition:none!important}
+}
