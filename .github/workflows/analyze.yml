@@ -1,0 +1,67 @@
+name: Analyze Meetus frontend
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/analyze.yml'
+      - 'snapshot/**'
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build source reports
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf analysis
+          mkdir -p analysis
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          patterns = {
+            'forward': r'forward|пересл',
+            'messages': r'contextMessage|messageContextMenu|activeMessages|renderMessage|createMediaMessage|/messages',
+            'contacts': r'state\.contacts|renderContacts|contactList|loadContacts|friend',
+            'community': r'applyCommunityInfo|managedCommunityInfo|description|avatar',
+            'media': r'mediaPreview|imageEditor|video|quality',
+            'request': r'async function request|const request|function request|rawRequest',
+          }
+          files = list(Path('snapshot').glob('*.js')) + list(Path('snapshot').glob('*.html'))
+          for report, pattern in patterns.items():
+              rx = re.compile(pattern, re.I)
+              out=[]
+              for path in files:
+                  try: lines=path.read_text('utf-8',errors='replace').splitlines()
+                  except: continue
+                  matches=[i for i,l in enumerate(lines) if rx.search(l)]
+                  if not matches: continue
+                  out.append(f'===== {path} ({len(matches)} matches) =====')
+                  used=[]
+                  for i in matches[:250]:
+                      a=max(0,i-8); b=min(len(lines),i+9)
+                      if used and a <= used[-1][1]:
+                          continue
+                      used.append((a,b))
+                      out.append(f'--- lines {a+1}-{b} match {i+1} ---')
+                      out.extend(f'{j+1}: {lines[j]}' for j in range(a,b))
+              Path(f'analysis/{report}.txt').write_text('\n'.join(out),encoding='utf-8')
+          PY
+      - name: Commit reports
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add analysis
+          if git diff --cached --quiet; then
+            echo 'No analysis changes'
+          else
+            git commit -m 'Analyze live Meetus frontend'
+            git push
+          fi
