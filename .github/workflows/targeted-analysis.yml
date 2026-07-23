@@ -1,0 +1,55 @@
+name: Targeted Meetus analysis
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/targeted-analysis.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract targeted snippets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p analysis
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          patterns={
+            'forward-clean': r'пересл|forward|auto_forwarded|forwarded',
+            'quality-clean': r'quality|качество|compress|transcod|480|720|1080|video_upload',
+            'avatar-clean': r'editable-avatar|avatar.*edit|edit.*avatar|communityManageAvatar|workspace13Avatar',
+            'message-markup-clean': r'function appendMessage|message-menu-trigger|data-message-id|openMessageContextMenu',
+          }
+          candidates=[p for p in Path('snapshot').glob('*.js') if p.stat().st_size < 800_000]
+          for name,pat in patterns.items():
+            rx=re.compile(pat,re.I)
+            out=[]
+            for p in candidates:
+              lines=p.read_text('utf-8',errors='replace').splitlines()
+              hits=[i for i,l in enumerate(lines) if rx.search(l)]
+              if not hits: continue
+              out.append(f'===== {p} ({len(hits)} matches) =====')
+              last=-1
+              for i in hits[:300]:
+                a=max(0,i-12); b=min(len(lines),i+13)
+                if a<=last: continue
+                last=b
+                out.append(f'--- {a+1}-{b} hit {i+1} ---')
+                out += [f'{j+1}: {lines[j]}' for j in range(a,b)]
+            Path(f'analysis/{name}.txt').write_text('\n'.join(out),encoding='utf-8')
+          PY
+      - name: Commit
+        shell: bash
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add analysis
+          if git diff --cached --quiet; then echo no-changes; else git commit -m 'Add targeted Meetus analysis'; git push; fi
